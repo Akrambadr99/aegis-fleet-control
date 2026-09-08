@@ -61,3 +61,12 @@ export function trafficConflicts(state: DomainState, facilityId: string) {
       route.corridorIds.some((id) => !state.corridors[id].open),
   );
 }
+
+// The initial topology models three alternative transfer lanes on each floor.
+export function routeCandidates(state: DomainState, robotId: string) {
+  const robot = state.robots[robotId];
+  return state.floors[robot.floorId].corridorIds
+    .filter((id) => state.corridors[id].open)
+    .sort((a, b) => state.corridors[a].length - state.corridors[b].length || a.localeCompare(b))
+    .slice(0, 1);
+}

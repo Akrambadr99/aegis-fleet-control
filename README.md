@@ -1,33 +1,35 @@
 # Aegis Fleet Control
 
-An autonomous robotics fleet management and digital twin platform, developed in small validated milestones.
+A self-contained React 19 robotics operations platform built in coherent, tested milestones.
 
-## Current delivery: Milestone 1 — application foundation
+## Current delivery
 
-One React 19 + TypeScript application at the repository root. The foundation includes:
+The foundation now runs on one normalized, versioned in-memory fleet gateway. The overview, fleet table, facility map, traffic, charging, faults, mission execution, telemetry, activity, replay events and scenario inputs observe the same confirmed records.
 
-- Responsive robotics operations shell and 15 addressable workspaces.
-- Facility overview with two fixed demonstration snapshots and a local SVG spatial preview.
-- Facility selection encoded in URL search parameters, including browser back/forward support.
-- Semantic landmarks, skip navigation, active navigation, visible keyboard focus, route titles and route focus management.
-- Route-level render error containment and unknown-route recovery.
-- Isolated TanStack Query clients and deterministic test setup.
-- Vitest/React Testing Library and Playwright browser journeys.
+Implemented cross-domain workflows:
 
-The remaining domain routes are explicitly marked as planned. The diagram is illustrative, and the summary is fixed seed data. There is no live telemetry, gateway engine, robot control or mission editing yet. This milestone does not claim the complete product or eventual test targets.
+- Close a corridor: update topology, invalidate affected routes, pause running missions, hold reservations, record activity/replay and change scenario inputs.
+- Recalculate a route: choose an available transfer lane, update reservation and mission estimates, then explicitly resume if readiness permits.
+- Disable a charger: displace reservations, expose robot warnings and update mission feasibility and scenario capacity.
+- Emergency stop: latch robot stop, pause its mission, release traffic reservations, revoke an existing control lease and record a replay frame.
+- Pause selected robots: independent per-robot success/failure results while filters and selection remain usable.
+- Acknowledge faults: record operator identity while retaining the recovery safety block.
+- Advance the deterministic simulation: update positions, battery, mission progress, telemetry and completion/battery-reserve events.
+
+The seed contains 4 facilities, 12 floors, 120 zones, 120 robots, 240 missions, 36 chargers, 36 reservations, 12 faults, 600 telemetry samples and 240 activity events.
 
 ## Run locally
 
-Use Node **20.19.5** and npm **10.8.2**. A matching Node 20 version >=20.19 is required.
+Use Node **20.19.5** and npm **10.8.2**.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open the address printed by Vite. No database, credentials, API keys or external application service is required. Dependencies and the test browser must be installed before offline use.
+No external database, service, credentials or API keys are required. Package and browser installation require internet access; the running application does not.
 
-## Validate
+## Validation
 
 ```sh
 npm run typecheck
@@ -38,17 +40,24 @@ npm run test:e2e
 npm run format:check
 ```
 
-The root test command directly invokes `vitest run`. Browser tests start their own local Vite server on port 4173; keep that port free.
+The root test command is directly `vitest run`. Chromium journeys start their own local server on port 4173. The production output is `dist/`; static hosting needs an `index.html` route fallback.
 
-The production output is `dist/`. Static hosts must fall back to `index.html` for application routes. `npm run preview` serves the build locally.
+## Try an interconnected workflow
 
-## Structure
+1. Open `/traffic?robot=R-001`.
+2. Close C-001 and observe the mission pause and held/invalid reservation.
+3. Recalculate the robot's route.
+4. Open Execution from the sidebar and explicitly resume M-001.
+5. Inspect Activity, Replay or the facility map. The same robot and facility remain selected.
 
-- `src/app`: shell, providers, application styles.
-- `src/routing`: workspace metadata and route contract.
-- `src/components`: shared behavior with actual reuse.
-- `src/features/overview`: fixed overview snapshots and spatial preview.
-- `src/test`: clean application rendering and test lifecycle.
-- `e2e`: browser history, focus, responsive layout and offline-service independence.
+Open `/charging?robot=R-001` and disable CHG-001 to see its reservations displaced and the robot's feasibility warning update.
 
-Future features add their own domain modules as implemented. See [architecture](docs/architecture.md), [milestones](docs/milestones.md), and the [product brief](docs/product-brief.md).
+The role selector is an explicit local simulation feature. The gateway checks role eligibility on every command. This is not a production authentication system.
+
+## Current boundaries
+
+This is an early interconnected implementation, not the finished long-term product. Current routing models alternative transfer lanes per floor, not a complete navigation graph. Mission graph editing, doors/elevators/docks, topology drag editing, queue moves/undo, automation execution, teleoperation acquisition/expiry, full timeline playback and comparative scenario runs remain future milestones. The current simulation is stepped manually; optimistic editing has not been introduced.
+
+All operational state lasts for the application session and resets to the deterministic seed on a full reload. URL context survives reload. Telemetry retains a bounded live window; activity and command replay frames retain session history.
+
+See [architecture](docs/architecture.md), [milestones](docs/milestones.md), [validation](docs/validation.md), and the original [product brief](docs/product-brief.md).

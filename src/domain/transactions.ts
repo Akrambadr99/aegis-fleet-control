@@ -1,5 +1,5 @@
 import type { Actor, Command, DomainState, Robot } from './model';
-import { canExecute, missionFeasibility } from './selectors';
+import { canExecute, missionFeasibility, routeCandidates } from './selectors';
 import { GatewayError } from '../gateway/requests';
 function frame(state: DomainState, robot: Robot, eventId: string) {
   const mission = robot.activeMissionId ? state.missions[robot.activeMissionId] : null;
@@ -124,6 +124,23 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
         lease.revision++;
         robot.controlSessionId = null;
       }
+    } else if (command.type === 'robot.reroute') {
+      if (
+        !mission ||
+        !route ||
+        robot.status === 'emergency-stopped' ||
+        mission.status === 'completed'
+      )
+        throw new GatewayError('invalid', 'Robot must have a recoverable active mission');
+      const candidates = routeCandidates(state, robot.id);
+      if (!candidates.length)
+        throw new GatewayError('invalid', 'No open transfer lane on this floor');
+      route.corridorIds = candidates;
+      route.topologyRevision = state.facilities[robot.facilityId].topologyRevision;
+      route.state = 'valid';
+      route.reservationState = mission.status === 'running' ? 'active' : 'held';
+      route.revision++;
+      mission.revision++;
     } else if (command.type === 'robot.pause') {
       if (robot.status !== 'running')
         throw new GatewayError('unchanged', 'Only a running robot can be paused');

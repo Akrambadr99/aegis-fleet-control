@@ -1,5 +1,6 @@
 import { useState, type PropsWithChildren } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { FleetProvider } from './FleetProvider';
 export function createQueryClient() {
   return new QueryClient({
     defaultOptions: {
@@ -10,5 +11,9 @@ export function createQueryClient() {
 }
 export function AppProviders({ children }: PropsWithChildren) {
   const [client] = useState(createQueryClient);
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={client}>
+      <FleetProvider>{children}</FleetProvider>
+    </QueryClientProvider>
+  );
 }

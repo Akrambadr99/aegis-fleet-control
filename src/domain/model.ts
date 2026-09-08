@@ -140,7 +140,11 @@ export interface DomainState {
 export type Command =
   | { type: 'corridor.set'; id: string; expectedRevision: number; open: boolean }
   | { type: 'charger.set'; id: string; expectedRevision: number; available: boolean }
-  | { type: 'robot.stop' | 'robot.pause' | 'robot.resume'; id: string; expectedRevision: number }
+  | {
+      type: 'robot.stop' | 'robot.pause' | 'robot.resume' | 'robot.reroute';
+      id: string;
+      expectedRevision: number;
+    }
   | { type: 'fault.acknowledge'; id: string; expectedRevision: number };
 export interface RoutePreview {
   robotId: string;

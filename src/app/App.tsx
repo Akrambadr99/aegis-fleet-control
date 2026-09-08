@@ -2,6 +2,7 @@ import { useLayoutEffect } from 'react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { Overview } from '../features/overview/Overview';
+import { OperationsWorkspace, connectedPaths } from '../features/operations/OperationsWorkspace';
 import { workspaces, type Workspace } from '../routing/workspaces';
 function RouteEffects() {
   const { pathname } = useLocation();
@@ -77,7 +78,11 @@ export function App() {
               {workspaces
                 .filter((item) => item.group === group)
                 .map((item) => (
-                  <NavLink key={item.path} end to={item.path}>
+                  <NavLink
+                    key={item.path}
+                    end
+                    to={{ pathname: item.path, search: location.search }}
+                  >
                     <span className="nav-code" aria-hidden="true">
                       {item.code}
                     </span>
@@ -88,7 +93,8 @@ export function App() {
           ))}
         </nav>
         <div className="sidebar-footer">
-          <span className="status-dot" /> Local demonstration<small>Foundation · v0.1</small>
+          <span className="status-dot" /> Local demonstration
+          <small>Connected operations · v0.2</small>
         </div>
       </aside>
       <div className="main-column">
@@ -108,7 +114,13 @@ export function App() {
                   <Route
                     key={item.path}
                     path={item.path}
-                    element={<PlannedWorkspace workspace={item} />}
+                    element={
+                      connectedPaths.includes(item.path) ? (
+                        <OperationsWorkspace workspace={item} />
+                      ) : (
+                        <PlannedWorkspace workspace={item} />
+                      )
+                    }
                   />
                 ))}
               <Route path="*" element={<NotFound />} />
@@ -116,7 +128,7 @@ export function App() {
           </ErrorBoundary>
         </main>
         <footer className="page-footer">
-          Aegis Fleet Control <span>Local seed snapshot · No physical robots connected</span>
+          Aegis Fleet Control <span>Shared simulation · No physical robots connected</span>
         </footer>
       </div>
       <RouteEffects />

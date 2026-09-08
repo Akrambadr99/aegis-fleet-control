@@ -46,10 +46,12 @@ describe('application foundation', () => {
     const user = userEvent.setup();
     renderApp();
     await user.selectOptions(screen.getByRole('combobox'), 'meridian');
-    expect(screen.getByText('87')).toBeVisible();
-    expect(screen.getByText('AMR-006 temperature above nominal')).toBeVisible();
-    expect(screen.queryByText('AGV-017 waiting at corridor C4')).not.toBeInTheDocument();
-    expect(screen.getByRole('progressbar')).toHaveAttribute('value', '91');
+    expect(screen.getByText('FAC-002 · Local operating facility')).toBeVisible();
+    expect(screen.getByText('R-039: Localization confidence below threshold')).toBeVisible();
+    expect(
+      screen.queryByText('R-009: Localization confidence below threshold'),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('progressbar')).toHaveAttribute('value', '80');
   });
   it('keeps selector focus during query-only updates', async () => {
     const user = userEvent.setup();

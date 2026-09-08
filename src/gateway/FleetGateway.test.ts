@@ -255,3 +255,85 @@ describe('asynchronous reads', () => {
     expect((await b.promise).id).toBe('R-002');
   });
 });
+
+it('explicit rerouting updates reservation, mission cost and preview before safe resume', async () => {
+  const { clock, gateway } = fixture();
+  const close = gateway.command(admin, {
+    type: 'corridor.set',
+    id: 'C-001',
+    expectedRevision: 1,
+    open: false,
+  });
+  clock.advance(250);
+  await close.promise;
+  const robot = gateway.getSnapshot().robots['R-001'];
+  const reroute = gateway.command(admin, {
+    type: 'robot.reroute',
+    id: robot.id,
+    expectedRevision: robot.revision,
+  });
+  clock.advance(250);
+  await reroute.promise;
+  const s = gateway.getSnapshot();
+  expect(s.routes['RT-001'].corridorIds).toEqual(['C-002']);
+  expect(s.routes['RT-001'].state).toBe('valid');
+  expect(s.missions['M-001'].status).toBe('paused');
+  expect(missionFeasibility(s, 'M-001').distance).toBe(130);
+  const preview = gateway.previewRoute(robot.id);
+  clock.advance(250);
+  expect((await preview.promise).corridorIds).toEqual(['C-002']);
+  const resume = gateway.command(admin, {
+    type: 'robot.resume',
+    id: robot.id,
+    expectedRevision: s.robots[robot.id].revision,
+  });
+  clock.advance(250);
+  await resume.promise;
+  expect(gateway.getSnapshot().missions['M-001'].status).toBe('running');
+  expect(gateway.getSnapshot().routes['RT-001'].reservationState).toBe('active');
+});
+it('reroute failure leaves existing route and audit intact when all lanes are closed', async () => {
+  const { clock, gateway } = fixture();
+  for (const id of ['C-001', 'C-002', 'C-003']) {
+    const request = gateway.command(admin, {
+      type: 'corridor.set',
+      id,
+      expectedRevision: 1,
+      open: false,
+    });
+    clock.advance(250);
+    await request.promise;
+  }
+  const before = gateway.getSnapshot(),
+    robot = before.robots['R-001'];
+  const request = gateway.command(admin, {
+    type: 'robot.reroute',
+    id: robot.id,
+    expectedRevision: robot.revision,
+  });
+  const failure = expect(request.promise).rejects.toMatchObject({ code: 'invalid' });
+  clock.advance(250);
+  await failure;
+  expect(gateway.getSnapshot()).toBe(before);
+});
+it('explicit supersession has a distinct outcome and prevents the old operation from running', async () => {
+  const { clock, gateway } = fixture();
+  const old = gateway.readRobot('R-001');
+  const rejected = expect(old.promise).rejects.toMatchObject({ code: 'superseded' });
+  old.supersede();
+  const current = gateway.readRobot('R-002');
+  clock.advance(250);
+  await rejected;
+  expect(old.status).toBe('superseded');
+  expect((await current.promise).id).toBe('R-002');
+  expect(clock.pending).toBe(0);
+});
+it('settled operations cannot be cancelled or superseded retroactively', async () => {
+  const { clock, gateway } = fixture();
+  const ticket = gateway.readRobot('R-001');
+  clock.advance(250);
+  await ticket.promise;
+  ticket.cancel();
+  ticket.supersede();
+  expect(ticket.status).toBe('confirmed');
+});

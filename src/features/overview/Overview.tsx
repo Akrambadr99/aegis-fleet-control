@@ -1,9 +1,11 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import { facilities, resolveFacility } from './snapshot';
 import { FacilityPreview } from './FacilityPreview';
+import { useDomain } from '../../app/FleetProvider';
 export function Overview() {
   const [params, setParams] = useSearchParams();
-  const facility = resolveFacility(params.get('facility'));
+  const state = useDomain();
+  const facility = resolveFacility(state, params.get('facility'));
   return (
     <>
       <div className="page-heading">
@@ -13,7 +15,7 @@ export function Overview() {
           <p>Operational context for your autonomous fleet.</p>
         </div>
         <span className="pill">
-          <span className="status-dot" /> Seed snapshot
+          <span className="status-dot" /> Shared simulation state
         </span>
       </div>
       <div className="facility-bar">
@@ -32,24 +34,22 @@ export function Overview() {
           >
             {facilities.map((item) => (
               <option key={item.id} value={item.id}>
-                {item.name}
+                {state.facilities[item.domainId].name}
               </option>
             ))}
           </select>
         </div>
         <span>{facility.location}</span>
-        <span className="facility-area">
-          {facility.area} m² <span className="separator">/</span> {facility.floors.length} floors
-        </span>
+        <span className="facility-area">{facility.floors.length} floors</span>
       </div>
       <section className="metrics" aria-label="Facility summary">
         <article>
           <p>Fleet online</p>
           <strong>
-            {facility.fleet - 1}
+            {facility.online}
             <span> / {facility.fleet}</span>
           </strong>
-          <small>1 robot offline</small>
+          <small>{facility.offline} robots offline</small>
         </article>
         <article>
           <p>Robots active</p>
@@ -59,7 +59,7 @@ export function Overview() {
         <article>
           <p>Missions completed</p>
           <strong>{facility.missions}</strong>
-          <small>Current shift snapshot</small>
+          <small>Retained completed missions</small>
         </article>
         <article>
           <p>Needs attention</p>
@@ -81,10 +81,9 @@ export function Overview() {
             <div>
               <span className="legend-dot robot-dot" />
               Robot <span className="legend-dot route-dot" />
-              Route <span className="legend-dot charger-dot" />
-              Charger
+              Corridor
             </div>
-            <Link to="/facilities">Digital twin roadmap ↗</Link>
+            <Link to={`/facilities?facility=${facility.domainId}`}>Open digital twin ↗</Link>
           </div>
         </section>
         <section className="panel shift-panel">
@@ -94,8 +93,8 @@ export function Overview() {
             {facility.throughput}
             <span>%</span>
           </div>
-          <p>Illustrative throughput target</p>
-          <progress aria-label="Throughput target" max="100" value={facility.throughput} />
+          <p>Active fleet utilization</p>
+          <progress aria-label="Active fleet utilization" max="100" value={facility.throughput} />
           <dl>
             <div>
               <dt>Active robots</dt>
@@ -107,9 +106,7 @@ export function Overview() {
             </div>
             <div>
               <dt>Available for assignment</dt>
-              <dd>
-                {facility.fleet - facility.active - facility.charging - facility.attention - 1}
-              </dd>
+              <dd>{facility.available}</dd>
             </div>
             <div>
               <dt>Needs attention</dt>
@@ -117,12 +114,12 @@ export function Overview() {
             </div>
             <div>
               <dt>Offline</dt>
-              <dd>1</dd>
+              <dd>{facility.offline}</dd>
             </div>
           </dl>
           <p className="snapshot-note">
-            Fixed demonstration data. Live telemetry and gateway operations are scheduled for later
-            milestones.
+            Shared gateway state. Advance the simulation from an operational workspace to update
+            telemetry.
           </p>
         </section>
         <section className="panel">
@@ -131,7 +128,7 @@ export function Overview() {
               <p className="eyebrow">OPERATIONS BRIEF</p>
               <h2>Facility advisories</h2>
             </div>
-            <span className="pill">{facility.attention} open</span>
+            <span className="pill">{facility.attention} robots</span>
           </div>
           <ul className="advisories">
             {facility.activity.map((activity, index) => (
@@ -139,7 +136,7 @@ export function Overview() {
                 <span className="advisory-number">{String(index + 1).padStart(2, '0')}</span>
                 <div>
                   <strong>{activity}</strong>
-                  <p>Demonstration advisory · {facility.name}</p>
+                  <p>Robot advisory · {facility.name}</p>
                 </div>
               </li>
             ))}
@@ -154,13 +151,13 @@ export function Overview() {
             </span>
             <span aria-hidden="true">↗</span>
           </Link>
-          <Link to="/traffic">
+          <Link to={`/traffic?facility=${facility.domainId}`}>
             <span>
               Traffic control<small>Reservations & routing</small>
             </span>
             <span aria-hidden="true">↗</span>
           </Link>
-          <Link to="/simulation">
+          <Link to={`/simulation?facility=${facility.domainId}`}>
             <span>
               Scenario simulator<small>Capacity & planning</small>
             </span>

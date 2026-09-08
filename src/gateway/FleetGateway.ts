@@ -1,7 +1,7 @@
 import type { Actor, Command, DomainState, RoutePreview } from '../domain/model';
 import { createSeed } from '../domain/seed';
 import { applyCommand, record } from '../domain/transactions';
-import { readiness } from '../domain/selectors';
+import { readiness, routeCandidates } from '../domain/selectors';
 import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
 function freeze<T>(value: T): T {
@@ -83,9 +83,7 @@ export class FleetGateway {
         this.state.robots[robotId].revision !== robot.revision
       )
         throw new GatewayError('stale', 'Route inputs changed; calculate again');
-      const corridorIds = snapshot.floors[robot.floorId].corridorIds.filter(
-          (id) => snapshot.corridors[id].open,
-        ),
+      const corridorIds = routeCandidates(snapshot, robotId),
         distance = corridorIds.reduce((sum, id) => sum + snapshot.corridors[id].length, 0);
       const reasons = readiness(snapshot, robot);
       if (!corridorIds.length) reasons.push('No open corridor');

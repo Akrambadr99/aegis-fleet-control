@@ -92,7 +92,7 @@ export function createSeed(): DomainState {
           facilityId,
           floorId,
           position: { x: 60 + r * 50, y: 175 },
-          status: faultId ? 'paused' : 'running',
+          status: faultId || r === 9 ? 'paused' : 'running',
           battery: 25 + ((n * 7) % 70),
           connected: r !== 9,
           activeMissionId: missionId,
@@ -107,10 +107,10 @@ export function createSeed(): DomainState {
           facilityId,
           destinationId: floor.zoneIds[9],
           routeId,
-          status: faultId ? 'paused' : 'running',
+          status: faultId || r === 9 ? 'paused' : 'running',
           priority: 1 + (n % 3),
           progress: n % 50,
-          pauseReason: faultId ? 'Active fault' : null,
+          pauseReason: faultId ? 'Active fault' : r === 9 ? 'Connection lost' : null,
         };
         state.missions[key('M', n + 120)] = {
           ...state.missions[missionId],
@@ -127,7 +127,7 @@ export function createSeed(): DomainState {
           corridorIds: [floor.corridorIds[r % 3]],
           topologyRevision: 1,
           state: 'valid',
-          reservationState: faultId ? 'held' : 'active',
+          reservationState: faultId || r === 9 ? 'held' : 'active',
         };
         if (r < 3) {
           const reservationId = key('RES', n);

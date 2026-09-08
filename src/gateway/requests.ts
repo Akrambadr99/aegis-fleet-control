@@ -24,6 +24,7 @@ export interface Ticket<T> {
   status: RequestStatus;
   promise: Promise<T>;
   cancel: () => void;
+  supersede: () => void;
 }
 export class RequestEngine {
   private sequence = 0;
@@ -51,6 +52,12 @@ export class RequestEngine {
     ticket.id = id;
     ticket.status = 'pending';
     ticket.cancel = cancel;
+    ticket.supersede = () => {
+      if (ticket.status !== 'pending') return;
+      ticket.status = 'superseded';
+      cleanup();
+      rejectPromise(new GatewayError('superseded', 'A newer request replaced this operation'));
+    };
     ticket.promise = new Promise<T>((resolve, reject) => {
       rejectPromise = reject;
       stop = this.scheduler.schedule(plan.delay ?? 250, () => {
