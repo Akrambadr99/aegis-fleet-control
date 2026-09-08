@@ -75,7 +75,7 @@ describe('application foundation', () => {
   });
   it('keeps domain routes individually addressable', () => {
     renderApp('/missions');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Mission management');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Mission editor');
     expect(document.title).toContain('Mission management');
   });
 });

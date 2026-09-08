@@ -1,3 +1,4 @@
+import { MissionPlanning } from '../features/missions/MissionPlanning';
 import { useLayoutEffect } from 'react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -115,7 +116,9 @@ export function App() {
                     key={item.path}
                     path={item.path}
                     element={
-                      connectedPaths.includes(item.path) ? (
+                      item.path === '/missions' ? (
+                        <MissionPlanning />
+                      ) : connectedPaths.includes(item.path) ? (
                         <OperationsWorkspace workspace={item} />
                       ) : (
                         <PlannedWorkspace workspace={item} />
