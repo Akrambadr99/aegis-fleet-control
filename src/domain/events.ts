@@ -8,6 +8,8 @@ export type DomainEventType =
   | 'robot.low-battery'
   | 'job.picked-up'
   | 'job.delivered'
+  | 'job.started'
+  | 'job.completed'
   | 'resource.expired'
   | 'resource.released'
   | 'resource.acquired'

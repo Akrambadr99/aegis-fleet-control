@@ -36,3 +36,20 @@ Other major gaps include cooperative missions, the unified physical model,
 component health, policy administration, shift handover and the dense command
 center. Existing telemetry, charging, faults, maintenance and replay are usable
 slices requiring further depth. The roadmap's scale targets are not yet achieved.
+
+## Warehouse job kinds and capabilities
+
+Seven explicit job kinds now share one definition used by dispatch, mission
+requirements and the job editor. Cargo jobs generate collection/delivery plans;
+inspection adds an inspection step and requires a suitable robot; support jobs
+reach the support station without inventing payload custody. Additional capability
+requirements constrain ranking and remain on generated missions. Existing jobs
+without a kind retain transport behavior. Partially completed work locks its kind,
+stations, payload and capability meaning while allowing priority/deadline updates.
+
+Validation: typecheck, lint, 204 Vitest/React tests and build passed; all four
+scheduler Chromium journeys passed, including inspection creation and capability
+filtering. The resulting workspace screenshot was inspected. This is a Stage F
+slice, not completion: the simulation still advances route progress at a fixed
+rate and does not execute individual plan actions. Job grouping, explicit retry
+history and partial-success bulk dispatch remain unfinished.

@@ -1,13 +1,16 @@
-import { supportsMissionAction } from './capabilities';
+import { supportsMissionAction, supportsRobotAction, type RobotAction } from './capabilities';
+import { jobKinds, jobProfiles, jobActions, jobSteps, type JobKind } from './jobKinds';
 import { reserveMissionResources, releaseRobotResources } from './resources';
 import type { DomainState, Robot, Versioned, Command } from './model';
 import { shortestPath, type PathResult } from './navigation';
 import { readiness } from './selectors';
 import { robotCommitments } from './availability';
-import { newPlan, newStep } from './planning';
+import { newPlan } from './planning';
 import { recordPlanRevision } from './planHistory';
 import { DomainError as GatewayError } from './errors';
 export interface JobInput {
+  kind?: JobKind;
+  requiredActions?: RobotAction[];
   title: string;
   facilityId: string;
   sourceZoneId: string;
@@ -85,8 +88,13 @@ export function rankCandidates(state: DomainState, job: WarehouseJob): RobotCand
     .filter((r) => r.facilityId === job.facilityId)
     .map((robot) => {
       const reasons = [...readiness(state, robot), ...robotCommitments(state, robot)];
-      if (!supportsMissionAction(robot, 'pickup', job.payloadKg))
+      if (
+        jobProfiles[job.kind ?? 'transport'].cargo &&
+        !supportsMissionAction(robot, 'pickup', job.payloadKg)
+      )
         reasons.push('Payload capability mismatch');
+      for (const action of jobActions(job))
+        if (!supportsRobotAction(robot, action)) reasons.push('Required capability: ' + action);
       if (job.dependsOn.some((id) => state.jobs[id]?.status !== 'completed'))
         reasons.push('Predecessor job incomplete');
       if (
@@ -124,13 +132,22 @@ export function rankCandidates(state: DomainState, job: WarehouseJob): RobotCand
     );
 }
 function validateInput(state: DomainState, id: string, input: JobInput) {
+  if (!jobKinds.includes(input.kind ?? 'transport'))
+    throw new GatewayError('invalid', 'Choose a supported job kind');
+  if (
+    input.requiredActions &&
+    (new Set(input.requiredActions).size !== input.requiredActions.length ||
+      input.requiredActions.some((action) => !['navigate', 'lift', 'inspect'].includes(action)))
+  )
+    throw new GatewayError('invalid', 'Required capabilities must be supported and unique');
+  const cargo = jobProfiles[input.kind ?? 'transport'].cargo;
   if (!input.title.trim() || !state.facilities[input.facilityId])
     throw new GatewayError('invalid', 'Job title and facility are required');
   if (
     !Number.isInteger(input.units) ||
     input.units < 1 ||
     !Number.isFinite(input.payloadKg) ||
-    input.payloadKg <= 0 ||
+    (cargo ? input.payloadKg <= 0 : input.payloadKg !== 0) ||
     !Number.isInteger(input.priority) ||
     input.priority < 1 ||
     input.priority > 5 ||
@@ -189,10 +206,25 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
     )
       throw new GatewayError('invalid', 'Only unassigned jobs can be edited within their facility');
     validateInput(state, command.id, command.input);
+    if (
+      existing &&
+      existing.completedUnits > 0 &&
+      ((existing.kind ?? 'transport') !== (command.input.kind ?? 'transport') ||
+        existing.sourceZoneId !== command.input.sourceZoneId ||
+        existing.destinationZoneId !== command.input.destinationZoneId ||
+        existing.payloadKg !== command.input.payloadKg ||
+        [...jobActions(existing)].sort().join() !== [...jobActions(command.input)].sort().join())
+    )
+      throw new GatewayError(
+        'invalid',
+        'Delivered work fixes job kind, stations, payload and capabilities; create a new job',
+      );
     if (existing && command.input.units <= existing.completedUnits)
       throw new GatewayError('invalid', 'Quantity must include undelivered work');
     state.jobs[command.id] = {
       ...structuredClone(command.input),
+      kind: command.input.kind ?? 'transport',
+      requiredActions: [...(command.input.requiredActions ?? [])],
       id: command.id,
       revision: command.expectedRevision + 1,
       status: existing?.status ?? 'queued',
@@ -252,12 +284,7 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
   const plan = newPlan(planId, existing.facilityId, robot.id);
   plan.title = existing.title;
   plan.revision = 1;
-  plan.steps = [
-    { ...newStep('source'), zoneId: existing.sourceZoneId },
-    { ...newStep('pickup', 'pickup'), payloadKg: existing.payloadKg, dependsOn: ['source'] },
-    { ...newStep('destination'), zoneId: existing.destinationZoneId, dependsOn: ['pickup'] },
-    { ...newStep('dropoff', 'dropoff'), payloadKg: existing.payloadKg, dependsOn: ['destination'] },
-  ];
+  plan.steps = jobSteps(existing);
   recordPlanRevision(state, plan, actorId);
   state.routes[routeId] = {
     id: routeId,
@@ -283,7 +310,7 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
     priority: existing.priority,
     progress: 0,
     pauseReason: null,
-    requirements: { payloadKg: existing.payloadKg, actions: ['navigate', 'lift'] },
+    requirements: { payloadKg: existing.payloadKg, actions: jobActions(existing) },
     jobId: existing.id,
     planId,
   };
@@ -310,22 +337,26 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
   return [...affected, robot];
 }
 export function synchronizeJobs(state: DomainState) {
-  const changes: { robot: Robot; job: WarehouseJob; event: 'job.picked-up' | 'job.delivered' }[] =
-    [];
+  const changes: {
+    robot: Robot;
+    job: WarehouseJob;
+    event: 'job.picked-up' | 'job.delivered' | 'job.started' | 'job.completed';
+  }[] = [];
   for (const job of Object.values(state.jobs)) {
     if (!job.missionId || !job.robotId || !['assigned', 'in-progress'].includes(job.status))
       continue;
     const mission = state.missions[job.missionId],
       robot = state.robots[job.robotId];
     if (
-      job.custody === 'source' &&
+      job.status === 'assigned' &&
       mission.progress >= job.pickupProgress &&
       mission.progress > 0
     ) {
-      job.custody = 'robot';
+      const cargo = jobProfiles[job.kind ?? 'transport'].cargo;
+      job.custody = cargo ? 'robot' : 'source';
       job.status = 'in-progress';
       job.revision++;
-      changes.push({ robot, job, event: 'job.picked-up' });
+      changes.push({ robot, job, event: cargo ? 'job.picked-up' : 'job.started' });
     }
     if (mission.status === 'completed') {
       job.completedUnits += job.assignedUnits;
@@ -335,7 +366,11 @@ export function synchronizeJobs(state: DomainState) {
       job.robotId = null;
       job.missionId = null;
       job.revision++;
-      changes.push({ robot, job, event: 'job.delivered' });
+      changes.push({
+        robot,
+        job,
+        event: jobProfiles[job.kind ?? 'transport'].cargo ? 'job.delivered' : 'job.completed',
+      });
     }
   }
   return changes;

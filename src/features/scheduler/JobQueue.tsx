@@ -1,4 +1,5 @@
 import type { WarehouseJob } from '../../domain/jobs';
+import { jobProfiles } from '../../domain/jobKinds';
 export function JobQueue({
   jobs,
   selected,
@@ -20,7 +21,7 @@ export function JobQueue({
               <th>Job / station transfer</th>
               <th>Priority</th>
               <th>Deadline</th>
-              <th>Delivered</th>
+              <th>Completed units</th>
               <th>Assignment</th>
             </tr>
           </thead>
@@ -36,6 +37,7 @@ export function JobQueue({
                     {job.id}
                   </button>
                   <strong>{job.title}</strong>
+                  <small>{jobProfiles[job.kind ?? 'transport'].label}</small>
                   <small>
                     {job.sourceZoneId} → {job.destinationZoneId}
                   </small>

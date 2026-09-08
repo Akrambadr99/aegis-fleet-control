@@ -1,4 +1,25 @@
 import { test, expect } from '@playwright/test';
+test('inspection job requirements persist and filter robot capability eligibility', async ({
+  page,
+}) => {
+  await page.goto('/scheduler');
+  await page.getByRole('button', { name: 'New warehouse job' }).click();
+  await page.getByLabel('Job title').fill('Outbound inspection sweep');
+  await page.getByRole('combobox', { name: 'Job kind', exact: true }).selectOption('inspection');
+  await expect(page.getByLabel('Payload kg')).toHaveValue('0');
+  await expect(page.getByLabel('Payload kg')).toBeDisabled();
+  await expect(page.getByText('Required capabilities: navigate, inspect')).toBeVisible();
+  await page.getByRole('checkbox', { name: 'lift', exact: true }).check();
+  await page.getByRole('button', { name: 'Create job', exact: true }).click();
+  await expect(
+    page.locator('.job-queue tr').filter({ hasText: 'Outbound inspection sweep' }),
+  ).toContainText('Inspection');
+  await expect(page.getByRole('combobox', { name: 'Job kind', exact: true })).toHaveValue(
+    'inspection',
+  );
+  await expect(page.getByText(/Required capability: lift/).first()).toBeVisible();
+  await page.screenshot({ path: 'test-results/inspection-job.png', fullPage: true });
+});
 test('queue filters survive reload and dependency navigation preserves query context', async ({
   page,
 }) => {

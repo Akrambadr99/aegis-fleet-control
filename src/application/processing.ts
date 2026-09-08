@@ -104,7 +104,7 @@ export function advanceDomain(
           change.job.completedUnits +
           '/' +
           change.job.units +
-          ' delivered',
+          ' completed',
         [change.robot],
       );
     for (const change of synchronizeResources(next))

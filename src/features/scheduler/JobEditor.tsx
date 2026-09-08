@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { DomainState } from '../../domain/model';
 import type { JobInput, WarehouseJob } from '../../domain/jobs';
+import { jobKinds, jobProfiles, jobActions, type JobKind } from '../../domain/jobKinds';
 export function JobEditor({
   state,
   facilityId,
@@ -21,6 +22,8 @@ export function JobEditor({
     job
       ? {
           title: job.title,
+          kind: job.kind ?? 'transport',
+          requiredActions: [...(job.requiredActions ?? [])],
           facilityId: job.facilityId,
           sourceZoneId: job.sourceZoneId,
           destinationZoneId: job.destinationZoneId,
@@ -32,6 +35,8 @@ export function JobEditor({
         }
       : {
           title: 'Dock transfer request',
+          kind: 'transport',
+          requiredActions: [],
           facilityId,
           sourceZoneId: zones[1]?.id ?? '',
           destinationZoneId: zones[4]?.id ?? '',
@@ -59,11 +64,55 @@ export function JobEditor({
           Job title
           <input required value={draft.title} onChange={(e) => patch({ title: e.target.value })} />
         </label>
+        <label>
+          Job kind
+          <select
+            value={draft.kind}
+            disabled={!!job?.completedUnits}
+            onChange={(e) => {
+              const kind = e.target.value as JobKind;
+              patch({ kind, payloadKg: jobProfiles[kind].cargo ? draft.payloadKg || 60 : 0 });
+            }}
+          >
+            {jobKinds.map((kind) => (
+              <option key={kind} value={kind}>
+                {jobProfiles[kind].label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <p>Required capabilities: {jobActions(draft).join(', ')}</p>
+        <fieldset disabled={!!job?.completedUnits}>
+          <legend>Additional capabilities</legend>
+          {(['lift', 'inspect'] as const).map((action) => (
+            <label className="check-label" key={action}>
+              <input
+                type="checkbox"
+                checked={(draft.requiredActions ?? []).includes(action)}
+                onChange={(e) =>
+                  patch({
+                    requiredActions: e.target.checked
+                      ? [...(draft.requiredActions ?? []), action]
+                      : (draft.requiredActions ?? []).filter((value) => value !== action),
+                  })
+                }
+              />
+              {action}
+            </label>
+          ))}
+        </fieldset>
+        {!!job?.completedUnits && (
+          <p>Completed units lock the job kind, stations, payload and capabilities.</p>
+        )}
         <div className="form-pair">
           {(['sourceZoneId', 'destinationZoneId'] as const).map((field) => (
             <label key={field}>
               {field === 'sourceZoneId' ? 'Source station' : 'Destination station'}
-              <select value={draft[field]} onChange={(e) => patch({ [field]: e.target.value })}>
+              <select
+                disabled={!!job?.completedUnits}
+                value={draft[field]}
+                onChange={(e) => patch({ [field]: e.target.value })}
+              >
                 {zones.map((z) => (
                   <option key={z.id} value={z.id}>
                     {z.id} · {z.name}
@@ -78,7 +127,8 @@ export function JobEditor({
             Payload kg
             <input
               type="number"
-              min="1"
+              min={jobProfiles[draft.kind ?? 'transport'].cargo ? 1 : 0}
+              disabled={!!job?.completedUnits || !jobProfiles[draft.kind ?? 'transport'].cargo}
               value={draft.payloadKg}
               onChange={(e) => patch({ payloadKg: Number(e.target.value) })}
             />
