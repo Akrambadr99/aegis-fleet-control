@@ -1,5 +1,6 @@
 import type { DomainState } from './model';
 import { seedNavigation } from './navigation';
+import { seedMaintenance } from './maintenance';
 const key = (prefix: string, n: number) => `${prefix}-${String(n).padStart(3, '0')}`;
 export function createSeed(): DomainState {
   const state: DomainState = {
@@ -18,6 +19,7 @@ export function createSeed(): DomainState {
     reservations: {},
     faults: {},
     leases: {},
+    maintenance: {},
     activity: [],
     replay: [],
     telemetry: [],
@@ -90,6 +92,12 @@ export function createSeed(): DomainState {
           routeId = key('RT', n);
         const faultId = r === 8 ? key('FLT', n) : null;
         state.robots[id] = {
+          capabilities: {
+            payloadKg: 100 + (n % 4) * 100,
+            actions: n % 2 === 0 ? ['navigate', 'lift', 'inspect'] : ['navigate', 'inspect'],
+            maxSpeed: 1.2,
+          },
+          maintenanceOrderId: null,
           id,
           revision: 1,
           facilityId,
@@ -178,5 +186,6 @@ export function createSeed(): DomainState {
     }
   }
   seedNavigation(state);
+  seedMaintenance(state);
   return state;
 }

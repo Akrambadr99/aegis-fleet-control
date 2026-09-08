@@ -60,6 +60,9 @@ export function RobotInspector() {
           <p className="eyebrow">SHARED ROBOT STATE · REV {robot.revision}</p>
           <h2>{robot.id}</h2>
           <p>
+            Capacity {robot.capabilities.payloadKg} kg · {robot.capabilities.actions.join(', ')}
+          </p>
+          <p>
             {robot.status} · Battery {robot.battery.toFixed(1)}%
           </p>
           <p>

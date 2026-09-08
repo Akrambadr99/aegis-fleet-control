@@ -1,12 +1,14 @@
 import type { DomainState, Robot, Role, Command } from './model';
 import { robotPath, routeDistance } from './navigation';
+import { maintenanceReasons, capabilityIssues } from './maintenance';
 export function canExecute(role: Role, type: Command['type']) {
   if (role === 'administrator') return true;
+  if (type.startsWith('maintenance.')) return role === 'fleet-manager';
   if (type === 'corridor.set' || type === 'charger.set') return role === 'facility-manager';
   return role === 'operator' || role === 'fleet-manager';
 }
 export function readiness(state: DomainState, robot: Robot): string[] {
-  const reasons: string[] = [];
+  const reasons: string[] = maintenanceReasons(state, robot);
   if (!robot.connected) reasons.push('Connection lost');
   if (robot.status === 'emergency-stopped') reasons.push('Emergency stop latched');
   if (robot.battery < 20) reasons.push('Low battery');
@@ -23,7 +25,10 @@ export function missionFeasibility(state: DomainState, missionId: string) {
   const mission = state.missions[missionId],
     robot = state.robots[mission.robotId],
     route = state.routes[mission.routeId];
-  const reasons = readiness(state, robot);
+  const reasons = [
+    ...readiness(state, robot),
+    ...capabilityIssues(robot, mission.requirements ?? { payloadKg: 0, actions: ['navigate'] }),
+  ];
   const distance = routeDistance(state, route);
   if (route.corridorIds.some((id) => !state.corridors[id].open)) reasons.push('Corridor closed');
   if (route.state === 'invalid') reasons.push('Route requires validation');

@@ -51,8 +51,17 @@ export type RobotStatus =
   | 'paused'
   | 'charging'
   | 'emergency-stopped'
-  | 'manual';
+  | 'manual'
+  | 'maintenance';
+export interface MaintenanceOrder extends Versioned {
+  robotId: string;
+  status: 'scheduled' | 'in-progress' | 'verification' | 'completed';
+  dueTick: number;
+  technician: string;
+}
 export interface Robot extends Versioned {
+  capabilities: { payloadKg: number; actions: string[]; maxSpeed: number };
+  maintenanceOrderId: string | null;
   facilityId: string;
   floorId: string;
   position: { x: number; y: number };
@@ -65,6 +74,7 @@ export interface Robot extends Versioned {
   faultIds: string[];
 }
 export interface Mission extends Versioned {
+  requirements?: { payloadKg: number; actions: string[] };
   robotId: string;
   facilityId: string;
   destinationId: string;
@@ -94,7 +104,7 @@ export interface Charger extends Versioned {
 export interface Reservation extends Versioned {
   robotId: string;
   chargerId: string;
-  state: 'queued' | 'charging' | 'displaced';
+  state: 'queued' | 'charging' | 'displaced' | 'released';
   priority: number;
   queuePosition: number;
 }
@@ -163,11 +173,17 @@ export interface DomainState {
   reservations: Record<string, Reservation>;
   faults: Record<string, Fault>;
   leases: Record<string, ControlLease>;
+  maintenance: Record<string, MaintenanceOrder>;
   activity: Activity[];
   replay: ReplayFrame[];
   telemetry: Telemetry[];
 }
 export type Command =
+  | {
+      type: 'maintenance.start' | 'maintenance.verify' | 'maintenance.complete';
+      id: string;
+      expectedRevision: number;
+    }
   | { type: 'corridor.set'; id: string; expectedRevision: number; open: boolean }
   | { type: 'charger.set'; id: string; expectedRevision: number; available: boolean }
   | {

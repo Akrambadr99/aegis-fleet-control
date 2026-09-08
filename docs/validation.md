@@ -47,3 +47,9 @@ Node 20.19.5 / npm 10.8.2, locally validated on Windows, 2026-09-08:
 - Browser evidence verifies cross-workspace grant persistence, retained read access, disabled out-of-scope commands and inspectable cross-domain changes.
 
 The preceding milestone validation records remain historical snapshots of their own implementations.
+
+# Maintenance lifecycle milestone
+
+Validated with Node 20.19.5 and npm 10.8.2 on 2026-09-08. Typecheck, ESLint, 80 Vitest/RTL tests, production build, and formatting passed. The complete pre-existing browser suite plus the initial maintenance journey passed (19 journeys); the final two-journey maintenance suite then passed, including the added cross-workspace reservation regression.
+
+Maintenance start releases traffic, charging and control ownership atomically. Verification precedes completion; completion never silently resumes a mission. Domain guards reject rerouting during service/verification and preserve released charging reservations across charger availability changes. Regression coverage also preserves the original seed counts: 96 running robots and 120 completed missions. No idle reserve robots were added to this milestone.

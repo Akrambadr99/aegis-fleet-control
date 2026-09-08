@@ -1,4 +1,5 @@
 import { useFleet } from '../../app/FleetProvider';
+import { MaintenancePanel } from '../maintenance/MaintenancePanel';
 import type { Role } from '../../domain/model';
 import { useScope } from './useScope';
 import { FleetTable } from './FleetTable';
@@ -15,6 +16,7 @@ import { RobotInspector } from './RobotInspector';
 import type { Workspace } from '../../routing/workspaces';
 export const connectedPaths = [
   '/fleet',
+  '/maintenance',
   '/facilities',
   '/traffic',
   '/charging',
@@ -30,6 +32,7 @@ export function OperationsWorkspace({ workspace }: { workspace: Workspace }) {
     { gateway, actor, setRole, controlScope, setControlScope } = useFleet();
   const panels: Record<string, React.ReactNode> = {
     '/fleet': <FleetTable key={facility.id} />,
+    '/maintenance': <MaintenancePanel />,
     '/facilities': <TopologyPanel map />,
     '/traffic': <TopologyPanel />,
     '/charging': <ChargingPanel />,

@@ -848,3 +848,17 @@ summary {
     grid-template-columns: 1fr;
   }
 }
+
+.service-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 16px;
+  overflow-x: auto;
+}
+.service-board > section {
+  min-width: 0;
+}
+.service-board h3 {
+  font-size: 13px;
+  text-transform: capitalize;
+}

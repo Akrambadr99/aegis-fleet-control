@@ -4,6 +4,7 @@ import { GatewayError } from '../gateway/requests';
 import { commandPermission } from './permissions';
 import { captureEntities, changedEntities } from './audit';
 import { robotPath } from './navigation';
+import { applyMaintenance, maintenanceReasons } from './maintenance';
 function frame(state: DomainState, robot: Robot, eventId: string) {
   const mission = robot.activeMissionId ? state.missions[robot.activeMissionId] : null;
   state.replay.push({
@@ -45,8 +46,9 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
   const denied = commandPermission(state, actor, command);
   if (denied)
     throw new GatewayError(denied === 'Entity no longer exists' ? 'missing' : 'forbidden', denied);
-  const table =
-    command.type === 'corridor.set'
+  const table = command.type.startsWith('maintenance.')
+    ? state.maintenance
+    : command.type === 'corridor.set'
       ? state.corridors
       : command.type === 'charger.set'
         ? state.chargers
@@ -59,7 +61,13 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
     throw new GatewayError('stale', 'Entity changed; review its current revision and retry');
   const before = captureEntities(state);
   const impacted: Robot[] = [];
-  if (command.type === 'corridor.set') {
+  if (
+    command.type === 'maintenance.start' ||
+    command.type === 'maintenance.verify' ||
+    command.type === 'maintenance.complete'
+  ) {
+    impacted.push(...applyMaintenance(state, command));
+  } else if (command.type === 'corridor.set') {
     const corridor = state.corridors[command.id];
     if (corridor.open === command.open)
       throw new GatewayError('unchanged', 'Corridor already has this state');
@@ -102,7 +110,12 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
     charger.available = command.available;
     if (!command.available)
       for (const reservation of Object.values(state.reservations)) {
-        if (reservation.chargerId !== charger.id || reservation.state === 'displaced') continue;
+        if (
+          reservation.chargerId !== charger.id ||
+          reservation.state === 'displaced' ||
+          reservation.state === 'released'
+        )
+          continue;
         reservation.state = 'displaced';
         reservation.revision++;
         const robot = state.robots[reservation.robotId];
@@ -149,6 +162,8 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
         mission.status === 'completed'
       )
         throw new GatewayError('invalid', 'Robot must have a recoverable active mission');
+      if (maintenanceReasons(state, robot).length)
+        throw new GatewayError('invalid', 'Route ownership is unavailable during maintenance');
       const candidates = routeCandidates(state, robot.id);
       if (!candidates.length)
         throw new GatewayError('invalid', 'No open transfer lane on this floor');

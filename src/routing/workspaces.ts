@@ -134,5 +134,14 @@ export const workspaces = [
     description: 'Inspect role capabilities enforced at both the interface and gateway.',
     code: '15',
   },
+  {
+    path: '/maintenance',
+    title: 'Robot maintenance',
+    short: 'Maintenance',
+    group: 'Coordinate',
+    milestone: 23,
+    description: 'Service lifecycle and operational eligibility.',
+    code: '16',
+  },
 ] as const;
 export type Workspace = (typeof workspaces)[number];

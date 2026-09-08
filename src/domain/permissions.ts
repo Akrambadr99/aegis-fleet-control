@@ -2,6 +2,12 @@ import type { Actor, Command, DomainState } from './model';
 import { canExecute } from './selectors';
 export function commandFacility(state: DomainState, command: Command): string | undefined {
   switch (command.type) {
+    case 'maintenance.start':
+    case 'maintenance.verify':
+    case 'maintenance.complete': {
+      const order = state.maintenance[command.id];
+      return order ? state.robots[order.robotId]?.facilityId : undefined;
+    }
     case 'corridor.set': {
       const corridor = state.corridors[command.id];
       return corridor ? state.floors[corridor.floorId]?.facilityId : undefined;
