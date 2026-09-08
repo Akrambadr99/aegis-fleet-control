@@ -17,6 +17,8 @@ it('round trips a versioned persisted record with its checksum', () => {
     checksumAlgorithm: 'fnv1a32',
     checksum: expect.stringMatching(/^[0-9a-f]{8}$/),
   });
+  expect(encoded).toContain('"snapshot":{"schemaVersion"');
+  expect(encoded).not.toContain('"snapshot":"{');
   expect(decodePersistedSnapshot(encoded)).toEqual(snapshot);
 });
 

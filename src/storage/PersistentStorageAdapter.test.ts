@@ -56,6 +56,7 @@ describe('PersistentStorageAdapter', () => {
     const before = adapter.readSnapshot();
     const candidate = structuredClone(before);
     candidate.robots['R-001'].battery--;
+    const candidateRevision = candidate.revision;
     let notifications = 0;
     adapter.subscribe(() => notifications++);
     persistence.failWrites = true;
@@ -63,6 +64,7 @@ describe('PersistentStorageAdapter', () => {
     expect(() => adapter.commit(before.revision, candidate)).toThrow('Quota exceeded');
     expect(adapter.readSnapshot()).toBe(before);
     expect(notifications).toBe(0);
+    expect(candidate.revision).toBe(candidateRevision);
   });
 
   it('rejects a stale application instance without overwriting the newer persisted revision', () => {

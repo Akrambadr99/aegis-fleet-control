@@ -4,13 +4,6 @@ import type { SnapshotEnvelope } from '../domain/snapshots';
 export const persistedSnapshotFormatVersion = 1;
 const checksumAlgorithm = 'fnv1a32';
 
-interface PersistedSnapshotRecord {
-  formatVersion: typeof persistedSnapshotFormatVersion;
-  checksumAlgorithm: typeof checksumAlgorithm;
-  checksum: string;
-  snapshot: SnapshotEnvelope;
-}
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
@@ -27,13 +20,12 @@ function checksum(value: string) {
 
 export function encodePersistedSnapshot(snapshot: SnapshotEnvelope) {
   const payload = JSON.stringify(snapshot);
-  const record: PersistedSnapshotRecord = {
+  const metadata = JSON.stringify({
     formatVersion: persistedSnapshotFormatVersion,
     checksumAlgorithm,
     checksum: checksum(payload),
-    snapshot,
-  };
-  return JSON.stringify(record);
+  });
+  return metadata.slice(0, -1) + ',"snapshot":' + payload + '}';
 }
 
 /** Returns either a verified record payload or a legacy unwrapped snapshot. */

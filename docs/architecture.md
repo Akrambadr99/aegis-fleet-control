@@ -56,6 +56,8 @@ The browser application restores canonical state from one versioned local snapsh
 
 A commit is serialized and written before the in-memory adapter publishes it, so a storage access or quota failure leaves the visible snapshot and subscribers unchanged. Tests and explicitly supplied gateways remain isolated in memory. Corrupt persisted data fails closed rather than silently discarding operational history.
 
+The persistent commit path creates one detached, validated snapshot clone. Its payload is serialized once, checksummed from that exact string and embedded directly in the storage record before the same detached state is handed to the in-memory publisher. Persistence failures leave both canonical state and the caller's transaction candidate unchanged.
+
 Each persistent adapter also retains the exact source record from which it restored. Before writing, it verifies that the backing record is unchanged. A stale application instance therefore fails without overwriting a newer sequential commit made by another tab or instance. Fully simultaneous multi-tab serialization requires a future shared locking service; this synchronous browser adapter does not claim that guarantee.
 
 ## Derived values

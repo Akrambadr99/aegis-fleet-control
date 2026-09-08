@@ -62,11 +62,12 @@ export class PersistentStorageAdapter implements CanonicalStorage {
         'Persisted fleet state changed in another application instance',
       );
 
-    const next = structuredClone(candidate);
-    next.revision = expectedRevision + 1;
-    const serialized = encodePersistedSnapshot(exportSnapshot(next));
+    const snapshot = exportSnapshot(candidate);
+    snapshot.state.revision = expectedRevision + 1;
+    snapshot.snapshotVersion = snapshot.state.revision;
+    const serialized = encodePersistedSnapshot(snapshot);
     this.persistence.setItem(this.key, serialized);
     this.persistedSource = serialized;
-    return this.memory.commit(expectedRevision, next);
+    return this.memory.commit(expectedRevision, snapshot.state);
   }
 }
