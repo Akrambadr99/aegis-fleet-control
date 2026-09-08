@@ -186,7 +186,8 @@ export function applyAutomationCommand(
             ).length || a.id.localeCompare(b.id),
       );
     const charger = chargers[0];
-    if (!charger) throw new GatewayError('invalid', 'No available charger on this floor');
+    if (!charger)
+      throw new GatewayError('invalid', 'No available charger on this floor', 'reservation');
     const id = 'RES-CHARGE-' + robot.id + '-' + robot.revision;
     state.reservations[id] = {
       id,

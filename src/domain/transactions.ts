@@ -1,3 +1,4 @@
+import type { DomainEventType } from './events';
 import { isAutomationCommand, applyAutomationCommand } from './automation';
 import { appendHistory } from './history';
 import { isControlCommand, applyControl } from './teleoperation';
@@ -29,7 +30,7 @@ function frame(state: DomainState, robot: Robot, eventId: string) {
 export function record(
   state: DomainState,
   actor: Actor,
-  type: string,
+  type: DomainEventType,
   entityId: string,
   details: string,
   robots: Robot[],
@@ -278,7 +279,7 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
         throw new GatewayError('invalid', 'Route ownership is unavailable during maintenance');
       const candidates = routeCandidates(state, robot.id);
       if (!candidates.length)
-        throw new GatewayError('invalid', 'No open transfer lane on this floor');
+        throw new GatewayError('invalid', 'No open transfer lane on this floor', 'topology');
       const path = robotPath(state, robot.id)!;
       route.nodeIds = path.nodeIds;
       route.edgeIds = path.edgeIds;

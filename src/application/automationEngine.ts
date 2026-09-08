@@ -64,7 +64,7 @@ export function processAutomation(
           status,
           message,
         });
-        record(state, rule.owner, 'automation.' + status, rule.id, message, [
+        record(state, rule.owner, `automation.${status}`, rule.id, message, [
           state.robots[target.robotId],
         ]);
         Object.assign(state.activity.at(-1)!, {

@@ -234,7 +234,11 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
       ? candidates.find((c) => c.robotId === command.robotId)
       : candidates.find((c) => !c.reasons.length);
   if (!candidate || candidate.reasons.length)
-    throw new GatewayError('invalid', candidate?.reasons.join('; ') || 'No eligible robot');
+    throw new GatewayError(
+      'invalid',
+      candidate?.reasons.join('; ') || 'No eligible robot',
+      'scheduling',
+    );
   if (command.robotId && command.expectedRobotRevision !== candidate.robotRevision)
     throw new GatewayError('stale', 'Robot state changed; review candidate ranking');
   if (command.robotId && !command.reason.trim())
@@ -306,7 +310,8 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
   return [...affected, robot];
 }
 export function synchronizeJobs(state: DomainState) {
-  const changes: { robot: Robot; job: WarehouseJob; event: string }[] = [];
+  const changes: { robot: Robot; job: WarehouseJob; event: 'job.picked-up' | 'job.delivered' }[] =
+    [];
   for (const job of Object.values(state.jobs)) {
     if (!job.missionId || !job.robotId || !['assigned', 'in-progress'].includes(job.status))
       continue;

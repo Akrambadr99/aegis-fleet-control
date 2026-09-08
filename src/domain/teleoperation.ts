@@ -136,7 +136,7 @@ export function applyControl(state: DomainState, actor: Actor, command: ControlC
       lease.ownerId !== actor.id &&
       !(command.type === 'control.release' && actor.role === 'administrator')
     )
-      throw new GatewayError('forbidden', 'Control belongs to another operator');
+      throw new GatewayError('forbidden', 'Control belongs to another operator', 'ownership');
     if (command.type === 'control.renew') {
       Object.assign(lease, renewLease(lease, actor.id, state.tick, command.duration));
       lease.revision++;

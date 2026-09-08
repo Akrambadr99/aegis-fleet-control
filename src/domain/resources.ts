@@ -114,7 +114,11 @@ export function reserveMissionResources(
   synchronizeResources(state);
 }
 export function synchronizeResources(state: DomainState) {
-  const events: { robot: Robot; resourceId: string; event: string }[] = [];
+  const events: {
+    robot: Robot;
+    resourceId: string;
+    event: 'resource.expired' | 'resource.released' | 'resource.acquired';
+  }[] = [];
   for (const lease of Object.values(state.resourceReservations)) {
     if (!['owned', 'queued'].includes(lease.state)) continue;
     const robot = state.robots[lease.robotId],
@@ -128,7 +132,7 @@ export function synchronizeResources(state: DomainState) {
       lease.state = lease.expiresTick <= state.tick ? 'expired' : 'released';
       lease.revision++;
       resource.revision++;
-      events.push({ robot, resourceId: resource.id, event: 'resource.' + lease.state });
+      events.push({ robot, resourceId: resource.id, event: `resource.${lease.state}` });
     }
   }
   const queued = Object.values(state.resourceReservations)
@@ -258,7 +262,8 @@ export function applyResource(state: DomainState, command: ResourceCommand): Rob
       'invalid',
       'Robot is unavailable: ' + readiness(state, robot).join('; '),
     );
-  if (!resource.available) throw new GatewayError('invalid', 'Resource is out of service');
+  if (!resource.available)
+    throw new GatewayError('invalid', 'Resource is out of service', 'resource');
   if (
     !Number.isInteger(command.priority) ||
     command.priority < 1 ||

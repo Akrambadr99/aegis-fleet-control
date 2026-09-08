@@ -1,3 +1,4 @@
+import type { DomainEventType } from './events';
 import type { AutomationRule, AutomationRun, AutomationCommand } from './automation';
 import type { RobotHistory } from './history';
 import type { ControlCommand } from './teleoperation';
@@ -146,7 +147,7 @@ export interface Activity {
   id: string;
   tick: number;
   actorId: string;
-  type: string;
+  type: DomainEventType;
   entityId: string;
   details: string;
   timestamp?: string;
