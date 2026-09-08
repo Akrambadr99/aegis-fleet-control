@@ -127,6 +127,7 @@ export interface Fault extends Versioned {
   acknowledgedBy: string | null;
 }
 export interface ControlLease extends Versioned {
+  acquiredAt?: number;
   robotId: string;
   ownerId: string;
   expiresAt: number;

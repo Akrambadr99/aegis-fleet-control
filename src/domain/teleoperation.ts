@@ -1,9 +1,12 @@
+import { renewLease } from './ownership';
 import type { Actor, Command, DomainState, Robot } from './model';
 import { readiness } from './selectors';
 import { releaseRobotResources } from './resources';
 import { DomainError as GatewayError } from './errors';
 export type ControlCommand =
   | { type: 'control.acquire'; id: string; expectedRevision: number; duration: number }
+  | { type: 'control.renew'; id: string; expectedRevision: number; duration: number }
+  | { type: 'control.takeover'; id: string; expectedRevision: number; duration: number }
   | { type: 'control.release'; id: string; expectedRevision: number }
   | { type: 'control.move'; id: string; expectedRevision: number; dx: number; dy: number }
   | { type: 'robot.connection'; id: string; expectedRevision: number; connected: boolean };
@@ -83,9 +86,27 @@ export function applyControl(state: DomainState, actor: Actor, command: ControlC
       state.faults[faultId].status = 'resolved';
       state.faults[faultId].revision++;
     }
-  } else if (command.type === 'control.acquire') {
-    if (lease && lease.state === 'active' && lease.expiresAt > state.tick)
-      throw new GatewayError('conflict', 'Control is already owned by ' + lease.ownerId);
+  } else if (command.type === 'control.acquire' || command.type === 'control.takeover') {
+    if (command.type === 'control.takeover') {
+      if (actor.role !== 'administrator')
+        throw new GatewayError(
+          'forbidden',
+          'Only an administrator may take over control',
+          'ownership',
+        );
+      releaseControl(state, robot, 'Control taken over');
+    }
+    if (
+      lease &&
+      lease.state === 'active' &&
+      lease.expiresAt > state.tick &&
+      command.type !== 'control.takeover'
+    )
+      throw new GatewayError(
+        'conflict',
+        'Control is already owned by ' + lease.ownerId,
+        'ownership',
+      );
     const reasons = readiness(state, robot);
     if (reasons.length) throw new GatewayError('invalid', reasons.join('; '));
     if (!Number.isInteger(command.duration) || command.duration < 1 || command.duration > 300)
@@ -97,6 +118,7 @@ export function applyControl(state: DomainState, actor: Actor, command: ControlC
       revision: 1,
       robotId: robot.id,
       ownerId: actor.id,
+      acquiredAt: state.tick,
       expiresAt: state.tick + command.duration,
       state: 'active',
     };
@@ -109,12 +131,18 @@ export function applyControl(state: DomainState, actor: Actor, command: ControlC
       lease.expiresAt <= state.tick ||
       robot.status !== 'manual'
     )
-      throw new GatewayError('invalid', 'No active control ownership');
+      throw new GatewayError('invalid', 'No active control ownership', 'ownership');
     if (
       lease.ownerId !== actor.id &&
       !(command.type === 'control.release' && actor.role === 'administrator')
     )
       throw new GatewayError('forbidden', 'Control belongs to another operator');
+    if (command.type === 'control.renew') {
+      Object.assign(lease, renewLease(lease, actor.id, state.tick, command.duration));
+      lease.revision++;
+      robot.revision++;
+      return [robot];
+    }
     if (command.type === 'control.release') {
       releaseControl(state, robot, 'Manual control released');
       return [robot];

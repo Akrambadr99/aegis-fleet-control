@@ -1,3 +1,4 @@
+import type { Actor } from '../domain/model';
 import { expect, it } from 'vitest';
 import { createSeed } from '../domain/seed';
 import { applyControl, synchronizeControls } from '../domain/teleoperation';
@@ -144,4 +145,31 @@ it('invalid direction and maintenance eligibility are domain constraints', () =>
       duration: 30,
     }),
   ).toThrow('maintenance');
+});
+
+it('renews control and atomically transfers ownership on administrator takeover', async () => {
+  const clock = new ManualScheduler();
+  const gateway = new FleetGateway(clock);
+  const perform = async (
+    actor: Actor,
+    type: 'control.acquire' | 'control.renew' | 'control.takeover',
+  ) => {
+    const ticket = gateway.command(actor, {
+      type,
+      id: 'R-001',
+      expectedRevision: gateway.getSnapshot().robots['R-001'].revision,
+      duration: 30,
+    });
+    clock.advance(250);
+    await ticket.promise;
+  };
+  await perform({ id: 'first', role: 'administrator' }, 'control.acquire');
+  const id = gateway.getSnapshot().robots['R-001'].controlSessionId!;
+  gateway.advance(1);
+  await perform({ id: 'first', role: 'administrator' }, 'control.renew');
+  expect(gateway.getSnapshot().leases[id].expiresAt).toBe(31);
+  await perform({ id: 'second', role: 'administrator' }, 'control.takeover');
+  expect(gateway.getSnapshot().leases[id].state).toBe('released');
+  const current = gateway.getSnapshot();
+  expect(current.leases[current.robots['R-001'].controlSessionId!].ownerId).toBe('second');
 });

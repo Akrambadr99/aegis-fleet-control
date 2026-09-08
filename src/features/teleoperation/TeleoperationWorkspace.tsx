@@ -1,3 +1,4 @@
+import { ownsLease } from '../../domain/ownership';
 import { useState } from 'react';
 import { useScope } from '../operations/useScope';
 import { useFleet } from '../../app/FleetProvider';
@@ -24,10 +25,7 @@ export function TeleoperationWorkspace() {
     dy: 0,
   };
   const owns =
-    !!lease &&
-    lease.ownerId === actor.id &&
-    lease.state === 'active' &&
-    lease.expiresAt > state.tick &&
+    ownsLease(lease, actor.id, state.tick) &&
     robot.connected &&
     robot.status === 'manual' &&
     !commandPermission(state, actor, movement);
@@ -155,6 +153,30 @@ export function TeleoperationWorkspace() {
               </CommandButton>
             )}
           </div>
+          {owns && (
+            <CommandButton
+              command={{
+                type: 'control.renew',
+                id: robot.id,
+                expectedRevision: robot.revision,
+                duration,
+              }}
+            >
+              Renew control lease
+            </CommandButton>
+          )}
+          {lease && !owns && actor.role === 'administrator' && (
+            <CommandButton
+              command={{
+                type: 'control.takeover',
+                id: robot.id,
+                expectedRevision: robot.revision,
+                duration,
+              }}
+            >
+              Take over control
+            </CommandButton>
+          )}
           <ControlPad enabled={owns} pending={pending} move={move} />
           <section className="emergency-panel">
             <h2>Emergency interlock</h2>
