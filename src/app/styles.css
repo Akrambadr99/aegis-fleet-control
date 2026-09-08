@@ -1797,3 +1797,98 @@ button.emergency-stop:hover {
     display: block;
   }
 }
+
+.automation-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 20px;
+}
+.rule-library {
+  border-right: 1px solid #b6c9c1;
+  padding-right: 14px;
+}
+.rule-library ol {
+  list-style: none;
+  padding: 0;
+}
+.rule-library li {
+  padding: 12px 0;
+  border-bottom: 1px solid #becfc5;
+}
+.rule-library p {
+  font-size: 11px;
+}
+.rule-library button {
+  padding: 6px 8px;
+  border-radius: 3px;
+}
+.rule-editor fieldset {
+  border: 0;
+  padding: 0;
+  margin: 10px 0;
+}
+.rule-editor label {
+  display: block;
+  font-size: 12px;
+}
+.rule-editor input,
+.rule-editor select {
+  display: block;
+  width: 100%;
+  padding: 7px;
+  border: 1px solid #afc1b7;
+  background: white;
+  margin: 4px 0 10px;
+}
+.rule-chain {
+  display: grid;
+  grid-template-columns: 1fr 25px 1fr;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid #becec4;
+  border-bottom: 1px solid #becec4;
+  padding: 10px 0;
+  margin: 12px 0;
+}
+.rule-chain > span {
+  font-size: 24px;
+  color: #638376;
+  text-align: center;
+}
+.rule-editor .check-label {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+.rule-editor .check-label input {
+  width: auto;
+  margin: 6px 0;
+}
+.rule-tester {
+  border-top: 2px solid #718f80;
+  margin-top: 18px;
+  padding-top: 12px;
+}
+.automation-history {
+  border-top: 1px solid #b7c9bf;
+  padding-top: 14px;
+  margin-top: 18px;
+}
+.automation-history td {
+  font-size: 12px;
+  padding: 8px;
+}
+@media (max-width: 1000px) {
+  .automation-layout {
+    grid-template-columns: 1fr;
+  }
+  .rule-library {
+    border-right: 0;
+    border-bottom: 1px solid #b6c9c1;
+  }
+}
+@media (max-width: 600px) {
+  .rule-chain {
+    grid-template-columns: 1fr;
+  }
+}
