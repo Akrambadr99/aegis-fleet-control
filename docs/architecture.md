@@ -2,7 +2,7 @@
 
 ## Authoritative state and boundaries
 
-FleetGateway owns normalized server-like records, keyed by IDs. React receives immutable snapshots through useSyncExternalStore. A single atomic publish makes related record changes visible together; components cannot mutate confirmed snapshots.
+CanonicalStorage owns normalized server-like records keyed by IDs. FleetGateway coordinates commands and queries through that boundary, while the in-memory adapter validates, structurally shares, freezes and publishes canonical snapshots. React receives immutable snapshots through useSyncExternalStore. A single atomic commit makes related record changes visible together; components cannot mutate confirmed snapshots.
 
 This is a simulated repository, not a global store for UI state. Filter and selected-entity context belong in React Router search parameters. Fleet selection and command feedback remain local interaction state. TanStack Query owns asynchronous route previews keyed by robot ID, robot revision and topology revision.
 
@@ -26,6 +26,8 @@ Commands capture their actor, payload and expected entity revision at invocation
 
 Independent resources can complete in any order. Competing writes to one resource cannot overwrite a newer revision. Commands that continue after navigation still update the shared repository. Bulk operations capture target IDs/revisions and settle independently; result handling does not rewrite current selection.
 
+The application transaction layer clones the current snapshot, applies domain behavior and automation, and enforces invariants before returning a candidate. The storage adapter then checks the expected canonical revision and publishes the candidate atomically. A stale or invalid candidate leaves the previous snapshot and subscribers untouched.
+
 Closing a corridor invalidates affected routes, holds reservations and pauses running missions. Reopening never silently resumes execution. Explicit reroute uses the same route-candidate selector as preview, then a separate resume validates mission feasibility. The initial topology models alternative transfer lanes; arbitrary graph pathfinding is pending.
 
 Disabling a charger displaces its queue entries and increments affected robot revisions. Re-enabling it does not silently reinstate displaced ownership.
@@ -41,6 +43,12 @@ Read snapshots retain their invocation context. Route previews reject results if
 FleetGateway.advance(n) deterministically moves eligible robots, drains battery, progresses missions and appends telemetry. Completion releases reservations. Low battery pauses execution. Stopped/disconnected robots do not move. Tests drive the scheduler and simulation clock explicitly without network or random wall-clock assertions.
 
 Optimistic edits will require per-mutation overlays and revision-aware rollback. They are deliberately not represented as confirmed server state in this milestone.
+
+## Snapshot schemas and migrations
+
+Snapshots carry independent schema, fixture and snapshot versions plus deterministic migration history. Migration functions are registered one version at a time; restoration walks each required step in order, never mutates the supplied snapshot, and validates the final canonical state. Current exports begin at the current schema with an empty migration history, while restored historical snapshots retain the exact steps applied during restoration.
+
+Schema migrations add compatibility defaults only for the version that introduced them. Seed fixtures remain separately versioned, so a schema change does not require rewriting every deterministic fixture. Unknown future schemas, unsupported fixture versions and malformed snapshot versions fail before publication.
 
 ## Derived values
 
