@@ -10,6 +10,16 @@ function fixture() {
   plan.steps = [{ ...newStep('travel'), zoneId: 'Z-010' }];
   return { clock, gateway, plan };
 }
+it('asynchronous feasibility includes captured operator permissions', async () => {
+  const { clock, gateway, plan } = fixture();
+  const actor = { id: 'limited', role: 'fleet-manager' as const, facilityIds: ['FAC-002'] };
+  const request = gateway.validateMissionPlan(plan, undefined, actor);
+  actor.facilityIds.push('FAC-001');
+  clock.advance(250);
+  expect((await request.promise).issues.map((issue) => issue.message)).toContain(
+    'This facility is outside your control scope',
+  );
+});
 it('validates explicit branch controls and derives the longest joined path', () => {
   const { plan } = fixture(),
     state = createSeed();

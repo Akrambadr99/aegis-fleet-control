@@ -1,8 +1,8 @@
 import { useMissionDraft } from './MissionDraftProvider';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDomain, useFleet } from '../../app/FleetProvider';
-import { newPlan, type MissionPlan, type PlanValidation } from '../../domain/planning';
+import { newPlan, type MissionPlan } from '../../domain/planning';
 import { commandPermission } from '../../domain/permissions';
 import { insertStep, moveStep } from './draftHistory';
 import { StepInspector } from './StepInspector';
@@ -10,6 +10,7 @@ import { StepSequence } from './StepSequence';
 import { DependencyGraph } from './DependencyGraph';
 import { MissionRevisionHistory } from './MissionRevisionHistory';
 import { MissionTemplateLibrary } from './MissionTemplateLibrary';
+import { useMissionValidation } from './useMissionValidation';
 export function MissionPlanning() {
   const state = useDomain(),
     { gateway, actor } = useFleet();
@@ -18,26 +19,9 @@ export function MissionPlanning() {
     key = JSON.stringify(plan),
     dirty = key !== JSON.stringify(history.baseline);
   const [selected, setSelected] = useState('');
-  const [pending, setPending] = useState<MissionPlan | null>(null),
-    [retry, setRetry] = useState(0);
-  const [validation, setValidation] = useState<{
-    key: string;
-    revision: number;
-    result?: PlanValidation;
-    error?: string;
-  }>({ key: '', revision: -1 });
-  useEffect(() => {
-    const controller = new AbortController();
-    gateway
-      .validateMissionPlan(plan, controller.signal)
-      .promise.then((result) => setValidation({ key, revision: result.stateRevision, result }))
-      .catch((error) => {
-        if (!controller.signal.aborted)
-          setValidation({ key, revision: state.revision, error: error.message });
-      });
-    return () => controller.abort();
-  }, [gateway, plan, key, state.revision, retry]);
-  const current = validation.key === key && validation.revision === state.revision;
+  const [pending, setPending] = useState<MissionPlan | null>(null);
+  const validation = useMissionValidation(gateway, plan, state.revision, actor);
+  const current = validation.current;
   const command = {
     type: 'plan.save' as const,
     id: plan.id,
@@ -253,7 +237,7 @@ export function MissionPlanning() {
         ) : validation.error ? (
           <>
             <p role="alert">{validation.error}</p>
-            <button onClick={() => setRetry((n) => n + 1)}>Retry validation</button>
+            <button onClick={validation.retry}>Retry validation</button>
           </>
         ) : (
           <>

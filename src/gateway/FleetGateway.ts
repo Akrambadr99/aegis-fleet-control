@@ -9,6 +9,7 @@ import type { Actor, Command, DomainState, RoutePreview } from '../domain/model'
 import { createSeed } from '../domain/seed';
 import { applyCommand, record } from '../domain/transactions';
 import { readiness } from '../domain/selectors';
+import { commandPermission } from '../domain/permissions';
 import { robotPath, positionOnRoute } from '../domain/navigation';
 import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
@@ -91,13 +92,24 @@ export class FleetGateway {
       return rankCandidates(snapshot, snapshot.jobs[id]);
     }, signal);
   }
-  validateMissionPlan(plan: MissionPlan, signal?: AbortSignal) {
+  validateMissionPlan(plan: MissionPlan, signal?: AbortSignal, actor?: Actor) {
     const snapshot = this.state,
-      input = structuredClone(plan);
+      input = structuredClone(plan),
+      identity = actor ? structuredClone(actor) : undefined;
     return this.requests.run(() => {
       if (this.state.revision !== snapshot.revision)
         throw new GatewayError('stale', 'Operational state changed; validate again');
-      return validatePlan(snapshot, input);
+      const result = validatePlan(snapshot, input);
+      if (identity) {
+        const denied = commandPermission(snapshot, identity, {
+          type: 'plan.save',
+          id: input.id,
+          expectedRevision: input.revision,
+          plan: input,
+        });
+        if (denied) result.issues.push({ stepId: null, message: denied });
+      }
+      return result;
     }, signal);
   }
   readRobot(id: string, signal?: AbortSignal) {
