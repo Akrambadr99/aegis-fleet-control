@@ -1,8 +1,10 @@
+import { resourcesOwned } from './resources';
 import type { DomainState, Robot, Role, Command } from './model';
 import { robotPath, routeDistance } from './navigation';
 import { maintenanceReasons, capabilityIssues } from './maintenance';
 export function canExecute(role: Role, type: Command['type']) {
   if (role === 'administrator') return true;
+  if (type === 'resource.set') return role === 'facility-manager';
   if (type.startsWith('job.')) return role === 'fleet-manager';
   if (type === 'plan.save') return role === 'fleet-manager';
   if (type.startsWith('maintenance.')) return role === 'fleet-manager';
@@ -31,6 +33,8 @@ export function missionFeasibility(state: DomainState, missionId: string) {
     ...readiness(state, robot),
     ...capabilityIssues(robot, mission.requirements ?? { payloadKg: 0, actions: ['navigate'] }),
   ];
+  if (!resourcesOwned(state, robot.id, mission.id, route.resourceIds ?? []))
+    reasons.push('Required resource ownership unavailable');
   const distance = routeDistance(state, route);
   if (route.corridorIds.some((id) => !state.corridors[id].open)) reasons.push('Corridor closed');
   if (route.state === 'invalid') reasons.push('Route requires validation');

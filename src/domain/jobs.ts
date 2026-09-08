@@ -1,3 +1,4 @@
+import { reserveMissionResources, releaseRobotResources } from './resources';
 import type { DomainState, Robot, Versioned, Command } from './model';
 import { shortestPath, type PathResult } from './navigation';
 import { readiness } from './selectors';
@@ -167,6 +168,7 @@ function releaseAssignment(state: DomainState, job: WarehouseJob) {
   if (!job.missionId || !job.robotId) return;
   const mission = state.missions[job.missionId],
     robot = state.robots[job.robotId];
+  releaseRobotResources(state, robot.id, mission.id);
   mission.status = 'cancelled';
   mission.pauseReason = 'Job assignment released';
   mission.revision++;
@@ -299,6 +301,10 @@ export function applyJob(state: DomainState, command: JobCommand): Robot[] {
     ? command.reason
     : 'Automatic ranking: shortest eligible delivery with battery reserve';
   existing.revision++;
+  const resourceIds = Object.values(state.resources)
+    .filter((r) => [existing.sourceZoneId, existing.destinationZoneId].includes(r.zoneId))
+    .map((r) => r.id);
+  reserveMissionResources(state, robot, missionId, resourceIds, existing.priority);
   return [...affected, robot];
 }
 export function synchronizeJobs(state: DomainState) {

@@ -1,3 +1,4 @@
+import { seedResources } from './resources';
 import { seedJobs } from './jobs';
 import type { DomainState } from './model';
 import { seedNavigation } from './navigation';
@@ -23,6 +24,8 @@ export function createSeed(): DomainState {
     maintenance: {},
     plans: {},
     jobs: {},
+    resources: {},
+    resourceReservations: {},
     activity: [],
     replay: [],
     telemetry: [],
@@ -190,6 +193,7 @@ export function createSeed(): DomainState {
   }
   seedNavigation(state);
   seedMaintenance(state);
+  seedResources(state);
   seedJobs(state);
   return state;
 }

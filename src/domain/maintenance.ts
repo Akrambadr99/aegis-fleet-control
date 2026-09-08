@@ -1,3 +1,4 @@
+import { releaseRobotResources } from './resources';
 import type { Command, DomainState, Robot } from './model';
 import { GatewayError } from '../gateway/requests';
 export function capabilityIssues(
@@ -39,6 +40,7 @@ export function applyMaintenance(
   if (command.type === 'maintenance.start') {
     order.status = 'in-progress';
     robot.status = 'maintenance';
+    releaseRobotResources(state, robot.id);
     const mission = robot.activeMissionId ? state.missions[robot.activeMissionId] : null;
     if (mission && mission.status !== 'completed') {
       mission.status = 'paused';

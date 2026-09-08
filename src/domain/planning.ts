@@ -137,7 +137,10 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
         issue('Choose an available charger in this facility', step.id);
       duration = step.seconds;
     } else if (step.kind === 'resource') {
-      issue('Resource steps require a reservable facility resource', step.id);
+      const resource = state.resources[step.resourceId];
+      if (!resource || resource.facilityId !== plan.facilityId || !resource.available)
+        issue('Choose an available resource in this facility', step.id);
+      duration = step.seconds;
     } else duration = step.seconds;
     if (!Number.isFinite(duration) || duration < 0) {
       issue('Duration must be a nonnegative number', step.id);

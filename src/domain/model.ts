@@ -1,3 +1,4 @@
+import type { FacilityResource, ResourceReservation, ResourceCommand } from './resources';
 import type { WarehouseJob, JobCommand } from './jobs';
 import type { MissionPlan } from './planning';
 export type Role = 'viewer' | 'operator' | 'fleet-manager' | 'facility-manager' | 'administrator';
@@ -89,6 +90,7 @@ export interface Mission extends Versioned {
   pauseReason: string | null;
 }
 export interface Route extends Versioned {
+  resourceIds?: string[];
   nodeIds: string[];
   edgeIds: string[];
   origin?: { x: number; y: number };
@@ -177,6 +179,8 @@ export interface DomainState {
   reservations: Record<string, Reservation>;
   faults: Record<string, Fault>;
   leases: Record<string, ControlLease>;
+  resources: Record<string, FacilityResource>;
+  resourceReservations: Record<string, ResourceReservation>;
   jobs: Record<string, WarehouseJob>;
   plans: Record<string, MissionPlan>;
   maintenance: Record<string, MaintenanceOrder>;
@@ -185,6 +189,7 @@ export interface DomainState {
   telemetry: Telemetry[];
 }
 export type Command =
+  | ResourceCommand
   | JobCommand
   | { type: 'plan.save'; id: string; expectedRevision: number; plan: MissionPlan }
   | {

@@ -1,3 +1,4 @@
+import { isResourceCommand, applyResource, releaseRobotResources } from './resources';
 import { isJobCommand, applyJob } from './jobs';
 import { validatePlan } from './planning';
 import type { Actor, AuditChange, Command, DomainState, Robot } from './model';
@@ -48,6 +49,20 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
   const denied = commandPermission(state, actor, command);
   if (denied)
     throw new GatewayError(denied === 'Entity no longer exists' ? 'missing' : 'forbidden', denied);
+  if (isResourceCommand(command)) {
+    const before = captureEntities(state);
+    const robots = applyResource(state, command);
+    record(
+      state,
+      actor,
+      command.type,
+      command.id,
+      'Facility resource ownership updated',
+      [...new Map(robots.map((r) => [r.id, r])).values()],
+      changedEntities(before, state),
+    );
+    return;
+  }
   if (isJobCommand(command)) {
     const before = captureEntities(state);
     const robots = applyJob(state, command);
@@ -183,6 +198,7 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
       if (robot.status === 'emergency-stopped')
         throw new GatewayError('unchanged', 'Robot is already emergency stopped');
       robot.status = 'emergency-stopped';
+      releaseRobotResources(state, robot.id);
       if (mission && mission.status !== 'completed') {
         mission.status = 'paused';
         mission.pauseReason = 'Emergency stop';

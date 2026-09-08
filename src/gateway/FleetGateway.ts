@@ -1,3 +1,4 @@
+import { synchronizeResources } from '../domain/resources';
 import { rankCandidates, synchronizeJobs } from '../domain/jobs';
 import { validatePlan, type MissionPlan } from '../domain/planning';
 import type { Actor, Command, DomainState, RoutePreview } from '../domain/model';
@@ -128,6 +129,15 @@ export class FleetGateway {
     const next = structuredClone(this.state);
     for (let t = 0; t < ticks; t++) {
       next.tick++;
+      for (const change of synchronizeResources(next))
+        record(
+          next,
+          { id: 'clock', role: 'administrator' },
+          change.event,
+          change.resourceId,
+          'Resource ownership transition',
+          [change.robot],
+        );
       for (const robot of Object.values(next.robots)) {
         const mission = robot.activeMissionId ? next.missions[robot.activeMissionId] : null;
         let velocity = 0;
@@ -182,21 +192,30 @@ export class FleetGateway {
           velocity,
         });
       }
+      for (const change of synchronizeJobs(next))
+        record(
+          next,
+          { id: 'clock', role: 'administrator' },
+          change.event,
+          change.job.id,
+          change.job.title +
+            ' · ' +
+            change.job.completedUnits +
+            '/' +
+            change.job.units +
+            ' delivered',
+          [change.robot],
+        );
+      for (const change of synchronizeResources(next))
+        record(
+          next,
+          { id: 'clock', role: 'administrator' },
+          change.event,
+          change.resourceId,
+          'Resource ownership transition',
+          [change.robot],
+        );
     }
-    for (const change of synchronizeJobs(next))
-      record(
-        next,
-        { id: 'clock', role: 'administrator' },
-        change.event,
-        change.job.id,
-        change.job.title +
-          ' · ' +
-          change.job.completedUnits +
-          '/' +
-          change.job.units +
-          ' delivered',
-        [change.robot],
-      );
     // Retain a bounded live window; activity and replay remain session history.
     next.telemetry = next.telemetry.slice(-2400);
     this.publish(next);

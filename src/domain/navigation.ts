@@ -9,6 +9,11 @@ export function shortestPath(state: DomainState, from: string, to: string): Path
   const origin = state.navigationNodes[from],
     target = state.navigationNodes[to];
   if (!origin || !target || origin.facilityId !== target.facilityId) return null;
+  const blockedResources = new Set(
+    Object.values(state.resources)
+      .filter((r) => !r.available && r.corridorId)
+      .map((r) => r.corridorId),
+  );
   const distances = new Map<string, number>([[from, 0]]),
     previous = new Map<string, { node: string; edge: string }>(),
     visited = new Set<string>();
@@ -26,7 +31,8 @@ export function shortestPath(state: DomainState, from: string, to: string): Path
       if (
         !edge.enabled ||
         edge.distance <= 0 ||
-        (edge.corridorId && !state.corridors[edge.corridorId]?.open)
+        (edge.corridorId &&
+          (!state.corridors[edge.corridorId]?.open || blockedResources.has(edge.corridorId)))
       )
         continue;
       const next =
