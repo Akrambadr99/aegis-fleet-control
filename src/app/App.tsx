@@ -110,9 +110,6 @@ export function App() {
                     end
                     to={{ pathname: item.path, search: location.search }}
                   >
-                    <span className="nav-code" aria-hidden="true">
-                      {item.code}
-                    </span>
                     {item.short}
                   </NavLink>
                 ))}
@@ -127,9 +124,6 @@ export function App() {
       <div className="main-column">
         <header className="topbar">
           <GlobalSearch />
-          <span>
-            Autonomous systems <span className="separator">/</span> Fleet operations
-          </span>
           <span className="environment-label">SIMULATED ENVIRONMENT</span>
         </header>
         <main id="workspace-content" tabIndex={-1}>

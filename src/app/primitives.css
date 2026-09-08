@@ -1,11 +1,11 @@
 :root {
-  font-family: Inter, 'Segoe UI', sans-serif;
-  color: #203444;
-  background: #f3f6f8;
+  font-family: system-ui, 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: var(--canvas);
   font-synthesis: none;
   font-weight: 400;
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 * {
   box-sizing: border-box;
@@ -14,7 +14,7 @@ body {
   margin: 0;
 }
 a {
-  color: #166e64;
+  color: var(--accent);
   text-decoration: none;
 }
 a:hover {
@@ -27,19 +27,20 @@ input {
 }
 button,
 .button-link {
-  background: #1e756b;
-  color: white;
-  border: 0;
-  border-radius: 2px;
-  padding: 6px 10px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  padding: 5px 10px;
   cursor: pointer;
   display: inline-block;
+  font-weight: 500;
 }
 a:focus-visible,
 button:focus-visible,
 select:focus-visible {
-  outline: 3px solid #d3912d;
-  outline-offset: 4px;
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 main:focus {
   outline: none;
@@ -49,23 +50,25 @@ main:focus {
   min-height: 100vh;
 }
 .sidebar {
-  width: 190px;
+  width: 184px;
   flex-shrink: 0;
-  background: #111e2b;
-  color: #c4d0db;
-  padding: 18px 12px;
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  padding: 20px 12px;
   display: flex;
   flex-direction: column;
+  border-right: 1px solid var(--rule);
 }
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: #f1f7fb;
-  font-size: 24px;
+  gap: 9px;
+  color: var(--text);
+  font-size: 19px;
   font-weight: 750;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   padding: 0 9px 27px;
+  padding-bottom: 24px;
 }
 .brand:hover {
   text-decoration: none;
@@ -77,14 +80,14 @@ main:focus {
   font-weight: 500;
 }
 .brand-mark {
-  width: 36px;
-  height: 39px;
-  border: 2px solid #77c6b9;
-  border-radius: 9px 9px 16px 16px;
-  color: #85d3c5;
+  width: 30px;
+  height: 32px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  color: var(--accent);
   text-align: center;
-  line-height: 35px;
-  font-size: 23px;
+  line-height: 29px;
+  font-size: 20px;
   letter-spacing: 0;
 }
 .sidebar-caption {
@@ -93,35 +96,38 @@ main:focus {
   padding: 15px 10px;
   border-top: 1px solid #2a3642;
   color: #8c9ead;
+  display: none;
 }
 .nav-group {
   margin-bottom: 18px;
 }
 .nav-group p {
   margin: 0 10px 6px;
-  color: #8397a7;
+  color: var(--text-muted);
   text-transform: uppercase;
   font-size: 10px;
-  letter-spacing: 1.2px;
+  letter-spacing: 0.5px;
 }
 .nav-group a {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 10px;
+  padding: 7px 10px;
   margin-bottom: 3px;
-  border-radius: 2px;
-  color: #b5c5d2;
+  border-radius: var(--radius);
+  color: var(--text-muted);
   font-size: 12px;
 }
 .nav-group a:hover {
-  background: #1d3040;
+  background: #e5e8eb;
   text-decoration: none;
+  color: var(--text);
 }
 .nav-group a.active {
-  background: #203e43;
-  color: #94e0d0;
-  box-shadow: inset 2px 0 #76c6b6;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: inset 2px 0 var(--accent);
+  font-weight: 600;
 }
 .nav-code {
   font-family: monospace;
@@ -131,12 +137,13 @@ main:focus {
 .sidebar-footer {
   margin-top: auto;
   padding: 20px 10px 0;
-  border-top: 1px solid #2a3642;
+  border-top: 1px solid var(--rule);
   font-size: 11px;
+  color: var(--text-muted);
 }
 .sidebar-footer small {
   display: block;
-  color: #8fa1af;
+  color: var(--text-muted);
   padding: 5px 0 0 14px;
 }
 .status-dot {
@@ -153,25 +160,25 @@ main:focus {
 }
 .topbar {
   height: 44px;
-  border-bottom: 1px solid #dce4e9;
-  background: #fff;
+  border-bottom: 1px solid var(--rule);
+  background: var(--canvas);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 18px;
   font-size: 11px;
-  color: #5c6e7c;
+  color: var(--text-muted);
 }
 .separator {
   padding: 0 12px;
   color: #a3b1ba;
 }
 .environment-label {
-  font-size: 9px;
-  letter-spacing: 1.2px;
-  color: #56766e;
-  background: #edf5f2;
-  border: 1px solid #dbeae4;
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
   border-radius: 4px;
   padding: 5px 8px;
 }
@@ -188,45 +195,45 @@ main {
   margin-bottom: 12px;
 }
 .eyebrow {
-  font-size: 9px;
-  letter-spacing: 1.8px;
-  font-weight: 650;
-  color: #74838f;
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  font-weight: 500;
+  color: var(--text-muted);
   margin: 0 0 7px;
 }
 h1 {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 650;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.35px;
   margin: 0 0 7px;
 }
 h2 {
-  font-size: 16px;
-  font-weight: 650;
-  letter-spacing: -0.3px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.15px;
   margin: 0;
 }
 .page-heading p:not(.eyebrow) {
   font-size: 12px;
-  color: #6b7d8a;
+  color: var(--text-muted);
   margin: 0;
 }
 .pill {
-  border: 1px solid #d6e1df;
-  background: #f8fcfa;
+  border: 0;
+  background: transparent;
   border-radius: 2px;
-  padding: 5px 9px;
-  font-size: 10px;
+  padding: 0;
+  font-size: 11px;
   white-space: nowrap;
-  color: #546c66;
+  color: var(--text-muted);
 }
 .amber {
   color: #a67125;
 }
 .panel {
   background: #fff;
-  border: 1px solid #dce5e9;
-  border-radius: 2px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
   padding: 20px;
   min-width: 0;
 }
@@ -238,8 +245,8 @@ h2 {
   margin-bottom: 15px;
 }
 .muted {
-  font-size: 10px;
-  color: #6b7f8c;
+  font-size: 11px;
+  color: var(--text-muted);
 }
 .legend-dot {
   display: inline-block;
@@ -282,7 +289,7 @@ dl div {
   font-size: 11px;
 }
 dt {
-  color: #697d8a;
+  color: var(--text-muted);
 }
 dd {
   font-weight: 600;
@@ -361,14 +368,21 @@ dd {
 }
 @media (max-width: 1100px) {
   .sidebar {
-    width: 195px;
+    width: 184px;
     padding-inline: 12px;
+    background: var(--surface-muted);
+    color: var(--text-muted);
+    border-right: 1px solid var(--rule);
+    padding: 20px 12px;
   }
   main {
     padding: 24px;
   }
   .topbar {
     padding: 0 24px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--text-muted);
+    background: var(--canvas);
   }
   .page-footer {
     padding-inline: 24px;
@@ -380,16 +394,27 @@ dd {
   }
   .sidebar {
     width: 100%;
-    padding: 15px;
+    padding: 20px 12px;
+    background: var(--surface-muted);
+    color: var(--text-muted);
+    border-right: 1px solid var(--rule);
   }
   .brand {
     padding: 0 0 12px;
     font-size: 19px;
+    color: var(--text);
+    letter-spacing: 2px;
+    gap: 9px;
+    padding-bottom: 24px;
   }
   .brand-mark {
     height: 32px;
     width: 30px;
-    line-height: 28px;
+    line-height: 29px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 8px;
+    font-size: 20px;
   }
   .sidebar-caption,
   .sidebar-footer {
@@ -405,6 +430,7 @@ dd {
     display: flex;
     gap: 4px;
     margin: 0;
+    margin-bottom: 18px;
   }
   .nav-group p,
   .nav-code {
@@ -413,7 +439,10 @@ dd {
   .nav-group a {
     white-space: nowrap;
     margin: 0;
-    padding: 9px 11px;
+    padding: 7px 10px;
+    color: var(--text-muted);
+    font-size: 12px;
+    border-radius: var(--radius);
   }
   .topbar {
     height: auto;
@@ -421,9 +450,16 @@ dd {
     padding: 12px 18px;
     gap: 15px;
     flex-wrap: wrap;
+    border-bottom: 1px solid var(--rule);
+    color: var(--text-muted);
+    background: var(--canvas);
   }
   .environment-label {
-    font-size: 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 0;
+    letter-spacing: 0.3px;
   }
   main {
     padding: 22px 16px;
@@ -434,10 +470,14 @@ dd {
     gap: 12px;
   }
   h1 {
-    font-size: 25px;
+    font-size: 21px;
+    letter-spacing: -0.35px;
+    font-weight: 650;
   }
   .panel {
     padding: 16px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
   }
   .panel-heading {
     flex-wrap: wrap;
@@ -472,16 +512,17 @@ dd {
 .control-row input,
 .control-row select {
   padding: 8px;
-  border: 1px solid #bdccd3;
-  border-radius: 2px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
   background: white;
   max-width: 100%;
 }
 .scope-controls {
-  padding: 14px;
-  background: #e8f0f2;
-  border-radius: 6px;
+  padding: 0 0 12px;
+  background: transparent;
+  border-radius: 0;
   margin-bottom: 20px;
+  border-bottom: 1px solid var(--rule);
 }
 .inspector-links {
   display: flex;
@@ -512,9 +553,10 @@ button:disabled {
 }
 .text-button {
   background: transparent;
-  color: #166e64;
+  color: var(--accent);
   padding: 3px 0;
-  text-decoration: underline;
+  text-decoration: none;
+  border: 0;
 }
 .table-scroll {
   overflow-x: auto;
@@ -570,6 +612,10 @@ thead {
   }
   .scope-controls {
     align-items: stretch;
+    background: transparent;
+    padding: 0 0 12px;
+    border-bottom: 1px solid var(--rule);
+    border-radius: 0;
   }
   .scope-controls label {
     width: 100%;
@@ -585,7 +631,7 @@ summary {
   justify-content: space-between;
   gap: 16px;
   align-items: center;
-  border-bottom: 2px solid #45685f;
+  border-bottom: 1px solid var(--rule);
   padding-bottom: 14px;
   margin-bottom: 12px;
 }
@@ -618,6 +664,7 @@ summary {
 @media (max-width: 700px) {
   .editor-header {
     display: block;
+    border-bottom: 1px solid var(--rule);
   }
   .editor-actions {
     margin-top: 10px;
@@ -695,7 +742,7 @@ button.emergency-stop {
   background: #ac2726;
   color: #fff;
   border: 3px double #fff;
-  outline: 2px solid #8c2928;
+  outline: 2px solid var(--focus);
   border-radius: 4px;
   padding: 14px 12px;
   font-weight: 800;
@@ -756,17 +803,20 @@ button.emergency-stop:hover {
   padding: 0.35rem;
 }
 :root {
-  --surface: #fff;
-  --rule: #bccbd3;
-  --surface-muted: #eaf0f3;
-  --critical: #a52a26;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
+  font-family: system-ui, 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: var(--canvas);
+  line-height: 1.5;
 }
 button,
 .button-link {
   min-height: 30px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
+  padding: 5px 10px;
+  font-weight: 500;
 }
 input,
 select,
@@ -776,30 +826,41 @@ textarea {
 input:focus-visible,
 textarea:focus-visible,
 summary:focus-visible {
-  outline: 3px solid #a86a08;
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
 .panel {
   padding: 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
 }
 .nav-group {
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 }
 .nav-group a {
-  padding: 6px 8px;
+  padding: 7px 10px;
   margin-bottom: 1px;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-radius: var(--radius);
 }
 .sidebar-caption {
   padding: 10px 8px;
+  display: none;
 }
 .brand {
-  padding-bottom: 18px;
-  font-size: 21px;
+  padding-bottom: 24px;
+  font-size: 19px;
+  color: var(--text);
+  letter-spacing: 2px;
+  gap: 9px;
 }
 .scope-controls {
-  padding: 8px;
+  padding: 0 0 12px;
   margin-bottom: 12px;
-  border-radius: 2px;
+  border-radius: 0;
+  background: transparent;
+  border-bottom: 1px solid var(--rule);
 }
 .control-row {
   gap: 8px;
@@ -807,6 +868,8 @@ summary:focus-visible {
 .control-row input,
 .control-row select {
   padding: 5px 7px;
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius);
 }
 .command-action [role='alert'] {
   border-left: 3px solid var(--critical);
@@ -823,16 +886,14 @@ summary:focus-visible {
 }
 
 .workspace-note {
-  font-size: 11px;
-  color: #526875;
+  font-size: 12px;
+  color: var(--text-muted);
 }
 :root {
-  --text-muted: #526875;
-  --accent-traffic: #35706c;
-  --accent-planning: #657b58;
-  --accent-replay: #4b6784;
-  --console-surface: #203642;
-  --surface-inset: #e7edf0;
+  font-family: system-ui, 'Segoe UI', sans-serif;
+  color: var(--text);
+  background: var(--canvas);
+  line-height: 1.5;
 }
 .job-editor label,
 .assignment-controls label,
@@ -853,4 +914,46 @@ summary:focus-visible {
 .replay-telemetry > p {
   font-size: 11px;
   color: #3f5d6c;
+}
+button:not(:disabled):hover,
+.button-link:hover {
+  filter: brightness(0.97);
+}
+button:disabled {
+  opacity: 1;
+  background: var(--surface-muted);
+  color: #747d86;
+  border-color: var(--rule);
+  cursor: not-allowed;
+}
+button.button-primary,
+.button-link.button-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+button.button-primary:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+button.button-primary:disabled {
+  background: var(--surface-muted);
+  color: #747d86;
+  border-color: var(--rule);
+}
+input,
+select,
+textarea {
+  accent-color: var(--accent);
+}
+.text-button:hover {
+  text-decoration: underline;
+}
+@media (prefers-reduced-motion: no-preference) {
+  button,
+  .button-link,
+  .nav-group a {
+    transition:
+      background-color var(--motion-fast),
+      border-color var(--motion-fast);
+  }
 }
