@@ -1,3 +1,4 @@
+import { validatePlan, type MissionPlan } from '../domain/planning';
 import type { Actor, Command, DomainState, RoutePreview } from '../domain/model';
 import { createSeed } from '../domain/seed';
 import { applyCommand, record } from '../domain/transactions';
@@ -61,6 +62,15 @@ export class FleetGateway {
         }
       }),
     );
+  }
+  validateMissionPlan(plan: MissionPlan, signal?: AbortSignal) {
+    const snapshot = this.state,
+      input = structuredClone(plan);
+    return this.requests.run(() => {
+      if (this.state.revision !== snapshot.revision)
+        throw new GatewayError('stale', 'Operational state changed; validate again');
+      return validatePlan(snapshot, input);
+    }, signal);
   }
   readRobot(id: string, signal?: AbortSignal) {
     const snapshot = this.state.robots[id];

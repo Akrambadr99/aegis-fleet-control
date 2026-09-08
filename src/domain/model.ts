@@ -1,3 +1,4 @@
+import type { MissionPlan } from './planning';
 export type Role = 'viewer' | 'operator' | 'fleet-manager' | 'facility-manager' | 'administrator';
 export interface Actor {
   id: string;
@@ -173,12 +174,14 @@ export interface DomainState {
   reservations: Record<string, Reservation>;
   faults: Record<string, Fault>;
   leases: Record<string, ControlLease>;
+  plans: Record<string, MissionPlan>;
   maintenance: Record<string, MaintenanceOrder>;
   activity: Activity[];
   replay: ReplayFrame[];
   telemetry: Telemetry[];
 }
 export type Command =
+  | { type: 'plan.save'; id: string; expectedRevision: number; plan: MissionPlan }
   | {
       type: 'maintenance.start' | 'maintenance.verify' | 'maintenance.complete';
       id: string;

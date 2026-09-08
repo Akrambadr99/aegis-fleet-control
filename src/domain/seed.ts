@@ -20,6 +20,7 @@ export function createSeed(): DomainState {
     faults: {},
     leases: {},
     maintenance: {},
+    plans: {},
     activity: [],
     replay: [],
     telemetry: [],

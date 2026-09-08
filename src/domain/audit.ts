@@ -14,6 +14,7 @@ const tables = [
   'faults',
   'leases',
   'maintenance',
+  'plans',
 ] as const;
 export type EntityCapture = Map<string, Versioned>;
 export function captureEntities(state: DomainState): EntityCapture {
