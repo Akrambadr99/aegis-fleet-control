@@ -25,6 +25,20 @@ export interface Zone extends Versioned {
   x: number;
   y: number;
 }
+export interface NavigationNode extends Versioned {
+  facilityId: string;
+  floorId: string;
+  position: { x: number; y: number };
+  zoneId: string | null;
+}
+export interface NavigationEdge extends Versioned {
+  from: string;
+  to: string;
+  corridorId: string | null;
+  distance: number;
+  enabled: boolean;
+  bidirectional: boolean;
+}
 export interface Corridor extends Versioned {
   floorId: string;
   name: string;
@@ -61,6 +75,9 @@ export interface Mission extends Versioned {
   pauseReason: string | null;
 }
 export interface Route extends Versioned {
+  nodeIds: string[];
+  edgeIds: string[];
+  origin?: { x: number; y: number };
   robotId: string;
   facilityId: string;
   corridorIds: string[];
@@ -137,6 +154,8 @@ export interface DomainState {
   floors: Record<string, Floor>;
   zones: Record<string, Zone>;
   corridors: Record<string, Corridor>;
+  navigationNodes: Record<string, NavigationNode>;
+  navigationEdges: Record<string, NavigationEdge>;
   robots: Record<string, Robot>;
   missions: Record<string, Mission>;
   routes: Record<string, Route>;

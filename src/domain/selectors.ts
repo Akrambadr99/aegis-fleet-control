@@ -1,4 +1,5 @@
 import type { DomainState, Robot, Role, Command } from './model';
+import { robotPath, routeDistance } from './navigation';
 export function canExecute(role: Role, type: Command['type']) {
   if (role === 'administrator') return true;
   if (type === 'corridor.set' || type === 'charger.set') return role === 'facility-manager';
@@ -23,7 +24,7 @@ export function missionFeasibility(state: DomainState, missionId: string) {
     robot = state.robots[mission.robotId],
     route = state.routes[mission.routeId];
   const reasons = readiness(state, robot);
-  const distance = route.corridorIds.reduce((sum, id) => sum + state.corridors[id].length, 0);
+  const distance = routeDistance(state, route);
   if (route.corridorIds.some((id) => !state.corridors[id].open)) reasons.push('Corridor closed');
   if (route.state === 'invalid') reasons.push('Route requires validation');
   const required = distance * 0.12;
@@ -64,9 +65,5 @@ export function trafficConflicts(state: DomainState, facilityId: string) {
 
 // The initial topology models three alternative transfer lanes on each floor.
 export function routeCandidates(state: DomainState, robotId: string) {
-  const robot = state.robots[robotId];
-  return state.floors[robot.floorId].corridorIds
-    .filter((id) => state.corridors[id].open)
-    .sort((a, b) => state.corridors[a].length - state.corridors[b].length || a.localeCompare(b))
-    .slice(0, 1);
+  return robotPath(state, robotId)?.corridorIds ?? [];
 }

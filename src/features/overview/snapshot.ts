@@ -23,6 +23,7 @@ export function resolveFacility(state: DomainState, id: string | null) {
   return {
     id: entry.id,
     domainId: facility.id,
+    floorId: floor.id,
     name: facility.name,
     location: `${facility.id} · Local operating facility`,
     floors: facility.floorIds.map((id) => state.floors[id].name),

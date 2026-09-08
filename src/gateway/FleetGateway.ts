@@ -1,7 +1,8 @@
 import type { Actor, Command, DomainState, RoutePreview } from '../domain/model';
 import { createSeed } from '../domain/seed';
 import { applyCommand, record } from '../domain/transactions';
-import { readiness, routeCandidates } from '../domain/selectors';
+import { readiness } from '../domain/selectors';
+import { robotPath, positionOnRoute } from '../domain/navigation';
 import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
 function freeze<T>(value: T): T {
@@ -83,8 +84,9 @@ export class FleetGateway {
         this.state.robots[robotId].revision !== robot.revision
       )
         throw new GatewayError('stale', 'Route inputs changed; calculate again');
-      const corridorIds = routeCandidates(snapshot, robotId),
-        distance = corridorIds.reduce((sum, id) => sum + snapshot.corridors[id].length, 0);
+      const path = robotPath(snapshot, robotId),
+        corridorIds = path?.corridorIds ?? [],
+        distance = path?.distance ?? 0;
       const reasons = readiness(snapshot, robot);
       if (!corridorIds.length) reasons.push('No open corridor');
       if (robot.battery < distance * 0.12 + 10) reasons.push('Insufficient battery reserve');
@@ -110,7 +112,11 @@ export class FleetGateway {
         const mission = robot.activeMissionId ? next.missions[robot.activeMissionId] : null;
         let velocity = 0;
         if (robot.connected && robot.status === 'running' && mission?.status === 'running') {
-          robot.position.x = 40 + ((robot.position.x - 40 + 2) % 600);
+          robot.position = positionOnRoute(
+            next,
+            next.routes[mission.routeId],
+            Math.min(100, mission.progress + 1),
+          );
           robot.battery = Math.max(0, Number((robot.battery - 0.1).toFixed(1)));
           robot.revision++;
           velocity = 1.2;

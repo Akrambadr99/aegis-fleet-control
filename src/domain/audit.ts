@@ -4,6 +4,8 @@ const tables = [
   'floors',
   'zones',
   'corridors',
+  'navigationNodes',
+  'navigationEdges',
   'robots',
   'missions',
   'routes',

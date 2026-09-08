@@ -1,4 +1,5 @@
 import type { DomainState } from './model';
+import { seedNavigation } from './navigation';
 const key = (prefix: string, n: number) => `${prefix}-${String(n).padStart(3, '0')}`;
 export function createSeed(): DomainState {
   const state: DomainState = {
@@ -8,6 +9,8 @@ export function createSeed(): DomainState {
     floors: {},
     zones: {},
     corridors: {},
+    navigationNodes: {},
+    navigationEdges: {},
     robots: {},
     missions: {},
     routes: {},
@@ -120,6 +123,8 @@ export function createSeed(): DomainState {
           pauseReason: null,
         };
         state.routes[routeId] = {
+          nodeIds: [],
+          edgeIds: [],
           id: routeId,
           revision: 1,
           robotId: id,
@@ -172,5 +177,6 @@ export function createSeed(): DomainState {
       }
     }
   }
+  seedNavigation(state);
   return state;
 }

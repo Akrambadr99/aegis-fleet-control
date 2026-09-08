@@ -3,6 +3,7 @@ import { missionFeasibility, routeCandidates } from './selectors';
 import { GatewayError } from '../gateway/requests';
 import { commandPermission } from './permissions';
 import { captureEntities, changedEntities } from './audit';
+import { robotPath } from './navigation';
 function frame(state: DomainState, robot: Robot, eventId: string) {
   const mission = robot.activeMissionId ? state.missions[robot.activeMissionId] : null;
   state.replay.push({
@@ -68,6 +69,13 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
     facility.revision++;
     for (const route of Object.values(state.routes)) {
       if (!route.corridorIds.includes(corridor.id)) continue;
+      const active = state.robots[route.robotId].activeMissionId;
+      if (
+        !active ||
+        state.missions[active].routeId !== route.id ||
+        state.missions[active].status === 'completed'
+      )
+        continue;
       route.state = 'invalid';
       route.revision++;
       const robot = state.robots[route.robotId],
@@ -144,6 +152,11 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
       const candidates = routeCandidates(state, robot.id);
       if (!candidates.length)
         throw new GatewayError('invalid', 'No open transfer lane on this floor');
+      const path = robotPath(state, robot.id)!;
+      route.nodeIds = path.nodeIds;
+      route.edgeIds = path.edgeIds;
+      route.origin = { ...robot.position };
+      mission.progress = 0;
       route.corridorIds = candidates;
       route.topologyRevision = state.facilities[robot.facilityId].topologyRevision;
       route.state = 'valid';
