@@ -10,6 +10,34 @@ function fixture() {
   plan.steps = [{ ...newStep('travel'), zoneId: 'Z-010' }];
   return { clock, gateway, plan };
 }
+it('validates explicit branch controls and derives the longest joined path', () => {
+  const { plan } = fixture(),
+    state = createSeed();
+  plan.steps = [
+    { ...newStep('gate', 'conditional-branch'), condition: 'battery-low' },
+    { ...newStep('fork', 'parallel-branch'), dependsOn: ['gate'] },
+    { ...newStep('a', 'inspect'), seconds: 20, dependsOn: ['fork'] },
+    { ...newStep('b', 'wait'), seconds: 30, dependsOn: ['fork'] },
+    { ...newStep('join', 'wait'), seconds: 5, dependsOn: ['a', 'b'] },
+  ];
+  expect(validatePlan(state, plan)).toMatchObject({
+    issues: [],
+    durationSeconds: 35,
+    order: ['gate', 'fork', 'a', 'b', 'join'],
+  });
+  plan.steps[0].condition = 'always';
+  expect(validatePlan(state, plan).issues.map((issue) => issue.message)).toContain(
+    'Choose a condition for this branch',
+  );
+  plan.steps[3].dependsOn = [];
+  expect(validatePlan(state, plan).issues.map((issue) => issue.message)).toContain(
+    'A parallel branch needs at least two dependent steps',
+  );
+  plan.steps[1].dependsOn = [];
+  expect(validatePlan(state, plan).issues.map((issue) => issue.message)).toContain(
+    'A conditional branch needs a dependent step',
+  );
+});
 it.each([
   ['dock', 'dock'],
   ['open-door', 'door'],

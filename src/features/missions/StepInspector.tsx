@@ -44,6 +44,14 @@ export function StepInspector({
           ))}
         </select>
       </label>
+      {(step.kind === 'conditional-branch' || step.kind === 'parallel-branch') && (
+        <p>
+          {step.kind === 'conditional-branch'
+            ? 'Choose a condition, then make the branch steps depend on this control step.'
+            : 'Make at least two steps depend on this control step. A later step can join them by depending on both.'}{' '}
+          Feasibility checks every branch conservatively.
+        </p>
+      )}
       <label>
         Run condition
         <select

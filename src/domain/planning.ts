@@ -12,6 +12,8 @@ export const stepKinds = [
   'dock',
   'open-door',
   'call-elevator',
+  'conditional-branch',
+  'parallel-branch',
 ] as const;
 export type StepKind = (typeof stepKinds)[number];
 export const resourceStepKinds = {
@@ -113,6 +115,13 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
       issue('Dependency is repeated', step.id);
     if (step.dependsOn.some((id) => !ids.has(id)))
       issue('Dependency references a missing step', step.id);
+    const children = plan.steps.filter((candidate) => candidate.dependsOn.includes(step.id));
+    if (step.kind === 'conditional-branch') {
+      if (step.condition === 'always') issue('Choose a condition for this branch', step.id);
+      if (!children.length) issue('A conditional branch needs a dependent step', step.id);
+    }
+    if (step.kind === 'parallel-branch' && children.length < 2)
+      issue('A parallel branch needs at least two dependent steps', step.id);
   }
   while (pending.length) {
     const index = pending.findIndex((s) => s.dependsOn.every((id) => result.order.includes(id)));
@@ -123,7 +132,10 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
     const step = pending.splice(index, 1)[0];
     result.order.push(step.id);
     let duration = 0;
-    if (step.kind === 'navigate') {
+    if (step.kind === 'conditional-branch' || step.kind === 'parallel-branch') {
+      // Control nodes add no work; downstream dependencies determine the critical path.
+      duration = 0;
+    } else if (step.kind === 'navigate') {
       const zone = state.zones[step.zoneId];
       const target = Object.values(state.navigationNodes).find((n) => n.zoneId === step.zoneId);
       if (!zone || state.floors[zone.floorId]?.facilityId !== plan.facilityId)
