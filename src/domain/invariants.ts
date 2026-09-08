@@ -120,6 +120,13 @@ export function inspectInvariants(state: DomainState): InvariantViolation[] {
     check(state.robots[order.robotId], order.id, 'Maintenance robot must exist');
   for (const job of Object.values(state.jobs)) {
     check(state.facilities[job.facilityId], job.id, 'Job facility must exist');
+    if (job.groupId)
+      check(
+        state.jobGroups[job.groupId]?.jobIds.includes(job.id) &&
+          state.jobGroups[job.groupId]?.facilityId === job.facilityId,
+        job.id,
+        'Job group membership must agree',
+      );
     check(
       new Set(job.attempts?.map((attempt) => attempt.missionId)).size ===
         (job.attempts?.length ?? 0),
@@ -162,6 +169,27 @@ export function inspectInvariants(state: DomainState): InvariantViolation[] {
         state.missions[job.missionId]?.jobId === job.id,
         job.id,
         'Job mission must reference its job',
+      );
+  }
+  for (const group of Object.values(state.jobGroups)) {
+    check(
+      state.facilities[group.facilityId] &&
+        group.jobIds.length > 0 &&
+        new Set(group.jobIds).size === group.jobIds.length,
+      group.id,
+      'Dispatch group must have distinct jobs and a facility',
+    );
+    for (const id of group.jobIds)
+      check(
+        state.jobs[id]?.groupId === group.id && state.jobs[id]?.facilityId === group.facilityId,
+        group.id,
+        'Dispatch group members must reference the group',
+      );
+    if (group.status === 'closed')
+      check(
+        group.jobIds.every((id) => ['completed', 'cancelled'].includes(state.jobs[id]?.status)),
+        group.id,
+        'Closed groups cannot contain unfinished jobs',
       );
   }
   for (const mission of Object.values(state.missions)) {

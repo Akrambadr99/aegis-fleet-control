@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import type { WarehouseJob } from '../../domain/jobs';
 import { JobQueue } from './JobQueue';
 import type { ReactNode } from 'react';
+import type { JobGroup } from '../../domain/jobGroups';
 
 const statuses = [
   'queued',
@@ -19,15 +20,18 @@ export function JobQueuePanel(props: {
   tick: number;
   batch?: { selectedIds: string[]; toggle: (id: string) => void };
   toolbar?: ReactNode;
+  groups?: JobGroup[];
 }) {
   const [params, setParams] = useSearchParams();
   const query = params.get('jobQuery') ?? '';
+  const groupId = params.get('jobGroup') ?? '';
   const status = statuses.includes(params.get('jobStatus') ?? '') ? params.get('jobStatus')! : '';
   const priority = /^[1-5]$/.test(params.get('jobPriority') ?? '')
     ? params.get('jobPriority')!
     : '';
   const jobs = props.jobs.filter(
     (job) =>
+      (!groupId || job.groupId === groupId) &&
       (!status || job.status === status) &&
       (!priority || job.priority >= Number(priority)) &&
       [job.id, job.title, job.sourceZoneId, job.destinationZoneId].some((value) =>
@@ -50,6 +54,19 @@ export function JobQueuePanel(props: {
   return (
     <>
       <div className="job-filterbar" aria-label="Job queue filters">
+        {!!props.groups?.length && (
+          <label>
+            Dispatch group
+            <select value={groupId} onChange={(event) => update('jobGroup', event.target.value)}>
+              <option value="">All groups</option>
+              {props.groups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.title} · {group.status}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label>
           Search jobs
           <input value={query} onChange={(event) => update('jobQuery', event.target.value)} />
@@ -78,6 +95,9 @@ export function JobQueuePanel(props: {
       <p role="status">
         {jobs.length} of {props.jobs.length} jobs shown
       </p>
+      {groupId && !props.groups?.some((group) => group.id === groupId) && (
+        <button onClick={() => update('jobGroup', '')}>Clear unavailable group filter</button>
+      )}
       {props.selected && !jobs.some((job) => job.id === props.selected) && (
         <p>
           Selected job {props.selected} is outside the queue filters. Its inspector remains open.

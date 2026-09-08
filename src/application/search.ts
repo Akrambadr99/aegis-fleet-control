@@ -3,6 +3,7 @@ export type SearchKind =
   | 'robot'
   | 'mission'
   | 'job'
+  | 'job-group'
   | 'facility'
   | 'fault'
   | 'charger'
@@ -40,6 +41,8 @@ export function buildSearchIndex(state: DomainState): SearchEntry[] {
     });
   for (const job of Object.values(state.jobs))
     add('job', job.id, job.title, job.facilityId, '/scheduler', { job: job.id });
+  for (const group of Object.values(state.jobGroups))
+    add('job-group', group.id, group.title, group.facilityId, '/scheduler', { jobGroup: group.id });
   for (const facility of Object.values(state.facilities))
     add('facility', facility.id, facility.name, facility.id, '/facilities');
   for (const fault of Object.values(state.faults))

@@ -1,4 +1,22 @@
 import { test, expect } from '@playwright/test';
+test('dispatch group holds block new assignments until explicitly released', async ({ page }) => {
+  await page.goto('/scheduler');
+  await page.getByRole('button', { name: 'Advance 100 seconds' }).click();
+  await page.getByLabel('Select JOB-001 for dispatch').check();
+  await page.getByText('Dispatch groups · 0', { exact: true }).click();
+  await page.getByLabel('Dispatch group title').fill('Outbound morning wave');
+  await page.getByRole('button', { name: 'Group selected jobs', exact: true }).click();
+  const group = page.getByRole('article', { name: 'Dispatch group Outbound morning wave' });
+  await group.getByLabel('Group decision reason').fill('Waiting for loading bay');
+  await group.getByRole('button', { name: 'Hold group', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Assign best candidate' })).toBeDisabled();
+  await expect(page.getByText(/Dispatch group is not released/).first()).toBeVisible();
+  await group.getByRole('button', { name: 'View group jobs' }).click();
+  await expect(page).toHaveURL(/jobGroup=GROUP-/);
+  await expect(page.getByText('1 of 2 jobs shown')).toBeVisible();
+  await group.getByRole('button', { name: 'Release group', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Assign best candidate' })).toBeEnabled();
+});
 test('batch dispatch reports partial success and survives workspace navigation', async ({
   page,
 }) => {

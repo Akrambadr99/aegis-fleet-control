@@ -1969,3 +1969,25 @@ button.emergency-stop:hover {
   overflow-y: auto;
   overflow-wrap: anywhere;
 }
+.job-groups-panel {
+  margin-block: 12px;
+  border-top: 1px solid #bdcbd2;
+  padding-block: 10px;
+}
+.job-groups-panel summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.dispatch-group {
+  border-left: 3px solid #688c8b;
+  padding: 10px;
+  margin-block: 10px;
+}
+.dispatch-group header {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.dispatch-group button {
+  margin: 4px 6px 4px 0;
+}

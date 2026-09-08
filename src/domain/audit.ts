@@ -18,6 +18,7 @@ const tables = [
   'planRevisions',
   'missionTemplates',
   'jobs',
+  'jobGroups',
   'resources',
   'automationRules',
   'resourceReservations',

@@ -4,6 +4,7 @@ import type { RobotHistory } from './history';
 import type { ControlCommand } from './teleoperation';
 import type { FacilityResource, ResourceReservation, ResourceCommand } from './resources';
 import type { WarehouseJob, JobCommand } from './jobs';
+import type { JobGroup, JobGroupCommand } from './jobGroups';
 import type { MissionPlan, MissionPlanRevision } from './planning';
 import type { MissionTemplate, TemplateCommand } from './missionTemplates';
 export type Role = 'viewer' | 'operator' | 'fleet-manager' | 'facility-manager' | 'administrator';
@@ -196,6 +197,7 @@ export interface DomainState {
   resources: Record<string, FacilityResource>;
   resourceReservations: Record<string, ResourceReservation>;
   jobs: Record<string, WarehouseJob>;
+  jobGroups: Record<string, JobGroup>;
   plans: Record<string, MissionPlan>;
   planRevisions: Record<string, MissionPlanRevision>;
   missionTemplates: Record<string, MissionTemplate>;
@@ -210,6 +212,7 @@ export type Command =
   | ControlCommand
   | ResourceCommand
   | JobCommand
+  | JobGroupCommand
   | { type: 'plan.save'; id: string; expectedRevision: number; plan: MissionPlan }
   | {
       type: 'maintenance.start' | 'maintenance.verify' | 'maintenance.complete';

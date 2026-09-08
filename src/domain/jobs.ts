@@ -22,6 +22,7 @@ export interface JobInput {
   dependsOn: string[];
 }
 export interface WarehouseJob extends Versioned, JobInput {
+  groupId?: string;
   attempts?: JobAttempt[];
   status: 'queued' | 'assigned' | 'in-progress' | 'partially-completed' | 'completed' | 'cancelled';
   completedUnits: number;
@@ -98,11 +99,30 @@ export function jobPath(state: DomainState, robot: Robot, job: JobInput) {
     pickupDistance: pickup.distance,
   };
 }
+function jobDispatchIssues(state: DomainState, job: WarehouseJob) {
+  const issues: string[] = [];
+  if (job.groupId && state.jobGroups[job.groupId]?.status !== 'ready')
+    issues.push('Dispatch group is not released');
+  if (job.dependsOn.some((id) => state.jobs[id]?.status !== 'completed'))
+    issues.push('Predecessor job incomplete');
+  if (
+    Object.values(state.resources).some(
+      (resource) =>
+        [job.sourceZoneId, job.destinationZoneId].includes(resource.zoneId) && !resource.available,
+    )
+  )
+    issues.push('Facility resource out of service');
+  return issues;
+}
 export function rankCandidates(state: DomainState, job: WarehouseJob): RobotCandidate[] {
   return Object.values(state.robots)
     .filter((r) => r.facilityId === job.facilityId)
     .map((robot) => {
-      const reasons = [...readiness(state, robot), ...robotCommitments(state, robot)];
+      const reasons = [
+        ...readiness(state, robot),
+        ...robotCommitments(state, robot),
+        ...jobDispatchIssues(state, job),
+      ];
       if (
         jobProfiles[job.kind ?? 'transport'].cargo &&
         !supportsMissionAction(robot, 'pickup', job.payloadKg)
@@ -110,14 +130,6 @@ export function rankCandidates(state: DomainState, job: WarehouseJob): RobotCand
         reasons.push('Payload capability mismatch');
       for (const action of jobActions(job))
         if (!supportsRobotAction(robot, action)) reasons.push('Required capability: ' + action);
-      if (job.dependsOn.some((id) => state.jobs[id]?.status !== 'completed'))
-        reasons.push('Predecessor job incomplete');
-      if (
-        Object.values(state.resources).some(
-          (r) => [job.sourceZoneId, job.destinationZoneId].includes(r.zoneId) && !r.available,
-        )
-      )
-        reasons.push('Facility resource out of service');
       const route = jobPath(state, robot, job),
         distance = route?.path.distance ?? 0,
         duration = Math.ceil(distance / robot.capabilities.maxSpeed),
@@ -257,6 +269,7 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
       missionId: null,
       missionIds: existing?.missionIds ?? [],
       attempts: existing?.attempts ?? [],
+      groupId: existing?.groupId,
       custody: 'source',
       assignmentReason: '',
       pickupProgress: 0,
@@ -297,6 +310,8 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
       'invalid',
       'Job already has an assignment; release it before batch dispatch',
     );
+  const blockers = jobDispatchIssues(state, existing);
+  if (blockers.length) throw new GatewayError('invalid', blockers.join('; '), 'scheduling');
   const candidates = rankCandidates(state, existing),
     candidate = command.robotId
       ? candidates.find((c) => c.robotId === command.robotId)

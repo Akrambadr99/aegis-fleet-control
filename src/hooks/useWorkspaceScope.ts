@@ -36,6 +36,8 @@ export function useScope() {
         next.delete('floor');
         next.delete('resource');
         next.delete('job');
+        next.delete('jobGroup');
+        next.delete('jobPage');
         next.delete('robot');
         next.delete('page');
       }

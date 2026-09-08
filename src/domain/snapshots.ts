@@ -1,7 +1,7 @@
 import type { DomainState } from './model';
 import { DomainError } from './errors';
 import { assertInvariants } from './invariants';
-export const schemaVersion = 1;
+export const schemaVersion = 2;
 export const fixtureVersion = 1;
 export interface SnapshotEnvelope {
   schemaVersion: number;
@@ -12,7 +12,15 @@ export interface SnapshotEnvelope {
 export function migrateSnapshot(input: DomainState | SnapshotEnvelope): SnapshotEnvelope {
   const candidate = structuredClone(input);
   const envelope: SnapshotEnvelope =
-    'schemaVersion' in candidate ? candidate : { schemaVersion, fixtureVersion, state: candidate };
+    'schemaVersion' in candidate
+      ? candidate
+      : { schemaVersion: 1, fixtureVersion, state: candidate };
+  if (!envelope.state || typeof envelope.state !== 'object')
+    throw new DomainError('invalid', 'Malformed domain snapshot');
+  if (envelope.schemaVersion === 1) {
+    envelope.state.jobGroups ??= {};
+    envelope.schemaVersion = schemaVersion;
+  }
   if (envelope.schemaVersion !== schemaVersion || envelope.fixtureVersion !== fixtureVersion)
     throw new DomainError('invalid', 'Unsupported snapshot or fixture version');
   try {

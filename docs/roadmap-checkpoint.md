@@ -83,3 +83,19 @@ passed. Six scheduler Chromium journeys passed. Coverage includes reversed
 completion, partial cancellation, duplicate-batch rejection, selection/filter
 changes and navigation before/after settlement. Grouping and physical execution
 remain separate unfinished work.
+
+## Dispatch groups
+
+Groups are canonical, revisioned records with exclusive job membership, a shared
+ready/held/closed lifecycle and attributed decisions. Holding a group blocks new
+assignments at completion time while allowing already running missions to finish.
+The queue supports group filtering and selecting queued members for batch dispatch;
+global search links to the same group filter. Closing requires every member job to
+be completed or cancelled. Snapshot schema 2 migrates earlier states with an empty
+group table, preserving source objects and all existing job history.
+
+Validation: 223 tests across 49 Vitest/React files, typecheck, lint and build
+passed; all seven scheduler Chromium journeys passed. Gateway coverage proves both
+hold/assignment completion orders, membership conflicts, closure rules, scoped
+permissions, audit changes, referential integrity and legacy migration. The next
+scheduler phase adds dispatcher ownership and richer assignment decisions.

@@ -2,6 +2,10 @@ import type { Actor, Command, DomainState } from './model';
 import { canExecute } from './selectors';
 export function commandFacility(state: DomainState, command: Command): string | undefined {
   switch (command.type) {
+    case 'job-group.create':
+      return state.jobGroups[command.id]?.facilityId ?? command.facilityId;
+    case 'job-group.set':
+      return state.jobGroups[command.id]?.facilityId;
     case 'template.create':
       return state.plans[command.sourcePlanId]?.facilityId;
     case 'automation.save':
