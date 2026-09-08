@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { usePreference } from '../../hooks/usePreference';
 import { useScope } from '../../hooks/useWorkspaceScope';
 import { useFleet } from '../../app/FleetProvider';
 import type { Role } from '../../domain/model';
@@ -10,11 +10,7 @@ import { ResourceQueue } from '../resources';
 export function TrafficWorkspace() {
   const { state, floor, facility, params, change } = useScope(),
     { gateway, actor, setRole, controlScope, setControlScope } = useFleet();
-  const [layers, setLayers] = useState<TrafficLayers>({
-    routes: true,
-    robots: true,
-    resources: true,
-  });
+  const [layers, setLayers] = usePreference('traffic-layers', defaultLayers, isTrafficLayers);
   const resource = state.resources[params.get('resource') ?? ''];
   const conflicts = trafficConflicts(state, facility.id);
   const routes = Object.values(state.routes).filter(
@@ -140,5 +136,16 @@ export function TrafficWorkspace() {
         </div>
       </div>
     </div>
+  );
+}
+
+const defaultLayers: TrafficLayers = { routes: true, robots: true, resources: true };
+function isTrafficLayers(value: unknown): value is TrafficLayers {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    ['routes', 'robots', 'resources'].every(
+      (key) => typeof (value as Record<string, unknown>)[key] === 'boolean',
+    )
   );
 }
