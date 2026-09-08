@@ -17,8 +17,8 @@ it('keeps shell navigation usable during workspace loading and ignores departed 
   const user = userEvent.setup();
   renderApp('/replay');
   expect(screen.getByRole('status')).toHaveTextContent('Loading workspace');
-  await user.click(screen.getByRole('link', { name: 'Overview' }));
-  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Every robot');
+  await user.click(screen.getByRole('link', { name: 'Operations' }));
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Operations desk');
   await act(async () => deferred.release());
   expect(screen.queryByText('Loaded replay')).not.toBeInTheDocument();
   await user.click(screen.getByRole('link', { name: 'Replay' }));

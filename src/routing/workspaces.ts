@@ -19,8 +19,8 @@ export const workspaces = [
   },
   {
     path: '/',
-    title: 'Operations overview',
-    short: 'Overview',
+    title: 'Operations desk',
+    short: 'Operations',
     group: 'Operate',
     milestone: 1,
     description: 'Facility context, fleet readiness and the current shift at a glance.',

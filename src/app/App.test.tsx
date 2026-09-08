@@ -5,7 +5,7 @@ import { renderApp } from '../test/renderApp';
 describe('application foundation', () => {
   it('opens the overview with explicitly simulated context', () => {
     renderApp();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Every robot');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Operations desk');
     expect(screen.getByText('SIMULATED ENVIRONMENT')).toBeVisible();
     expect(screen.getByText(/No physical robots connected/)).toBeVisible();
   });
@@ -28,7 +28,7 @@ describe('application foundation', () => {
     renderApp('/does-not-exist');
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Workspace not found');
     await user.click(screen.getByRole('link', { name: 'Return to operations overview' }));
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Every robot');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Operations desk');
   });
   it('does not imply planned operational controls work', () => {
     renderApp('/permissions');

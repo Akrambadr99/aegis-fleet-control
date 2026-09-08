@@ -17,7 +17,7 @@ test('direct workspace routes and unknown-route recovery', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Corridor control' })).toBeVisible();
   await page.goto('/unknown');
   await page.getByRole('link', { name: 'Return to operations overview' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Every robot');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Operations desk');
 });
 test('keyboard navigation focuses the newly opened workspace', async ({ page }) => {
   await page.goto('/');

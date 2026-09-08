@@ -4,8 +4,8 @@
   background: #f3f6f8;
   font-synthesis: none;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.4;
 }
 * {
   box-sizing: border-box;
@@ -30,8 +30,8 @@ button,
   background: #1e756b;
   color: white;
   border: 0;
-  border-radius: 5px;
-  padding: 10px 16px;
+  border-radius: 2px;
+  padding: 6px 10px;
   cursor: pointer;
   display: inline-block;
 }
@@ -49,11 +49,11 @@ main:focus {
   min-height: 100vh;
 }
 .sidebar {
-  width: 224px;
+  width: 190px;
   flex-shrink: 0;
   background: #111e2b;
   color: #c4d0db;
-  padding: 27px 17px;
+  padding: 18px 12px;
   display: flex;
   flex-direction: column;
 }
@@ -110,7 +110,7 @@ main:focus {
   gap: 12px;
   padding: 8px 10px;
   margin-bottom: 3px;
-  border-radius: 5px;
+  border-radius: 2px;
   color: #b5c5d2;
   font-size: 12px;
 }
@@ -152,13 +152,13 @@ main:focus {
   flex: 1;
 }
 .topbar {
-  height: 65px;
+  height: 44px;
   border-bottom: 1px solid #dce4e9;
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 34px;
+  padding: 0 18px;
   font-size: 11px;
   color: #5c6e7c;
 }
@@ -176,7 +176,7 @@ main:focus {
   padding: 5px 8px;
 }
 main {
-  padding: 30px 34px;
+  padding: 18px;
   max-width: 1700px;
   margin: auto;
 }
@@ -185,7 +185,7 @@ main {
   align-items: center;
   justify-content: space-between;
   gap: 15px;
-  margin-bottom: 25px;
+  margin-bottom: 12px;
 }
 .eyebrow {
   font-size: 9px;
@@ -195,9 +195,9 @@ main {
   margin: 0 0 7px;
 }
 h1 {
-  font-size: clamp(24px, 2.2vw, 32px);
+  font-size: 22px;
   font-weight: 650;
-  letter-spacing: -1px;
+  letter-spacing: -0.4px;
   margin: 0 0 7px;
 }
 h2 {
@@ -214,7 +214,7 @@ h2 {
 .pill {
   border: 1px solid #d6e1df;
   background: #f8fcfa;
-  border-radius: 5px;
+  border-radius: 2px;
   padding: 5px 9px;
   font-size: 10px;
   white-space: nowrap;
@@ -226,7 +226,7 @@ h2 {
   align-items: center;
   background: #eaf0f3;
   border: 1px solid #dce5ea;
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 13px 17px;
   margin-bottom: 20px;
   color: #657987;
@@ -265,7 +265,7 @@ h2 {
   background: #fff;
   border: 1px solid #dfe6eb;
   padding: 18px 22px;
-  border-radius: 7px;
+  border-radius: 2px;
 }
 .metrics p {
   font-size: 11px;
@@ -301,7 +301,7 @@ h2 {
 .panel {
   background: #fff;
   border: 1px solid #dce5e9;
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 20px;
   min-width: 0;
 }
@@ -666,7 +666,7 @@ dd {
 .control-row select {
   padding: 8px;
   border: 1px solid #bdccd3;
-  border-radius: 5px;
+  border-radius: 2px;
   background: white;
   max-width: 100%;
 }
@@ -764,12 +764,12 @@ thead {
 }
 .resource {
   border: 1px solid #d9e3e8;
-  border-radius: 5px;
+  border-radius: 2px;
   padding: 15px;
   margin: 12px 0;
 }
 .resource h3 {
-  font-size: 14px;
+  font-size: 13px;
   margin: 0 0 8px;
 }
 .resource p {
@@ -1420,7 +1420,7 @@ summary {
 .direction-pad button {
   background: #304c5b;
   border: 2px solid #203e4c;
-  border-radius: 5px;
+  border-radius: 2px;
   font-size: 28px;
   padding: 0;
 }
@@ -2001,4 +2001,246 @@ button.emergency-stop:hover {
 }
 .job-lock-panel button {
   margin: 6px 6px 0 0;
+}
+
+/* Operational surfaces share a compact scale, not a common page composition. */
+:root {
+  --surface: #fff;
+  --rule: #bccbd3;
+  --surface-muted: #eaf0f3;
+  --critical: #a52a26;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+}
+button,
+.button-link {
+  min-height: 30px;
+}
+input,
+select,
+textarea {
+  border-radius: 2px;
+}
+input:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #a86a08;
+  outline-offset: 2px;
+}
+.panel {
+  padding: 12px;
+}
+.nav-group {
+  margin-bottom: 12px;
+}
+.nav-group a {
+  padding: 6px 8px;
+  margin-bottom: 1px;
+}
+.sidebar-caption {
+  padding: 10px 8px;
+}
+.brand {
+  padding-bottom: 18px;
+  font-size: 21px;
+}
+.scope-controls {
+  padding: 8px;
+  margin-bottom: 12px;
+  border-radius: 2px;
+}
+.control-row {
+  gap: 8px;
+}
+.control-row input,
+.control-row select {
+  padding: 5px 7px;
+}
+.robot-inspector {
+  width: 280px;
+}
+.robot-inspector h2 {
+  font-size: 20px;
+  margin-top: 8px;
+}
+.robot-inspector h3 {
+  margin-top: 14px;
+}
+.command-action [role='alert'] {
+  border-left: 3px solid var(--critical);
+  padding-left: 6px;
+  color: #89251f;
+}
+.desk-header,
+.desk-map > header,
+.desk-dispatch > header,
+.desk-watch > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.desk-header {
+  margin-bottom: 12px;
+}
+.desk-clock {
+  font-family: Consolas, monospace;
+  font-size: 11px;
+}
+.operations-desk .facility-bar {
+  padding: 8px 10px;
+  margin-bottom: 0;
+  border-radius: 0;
+}
+.fleet-strip {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 0 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.fleet-strip > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 9px 14px 9px 0;
+  margin-right: 14px;
+}
+.fleet-strip dt {
+  font-size: 11px;
+  color: #506572;
+}
+.fleet-strip dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.desk-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 14px;
+  align-items: start;
+}
+.desk-spatial {
+  min-width: 0;
+}
+.desk-map {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+}
+.desk-map > header,
+.desk-dispatch > header {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.desk-map header span,
+.desk-watch header span {
+  font-size: 11px;
+  color: #506572;
+}
+.desk-map svg {
+  display: block;
+  width: 100%;
+  max-height: 390px;
+}
+.desk-map .map-footer {
+  padding: 8px 12px;
+}
+.desk-dispatch {
+  margin-top: 14px;
+  background: var(--surface);
+  border-top: 2px solid #496775;
+}
+.desk-dispatch table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.desk-dispatch td,
+.desk-dispatch th {
+  padding: 8px;
+  text-align: left;
+  font-size: 11px;
+  border-bottom: 1px solid #d5dfe5;
+}
+.desk-dispatch td small {
+  display: block;
+  margin-top: 3px;
+  color: #526875;
+}
+.desk-watch {
+  border-left: 1px solid var(--rule);
+  padding-left: 14px;
+}
+.desk-watch > header {
+  align-items: start;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #aa6b25;
+}
+.watch-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.watch-list li {
+  border-bottom: 1px solid var(--rule);
+  padding: 12px 0;
+}
+.watch-list a {
+  color: #8a3e20;
+  font-weight: 600;
+}
+.watch-list small {
+  display: block;
+  margin-top: 5px;
+  color: #536975;
+  font-size: 10px;
+}
+.desk-capacity,
+.desk-handover {
+  border-top: 1px solid var(--rule);
+  margin-top: 18px;
+  padding-top: 8px;
+}
+.desk-watch h3 {
+  font-size: 12px;
+  margin: 5px 0 10px;
+}
+.desk-capacity progress {
+  display: block;
+  width: 100%;
+  height: 6px;
+  margin: 8px 0;
+}
+.desk-capacity label,
+.desk-capacity p,
+.desk-handover p {
+  font-size: 11px;
+}
+.desk-handover a {
+  display: block;
+  margin-top: 9px;
+}
+@media (max-width: 1000px) {
+  .desk-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .desk-watch {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+@media (max-width: 700px) {
+  .desk-header {
+    align-items: start;
+    flex-direction: column;
+  }
+  .robot-inspector {
+    width: 100%;
+  }
+  .desk-map > header {
+    align-items: start;
+    flex-direction: column;
+  }
 }

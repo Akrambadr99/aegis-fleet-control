@@ -2,22 +2,29 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { facilities, resolveFacility } from './snapshot';
 import { FacilityPreview } from './FacilityPreview';
 import { useDomain } from '../../app/FleetProvider';
+
 export function Overview() {
   const [params, setParams] = useSearchParams();
   const state = useDomain();
   const facility = resolveFacility(state, params.get('facility'));
+  const jobs = Object.values(state.jobs)
+    .filter(
+      (job) =>
+        job.facilityId === facility.domainId && !['completed', 'cancelled'].includes(job.status),
+    )
+    .sort((a, b) => b.priority - a.priority || a.deadlineTick - b.deadlineTick);
   return (
-    <>
-      <div className="page-heading">
+    <div className="operations-desk">
+      <header className="desk-header">
         <div>
-          <p className="eyebrow">COMMAND CENTER / OPERATIONS</p>
-          <h1>Every robot. One clear picture.</h1>
-          <p>Operational context for your autonomous fleet.</p>
+          <p className="eyebrow">FLEET CONTROL / SHIFT OPERATIONS</p>
+          <h1>Operations desk</h1>
         </div>
-        <span className="pill">
-          <span className="status-dot" /> Shared simulation state
+        <span className="desk-clock">
+          Simulation tick <strong>{state.tick}</strong> · Topology rev{' '}
+          {state.facilities[facility.domainId].topologyRevision}
         </span>
-      </div>
+      </header>
       <div className="facility-bar">
         <div>
           <label htmlFor="facility">Facility</label>
@@ -42,129 +49,138 @@ export function Overview() {
         <span>{facility.location}</span>
         <span className="facility-area">{facility.floors.length} floors</span>
       </div>
-      <section className="metrics" aria-label="Facility summary">
-        <article>
-          <p>Fleet online</p>
-          <strong>
-            {facility.online}
-            <span> / {facility.fleet}</span>
-          </strong>
-          <small>{facility.offline} robots offline</small>
-        </article>
-        <article>
-          <p>Robots active</p>
-          <strong>{facility.active}</strong>
-          <small>Assigned to operations</small>
-        </article>
-        <article>
-          <p>Missions completed</p>
-          <strong>{facility.missions}</strong>
-          <small>Retained completed missions</small>
-        </article>
-        <article>
-          <p>Needs attention</p>
-          <strong className="amber">{facility.attention.toString().padStart(2, '0')}</strong>
-          <small>Open operational advisories</small>
-        </article>
-      </section>
-      <div className="overview-grid">
-        <section className="panel map-panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">SPATIAL CONTEXT</p>
-              <h2>{facility.name}</h2>
+      <dl className="fleet-strip" aria-label="Facility summary">
+        <div>
+          <dt>Connected robots</dt>
+          <dd>
+            {facility.online} / {facility.fleet}
+          </dd>
+        </div>
+        <div>
+          <dt>Executing missions</dt>
+          <dd>{facility.active}</dd>
+        </div>
+        <div>
+          <dt>Ready for dispatch</dt>
+          <dd>{facility.available}</dd>
+        </div>
+        <div>
+          <dt>Charging</dt>
+          <dd>{facility.charging}</dd>
+        </div>
+        <div>
+          <dt>Offline</dt>
+          <dd>{facility.offline}</dd>
+        </div>
+      </dl>
+      <div className="desk-layout">
+        <div className="desk-spatial">
+          <section className="desk-map" aria-label="Facility operating picture">
+            <header>
+              <div>
+                <h2>{facility.name}</h2>
+                <span>{facility.floors[0]} · Current robot positions and routes</span>
+              </div>
+              <Link to={`/facilities?facility=${facility.domainId}`}>Open digital twin ↗</Link>
+            </header>
+            <FacilityPreview facility={facility} />
+            <div className="map-footer">
+              <span>● Robot position · Lines: navigation corridors</span>
+              <Link to={`/traffic?facility=${facility.domainId}`}>Route reservations ↗</Link>
             </div>
-            <span className="muted">{facility.floors[0]}</span>
-          </div>
-          <FacilityPreview facility={facility} />
-          <div className="map-footer">
-            <div>
-              <span className="legend-dot robot-dot" />
-              Robot <span className="legend-dot route-dot" />
-              Corridor
+          </section>
+          <section className="desk-dispatch" aria-label="Dispatch commitments">
+            <header>
+              <h2>Dispatch commitments</h2>
+              <Link to={`/scheduler?facility=${facility.domainId}`}>Open scheduler ↗</Link>
+            </header>
+            <div className="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Job / priority</th>
+                    <th>Transfer</th>
+                    <th>Custody</th>
+                    <th>Fulfillment</th>
+                    <th>Deadline</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {jobs.map((job) => (
+                    <tr key={job.id}>
+                      <td>
+                        <Link to={`/scheduler?facility=${facility.domainId}&job=${job.id}`}>
+                          {job.id}
+                        </Link>{' '}
+                        · P{job.priority}
+                      </td>
+                      <td>
+                        {job.title}
+                        <small>
+                          {job.sourceZoneId} → {job.destinationZoneId}
+                        </small>
+                      </td>
+                      <td>{job.custody}</td>
+                      <td>
+                        {job.completedUnits} / {job.units} · {job.status}
+                      </td>
+                      <td className={job.deadlineTick < state.tick ? 'overdue' : undefined}>
+                        {job.deadlineTick < state.tick ? 'Overdue' : 'Due'} tick {job.deadlineTick}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <Link to={`/facilities?facility=${facility.domainId}`}>Open digital twin ↗</Link>
-          </div>
-        </section>
-        <section className="panel shift-panel">
-          <p className="eyebrow">SHIFT READINESS</p>
-          <h2>Capacity at a glance</h2>
-          <div className="capacity-value">
-            {facility.throughput}
-            <span>%</span>
-          </div>
-          <p>Active fleet utilization</p>
-          <progress aria-label="Active fleet utilization" max="100" value={facility.throughput} />
-          <dl>
-            <div>
-              <dt>Active robots</dt>
-              <dd>{facility.active}</dd>
-            </div>
-            <div>
-              <dt>At charging stations</dt>
-              <dd>{facility.charging}</dd>
-            </div>
-            <div>
-              <dt>Available for assignment</dt>
-              <dd>{facility.available}</dd>
-            </div>
-            <div>
-              <dt>Needs attention</dt>
-              <dd>{facility.attention}</dd>
-            </div>
-            <div>
-              <dt>Offline</dt>
-              <dd>{facility.offline}</dd>
-            </div>
-          </dl>
-          <p className="snapshot-note">
-            Shared gateway state. Advance the simulation from an operational workspace to update
-            telemetry.
-          </p>
-        </section>
-        <section className="panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">OPERATIONS BRIEF</p>
-              <h2>Facility advisories</h2>
-            </div>
-            <span className="pill">{facility.attention} robots</span>
-          </div>
-          <ul className="advisories">
-            {facility.activity.map((activity, index) => (
-              <li key={activity}>
-                <span className="advisory-number">{String(index + 1).padStart(2, '0')}</span>
-                <div>
-                  <strong>{activity}</strong>
-                  <p>Robot advisory · {facility.name}</p>
-                </div>
-              </li>
-            ))}
+            {!jobs.length && <p>No outstanding warehouse commitments in this facility.</p>}
+          </section>
+        </div>
+        <aside className="desk-watch" aria-label="Operational watch">
+          <header>
+            <h2>Operator attention</h2>
+            <span>{facility.attention} affected robots</span>
+          </header>
+          <ul className="watch-list">
+            {facility.activity.map((activity) => {
+              const robotId = activity.split(':')[0];
+              return (
+                <li key={activity}>
+                  <Link to={`/fleet?facility=${facility.domainId}&robot=${robotId}`}>
+                    {activity}
+                  </Link>
+                  <small>Inspect robot state and recovery controls ↗</small>
+                </li>
+              );
+            })}
           </ul>
-        </section>
-        <section className="panel next-panel">
-          <p className="eyebrow">WORKSPACE DIRECTORY</p>
-          <h2>Explore the control platform</h2>
-          <Link to="/missions">
-            <span>
-              Mission management<small>Composition & execution</small>
-            </span>
-            <span aria-hidden="true">↗</span>
-          </Link>
-          <Link to={`/traffic?facility=${facility.domainId}`}>
-            <span>
-              Traffic control<small>Reservations & routing</small>
-            </span>
-            <span aria-hidden="true">↗</span>
-          </Link>
-          <Link to={`/simulation?facility=${facility.domainId}`}>
-            <span>
-              Scenario simulator<small>Capacity & planning</small>
-            </span>
-            <span aria-hidden="true">↗</span>
-          </Link>
-        </section>
+          {!facility.activity.length && <p>No active robot advisories.</p>}
+          <section className="desk-capacity">
+            <h3>Dispatch capacity</h3>
+            <label htmlFor="fleet-utilization">
+              Active fleet utilization · {facility.throughput}%
+            </label>
+            <progress
+              id="fleet-utilization"
+              aria-label="Active fleet utilization"
+              max="100"
+              value={facility.throughput}
+            />
+            <p>
+              {facility.available} ready · {facility.charging} charging · {facility.offline}{' '}
+              disconnected
+            </p>
+            <Link to={`/fleet?facility=${facility.domainId}`}>Inspect fleet eligibility ↗</Link>
+          </section>
+          <section className="desk-handover">
+            <h3>Shift record</h3>
+            <p>{facility.missions} retained completed missions</p>
+            <Link to={`/activity?facility=${facility.domainId}`}>
+              Operator actions and audit ↗
+            </Link>
+            <Link to={`/replay?facility=${facility.domainId}`}>Execution replay ↗</Link>
+          </section>
+        </aside>
       </div>
-    </>
+    </div>
   );
 }
