@@ -9,8 +9,20 @@ export const stepKinds = [
   'inspect',
   'charge',
   'resource',
+  'dock',
+  'open-door',
+  'call-elevator',
 ] as const;
 export type StepKind = (typeof stepKinds)[number];
+export const resourceStepKinds = {
+  resource: null,
+  dock: 'dock',
+  'open-door': 'door',
+  'call-elevator': 'elevator',
+} as const;
+export function isResourceStep(kind: StepKind): kind is keyof typeof resourceStepKinds {
+  return Object.hasOwn(resourceStepKinds, kind);
+}
 export interface MissionStep {
   id: string;
   kind: StepKind;
@@ -144,10 +156,12 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
       if (!charger || charger.facilityId !== plan.facilityId || !charger.available)
         issue('Choose an available charger in this facility', step.id);
       duration = step.seconds;
-    } else if (step.kind === 'resource') {
+    } else if (isResourceStep(step.kind)) {
       const resource = state.resources[step.resourceId];
       if (!resource || resource.facilityId !== plan.facilityId || !resource.available)
         issue('Choose an available resource in this facility', step.id);
+      else if (resourceStepKinds[step.kind] && resource.kind !== resourceStepKinds[step.kind])
+        issue('This action requires a ' + resourceStepKinds[step.kind] + ' resource', step.id);
       duration = step.seconds;
     } else duration = step.seconds;
     if (!Number.isFinite(duration) || duration < 0) {

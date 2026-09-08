@@ -10,6 +10,32 @@ function fixture() {
   plan.steps = [{ ...newStep('travel'), zoneId: 'Z-010' }];
   return { clock, gateway, plan };
 }
+it.each([
+  ['dock', 'dock'],
+  ['open-door', 'door'],
+  ['call-elevator', 'elevator'],
+] as const)('%s requires the matching available facility resource', (kind, resourceKind) => {
+  const { plan } = fixture(),
+    state = createSeed();
+  const resource = Object.values(state.resources).find(
+    (entry) => entry.facilityId === plan.facilityId && entry.kind === resourceKind,
+  )!;
+  plan.steps = [{ ...newStep('use', kind), resourceId: resource.id, seconds: 15 }];
+  expect(validatePlan(state, plan).issues).toEqual([]);
+  resource.available = false;
+  expect(validatePlan(state, plan).issues.map((issue) => issue.message)).toContain(
+    'Choose an available resource in this facility',
+  );
+  resource.available = true;
+  resource.kind = 'inspection-station';
+  expect(validatePlan(state, plan).issues.map((issue) => issue.message)).toContain(
+    'This action requires a ' + resourceKind + ' resource',
+  );
+  resource.facilityId = 'FAC-002';
+  expect(validatePlan(state, plan).issues.map((issue) => issue.message)).toContain(
+    'Choose an available resource in this facility',
+  );
+});
 it('retains immutable attributed revisions and ignores client ownership spoofing', async () => {
   const { clock, gateway, plan } = fixture();
   async function save(actorId: string, expectedRevision: number) {

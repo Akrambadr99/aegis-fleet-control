@@ -1,5 +1,11 @@
 import type { DomainState } from '../../domain/model';
-import { stepKinds, type MissionPlan, type MissionStep } from '../../domain/planning';
+import {
+  stepKinds,
+  isResourceStep,
+  resourceStepKinds,
+  type MissionPlan,
+  type MissionStep,
+} from '../../domain/planning';
 export function StepInspector({
   plan,
   step,
@@ -19,6 +25,7 @@ export function StepInspector({
       </aside>
     );
   const patch = (values: Partial<MissionStep>) => update({ ...step, ...values });
+  const resourceKind = isResourceStep(step.kind) ? resourceStepKinds[step.kind] : null;
   return (
     <aside className="step-inspector" aria-label="Step inspector">
       <h2>{step.label || step.id}</h2>
@@ -74,7 +81,7 @@ export function StepInspector({
           />
         </label>
       )}
-      {['wait', 'inspect', 'charge', 'resource'].includes(step.kind) && (
+      {(['wait', 'inspect', 'charge'].includes(step.kind) || isResourceStep(step.kind)) && (
         <label>
           Duration seconds
           <input
@@ -100,13 +107,16 @@ export function StepInspector({
           </select>
         </label>
       )}
-      {step.kind === 'resource' && (
+      {isResourceStep(step.kind) && (
         <label>
           Resource identifier
           <select value={step.resourceId} onChange={(e) => patch({ resourceId: e.target.value })}>
             <option value="">Choose resource</option>
             {Object.values(state.resources)
-              .filter((r) => r.facilityId === plan.facilityId)
+              .filter(
+                (r) =>
+                  r.facilityId === plan.facilityId && (!resourceKind || r.kind === resourceKind),
+              )
               .map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.id} · {r.kind} · {r.available ? 'available' : 'out of service'}
