@@ -1,7 +1,6 @@
 import type { OperationResult } from '../application/operations';
 import type { FleetQueries, FleetCommands } from './ports';
 import { routePreviewKey } from '../application/queries';
-import { shareUnchanged } from './structuralSharing';
 import { advanceDomain } from '../application/processing';
 import { defaultConfiguration, type OperationalConfiguration } from '../application/configuration';
 import { exportSnapshot, migrateSnapshot, type SnapshotEnvelope } from '../domain/snapshots';
@@ -13,49 +12,37 @@ import type { Actor, Command, DomainState, RoutePreview } from '../domain/model'
 import { createSeed } from '../domain/seed';
 import { readiness } from '../domain/selectors';
 import { commandPermission } from '../domain/permissions';
-import { assertInvariants } from '../domain/invariants';
 import { robotPath } from '../domain/navigation';
 import { estimateJourney } from '../domain/motion';
+import type { CanonicalStorage } from '../storage/contracts';
+import { InMemoryStorageAdapter } from '../storage/InMemoryStorageAdapter';
 import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
-function freeze<T>(value: T): T {
-  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
-    Object.freeze(value);
-    Object.values(value).forEach(freeze);
-  }
-  return value;
-}
 export class FleetGateway implements FleetQueries, FleetCommands {
-  private state: DomainState;
+  private readonly storage: CanonicalStorage;
   private operationSequence = 0;
   readonly configuration: Readonly<OperationalConfiguration>;
-  private listeners = new Set<() => void>();
   readonly requests: RequestEngine;
   constructor(
     scheduler: Scheduler = new RealScheduler(),
-    state: DomainState = createSeed(),
+    source: DomainState | CanonicalStorage = createSeed(),
     configuration: OperationalConfiguration = defaultConfiguration,
   ) {
     this.configuration = Object.freeze({ ...configuration });
-    this.state = freeze(structuredClone(state));
+    this.storage = 'readSnapshot' in source ? source : new InMemoryStorageAdapter(source);
     this.requests = new RequestEngine(scheduler);
+  }
+  private get state() {
+    return this.storage.readSnapshot();
   }
   exportSnapshot = () => exportSnapshot(this.state);
   static fromSnapshot(snapshot: DomainState | SnapshotEnvelope, scheduler?: Scheduler) {
     return new FleetGateway(scheduler, migrateSnapshot(snapshot).state);
   }
-  getSnapshot = () => this.state;
-  subscribe = (listener: () => void) => {
-    this.listeners.add(listener);
-    return () => {
-      this.listeners.delete(listener);
-    };
-  };
+  getSnapshot = () => this.storage.readSnapshot();
+  subscribe = (listener: () => void) => this.storage.subscribe(listener);
   private publish(next: DomainState) {
-    assertInvariants(next);
-    next.revision = this.state.revision + 1;
-    this.state = freeze(shareUnchanged(this.state, next));
-    this.listeners.forEach((listener) => listener());
+    this.storage.commit(this.state.revision, next);
   }
   command(actor: Actor, command: Command, signal?: AbortSignal): Ticket<OperationResult> {
     const input = structuredClone(command),
