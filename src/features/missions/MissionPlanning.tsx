@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useDomain, useFleet } from '../../app/FleetProvider';
 import { newPlan, type MissionPlan } from '../../domain/planning';
 import { commandPermission } from '../../domain/permissions';
-import { insertStep, moveStep } from './draftHistory';
+import { insertStep } from './draftHistory';
 import { StepInspector } from './StepInspector';
 import { StepSequence } from './StepSequence';
 import { DependencyGraph } from './DependencyGraph';
@@ -205,7 +205,7 @@ export function MissionPlanning() {
               plan={plan}
               selected={selected}
               select={setSelected}
-              move={(id, index) => edit(moveStep(plan, id, index))}
+              move={(id, index) => dispatch({ type: 'move-step', id, target: index })}
               insert={(index) => add(index)}
               duplicate={(id, index) => add(index, id)}
               remove={(id) => {

@@ -73,3 +73,10 @@ it('reset establishes a clean baseline and clears both history directions', () =
   expect(state.future).toEqual([]);
   expect(state.baseline).toEqual(saved);
 });
+
+it('records reversible move commands without storing whole plan snapshots', () => {
+  const plan = { ...newPlan('P', 'FAC-001', 'R-001'), steps: [newStep('a'), newStep('b')] };
+  const moved = draftReducer(initialHistory(plan), { type: 'move-step', id: 'b', target: 0 });
+  expect(moved.past).toEqual([{ type: 'move-step', id: 'b', from: 1, to: 0 }]);
+  expect(draftReducer(moved, { type: 'undo' }).present).toEqual(plan);
+});
