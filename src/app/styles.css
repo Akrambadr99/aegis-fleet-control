@@ -1255,3 +1255,62 @@ summary {
     grid-template-columns: 1fr;
   }
 }
+
+.resource-control-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(270px, 0.7fr);
+  gap: 22px;
+}
+.resources-workspace button {
+  padding: 7px 10px;
+  border-radius: 3px;
+}
+.resources-workspace td small {
+  display: block;
+}
+.resources-workspace td {
+  padding: 10px 7px;
+}
+.resources-workspace label {
+  display: block;
+  font-size: 12px;
+}
+.resources-workspace select,
+.resources-workspace input {
+  padding: 6px;
+  border: 1px solid #b5c3c8;
+  background: white;
+  max-width: 100%;
+}
+.resource-request {
+  border-top: 2px solid #6c8883;
+  margin-top: 22px;
+  padding-top: 12px;
+}
+.resource-request label input,
+.resource-request label select {
+  display: block;
+  width: 100%;
+  margin: 3px 0 9px;
+}
+.resource-queue {
+  border-left: 1px solid #b0c2b8;
+  padding: 0 0 0 16px;
+}
+.resource-queue ol {
+  padding-left: 20px;
+}
+.resource-queue li {
+  border-bottom: 1px solid #b7c7bd;
+  padding: 10px 0;
+}
+@media (max-width: 1050px) {
+  .resource-control-grid {
+    grid-template-columns: 1fr;
+  }
+  .resource-queue {
+    border-left: 0;
+    border-top: 1px solid #b0c2b8;
+    padding: 12px 0;
+  }
+}

@@ -99,6 +99,12 @@ export function rankCandidates(state: DomainState, job: WarehouseJob): RobotCand
         reasons.push('Charging commitment');
       if (job.dependsOn.some((id) => state.jobs[id]?.status !== 'completed'))
         reasons.push('Predecessor job incomplete');
+      if (
+        Object.values(state.resources).some(
+          (r) => [job.sourceZoneId, job.destinationZoneId].includes(r.zoneId) && !r.available,
+        )
+      )
+        reasons.push('Facility resource out of service');
       const route = jobPath(state, robot, job),
         distance = route?.path.distance ?? 0,
         duration = Math.ceil(distance / robot.capabilities.maxSpeed),

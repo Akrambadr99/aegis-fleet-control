@@ -103,7 +103,16 @@ export function StepInspector({
       {step.kind === 'resource' && (
         <label>
           Resource identifier
-          <input value={step.resourceId} onChange={(e) => patch({ resourceId: e.target.value })} />
+          <select value={step.resourceId} onChange={(e) => patch({ resourceId: e.target.value })}>
+            <option value="">Choose resource</option>
+            {Object.values(state.resources)
+              .filter((r) => r.facilityId === plan.facilityId)
+              .map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.id} · {r.kind} · {r.available ? 'available' : 'out of service'}
+                </option>
+              ))}
+          </select>
         </label>
       )}
       <fieldset>

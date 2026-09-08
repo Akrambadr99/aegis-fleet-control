@@ -1,3 +1,4 @@
+import { ResourcesWorkspace } from '../features/resources/ResourcesWorkspace';
 import { SchedulerWorkspace } from '../features/scheduler/SchedulerWorkspace';
 import { MissionPlanning } from '../features/missions/MissionPlanning';
 import { useLayoutEffect } from 'react';
@@ -117,7 +118,9 @@ export function App() {
                     key={item.path}
                     path={item.path}
                     element={
-                      item.path === '/scheduler' ? (
+                      item.path === '/resources' ? (
+                        <ResourcesWorkspace />
+                      ) : item.path === '/scheduler' ? (
                         <SchedulerWorkspace />
                       ) : item.path === '/missions' ? (
                         <MissionPlanning />

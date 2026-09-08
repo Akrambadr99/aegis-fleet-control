@@ -1,5 +1,14 @@
 export const workspaces = [
   {
+    path: '/resources',
+    title: 'Resource control',
+    short: 'Resources',
+    group: 'Coordinate',
+    milestone: 25,
+    description: 'Shared facility ownership and contention.',
+    code: '18',
+  },
+  {
     path: '/scheduler',
     title: 'Jobs & scheduler',
     short: 'Scheduler',
