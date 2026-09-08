@@ -1914,3 +1914,32 @@ button.emergency-stop:hover {
   border-inline-start: 3px solid #78918a;
   background: #f1f5f3;
 }
+
+.global-search {
+  position: relative;
+}
+.search-panel {
+  position: absolute;
+  top: 2rem;
+  left: 0;
+  z-index: 30;
+  width: min(30rem, 80vw);
+  max-height: 70vh;
+  overflow: auto;
+  padding: 1rem;
+  background: var(--surface, #fff);
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 8px 24px #0002;
+}
+.search-panel input {
+  width: 100%;
+}
+.search-panel ul {
+  list-style: none;
+  padding: 0;
+}
+.search-panel li a,
+.search-panel li strong {
+  display: block;
+  padding: 0.35rem;
+}

@@ -1,3 +1,4 @@
+import { GlobalSearch } from '../components/GlobalSearch';
 import { TrafficWorkspace } from '../features/traffic/TrafficWorkspace';
 import { TeleoperationWorkspace } from '../features/teleoperation/TeleoperationWorkspace';
 import { ResourcesWorkspace } from '../features/resources/ResourcesWorkspace';
@@ -118,6 +119,7 @@ export function App() {
       </aside>
       <div className="main-column">
         <header className="topbar">
+          <GlobalSearch />
           <span>
             Autonomous systems <span className="separator">/</span> Fleet operations
           </span>
