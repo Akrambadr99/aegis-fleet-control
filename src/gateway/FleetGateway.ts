@@ -50,7 +50,7 @@ export class FleetGateway implements FleetQueries, FleetCommands {
     const operationId = 'OP-' + this.state.revision + '-' + ++this.operationSequence;
     return this.requests.run(
       () => {
-        const next = executeTransaction(
+        const transaction = executeTransaction(
           this.state,
           identity,
           input,
@@ -60,8 +60,11 @@ export class FleetGateway implements FleetQueries, FleetCommands {
           },
           this.configuration,
         );
-        const committed = this.publish(next);
-        const events = committed.activity.filter((event) => event.operationId === operationId);
+        const committed = this.publish(transaction.state);
+        const events = committed.activity.slice(
+          transaction.eventRange.start,
+          transaction.eventRange.start + transaction.eventRange.length,
+        );
         const failures = events
           .filter((event) => event.type === 'automation.failed')
           .map((event) => ({ entityId: event.entityId, message: event.details }));

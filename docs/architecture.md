@@ -26,7 +26,7 @@ Commands capture their actor, payload and expected entity revision at invocation
 
 Independent resources can complete in any order. Competing writes to one resource cannot overwrite a newer revision. Commands that continue after navigation still update the shared repository. Bulk operations capture target IDs/revisions and settle independently; result handling does not rewrite current selection.
 
-The application transaction layer clones the current snapshot, applies domain behavior and automation, and enforces invariants before returning a candidate. The storage adapter then checks the expected canonical revision and publishes the candidate atomically. A stale or invalid candidate leaves the previous snapshot and subscribers untouched.
+The application transaction layer clones the current snapshot, applies domain behavior and automation, and enforces invariants before returning a candidate plus the exact range of events it created. The storage adapter then checks the expected canonical revision and publishes the candidate atomically. Command receipts consume only that bounded committed event range, so their cost does not grow with retained audit history. A stale or invalid candidate leaves the previous snapshot and subscribers untouched.
 
 Closing a corridor invalidates affected routes, holds reservations and pauses running missions. Reopening never silently resumes execution. Explicit reroute uses the same route-candidate selector as preview, then a separate resume validates mission feasibility. The initial topology models alternative transfer lanes; arbitrary graph pathfinding is pending.
 

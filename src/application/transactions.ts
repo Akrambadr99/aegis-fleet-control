@@ -11,6 +11,12 @@ export interface OperationContext {
   operationId: string;
   correlationId: string;
 }
+
+export interface TransactionCandidate {
+  state: DomainState;
+  eventRange: { start: number; length: number };
+}
+
 /** One candidate state, including automation consequences; callers publish only on success. */
 export function executeTransaction(
   state: DomainState,
@@ -18,7 +24,7 @@ export function executeTransaction(
   command: Command,
   context: OperationContext,
   config: Readonly<OperationalConfiguration> = defaultConfiguration,
-) {
+): TransactionCandidate {
   assertCapabilityEnabled(command, config);
   const next = structuredClone(state);
   const start = next.activity.length;
@@ -27,5 +33,5 @@ export function executeTransaction(
     Object.assign(event, context, { causationId: context.operationId });
   if (config.automatedRecovery) processAutomation(next, start, config);
   assertInvariants(next);
-  return next;
+  return { state: next, eventRange: { start, length: next.activity.length - start } };
 }
