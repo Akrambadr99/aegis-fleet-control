@@ -98,11 +98,13 @@ export function TrafficWorkspace() {
             selectResource={(id) => change('resource', id)}
           />
           <CorridorControls state={state} floorId={floor.id} />
+        </div>
+        <div className="traffic-context">
           <section className="route-register">
             <h2>Route reservations</h2>
             <ul className="record-list">
               {routes.map((route) => (
-                <li key={route.id}>
+                <li key={route.id} data-reservation={route.reservationState}>
                   <button className="text-button" onClick={() => change('robot', route.robotId)}>
                     {route.robotId}
                   </button>{' '}
@@ -114,8 +116,6 @@ export function TrafficWorkspace() {
               ))}
             </ul>
           </section>
-        </div>
-        <div className="traffic-context">
           {resource && resource.floorId === floor.id ? (
             <ResourceQueue resource={resource} state={state} />
           ) : params.get('robot') ? (
@@ -126,7 +126,7 @@ export function TrafficWorkspace() {
               <p>Select a robot or resource directly on the map.</p>
               <h3>Current conflicts</h3>
               {conflicts.map((route) => (
-                <p key={route.id}>
+                <p key={route.id} className="traffic-conflict">
                   {route.robotId} · {route.state} · {route.reservationState}
                 </p>
               ))}

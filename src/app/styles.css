@@ -2759,3 +2759,74 @@ summary:focus-visible {
   font-size: 11px;
   color: #3f5d6c;
 }
+
+/* Shared operational tokens; each workspace owns its own composition. */
+:root {
+  --text-muted: #526875;
+  --accent-traffic: #35706c;
+  --accent-planning: #657b58;
+  --accent-replay: #4b6784;
+  --console-surface: #203642;
+  --surface-inset: #e7edf0;
+}
+.traffic-workspace .traffic-layout {
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: var(--space-3);
+}
+.traffic-context .route-register {
+  border-top: 3px solid var(--accent-traffic);
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2);
+  background: var(--surface);
+}
+.traffic-context .route-register h2 {
+  font-size: 13px;
+  margin-bottom: var(--space-2);
+}
+.traffic-context .route-register .record-list {
+  max-height: 280px;
+  overflow: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.traffic-context .route-register li {
+  padding: 7px 5px;
+  border-bottom: 1px solid var(--rule);
+  border-left: 3px solid transparent;
+  font-size: 11px;
+}
+.traffic-context .route-register li[data-reservation='held'] {
+  border-left-color: #a66f22;
+  background: #fff8e9;
+}
+.traffic-context .route-register li[data-reservation='released'] {
+  color: var(--text-muted);
+}
+.traffic-context .route-register button {
+  font-family: Consolas, monospace;
+  font-weight: 700;
+}
+.traffic-conflict {
+  border-left: 3px solid var(--critical);
+  padding: var(--space-2);
+  background: #fff4ee;
+}
+.traffic-context > section {
+  padding: var(--space-2);
+}
+.traffic-context .robot-inspector {
+  position: static;
+  width: 100%;
+}
+.traffic-main .traffic-canvas {
+  border-color: var(--accent-traffic);
+}
+@media (max-width: 1000px) {
+  .traffic-workspace .traffic-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .traffic-context .route-register .record-list {
+    max-height: 220px;
+  }
+}
