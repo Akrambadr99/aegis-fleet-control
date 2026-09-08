@@ -3,7 +3,7 @@ import { recoveryFor } from '../domain/errors';
 import { useState } from 'react';
 import type { Command } from '../domain/model';
 import { commandPermission } from '../domain/permissions';
-import { useFleet, useDomain } from '../app/FleetProvider';
+import { useFleet, useDomainSelector } from '../app/FleetProvider';
 export function CommandButton({
   command,
   children,
@@ -15,8 +15,7 @@ export function CommandButton({
   const { pending } = useOperation(command.id, command.type);
   const [state, setState] = useState<'idle' | 'pending' | 'confirmed' | 'failed'>('idle');
   const [message, setMessage] = useState('');
-  const confirmed = useDomain();
-  const denied = commandPermission(confirmed, actor, command);
+  const denied = useDomainSelector((state) => commandPermission(state, actor, command));
   const allowed = !denied;
   async function run() {
     setState('pending');

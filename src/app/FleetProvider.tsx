@@ -1,12 +1,13 @@
 import {
   createContext,
   useContext,
+  useMemo,
   useState,
   useSyncExternalStore,
   type PropsWithChildren,
 } from 'react';
 import { FleetGateway } from '../gateway/FleetGateway';
-import type { Actor, Role } from '../domain/model';
+import type { Actor, Role, DomainState } from '../domain/model';
 const FleetContext = createContext<{
   gateway: FleetGateway;
   actor: Actor;
@@ -47,4 +48,21 @@ export function useFleet() {
 export function useDomain() {
   const { gateway } = useFleet();
   return useSyncExternalStore(gateway.subscribe, gateway.getSnapshot, gateway.getSnapshot);
+}
+
+export function useDomainSelector<T>(selector: (state: DomainState) => T): T {
+  const { gateway } = useFleet();
+  const read = useMemo(() => {
+    let snapshot: DomainState | undefined;
+    let selected: T;
+    return () => {
+      const next = gateway.getSnapshot();
+      if (next !== snapshot) {
+        selected = selector(next);
+        snapshot = next;
+      }
+      return selected;
+    };
+  }, [gateway, selector]);
+  return useSyncExternalStore(gateway.subscribe, read, read);
 }

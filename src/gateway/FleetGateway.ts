@@ -1,3 +1,4 @@
+import { shareUnchanged } from './structuralSharing';
 import { advanceDomain } from '../application/processing';
 import { defaultConfiguration, type OperationalConfiguration } from '../application/configuration';
 import { exportSnapshot, migrateSnapshot, type SnapshotEnvelope } from '../domain/snapshots';
@@ -49,7 +50,7 @@ export class FleetGateway {
   private publish(next: DomainState) {
     assertInvariants(next);
     next.revision = this.state.revision + 1;
-    this.state = freeze(next);
+    this.state = freeze(shareUnchanged(this.state, next));
     this.listeners.forEach((listener) => listener());
   }
   command(actor: Actor, command: Command, signal?: AbortSignal): Ticket<{ revision: number }> {
