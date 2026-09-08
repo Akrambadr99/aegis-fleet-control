@@ -56,11 +56,13 @@ The role selector is an explicit local simulation feature. The gateway checks ro
 
 ## Current boundaries
 
-This is an early interconnected implementation, not the finished long-term product. Current routing models alternative transfer lanes per floor, not a complete navigation graph. Mission graph editing, doors/elevators/docks, topology drag editing, queue moves/undo, automation execution, teleoperation acquisition/expiry, full timeline playback and comparative scenario runs remain future milestones. The current simulation is stepped manually; optimistic editing has not been introduced.
+This is an interconnected implementation with a substantial development program still ahead. Routing uses a facility navigation graph. Mission graph editing, saved revisions, templates, typed facility-resource steps, reservation arbitration, teleoperation leases, historical playback and event-driven automation are implemented. Advanced scheduling, cooperative execution, charging progression, configuration, comparative scenarios and the remaining expansion phases still require work. Simulation is stepped manually; optimistic editing has not been introduced.
 
 All operational state lasts for the application session and resets to the deterministic seed on a full reload. URL context survives reload. Telemetry retains a bounded live window; activity and command replay frames retain session history.
 
 See [architecture](docs/architecture.md), [milestones](docs/milestones.md), [validation](docs/validation.md), and the original [product brief](docs/product-brief.md).
+
+The [development program checkpoints](docs/program-progress.md) record current phase scope, measured repository size, commits and validation results. Earlier milestone documents retain historical context.
 
 ## Scoped control and audit history
 
