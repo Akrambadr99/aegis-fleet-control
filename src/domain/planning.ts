@@ -24,10 +24,17 @@ export interface MissionStep {
   resourceId: string;
 }
 export interface MissionPlan extends Versioned {
+  ownerId?: string;
   title: string;
   facilityId: string;
   robotId: string;
   steps: MissionStep[];
+}
+export interface MissionPlanRevision extends Versioned {
+  planId: string;
+  savedBy: string;
+  savedAtTick: number;
+  plan: MissionPlan;
 }
 export interface PlanIssue {
   stepId: string | null;

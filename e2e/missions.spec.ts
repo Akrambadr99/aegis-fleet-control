@@ -1,4 +1,21 @@
 import { test, expect } from '@playwright/test';
+test('revision restore creates a new saved revision and keeps earlier snapshots', async ({
+  page,
+}) => {
+  await page.goto('/missions');
+  await page.getByRole('button', { name: 'Add step' }).click();
+  await page.getByRole('button', { name: 'Save mission', exact: true }).click();
+  await expect(page.getByText('Mission plan saved')).toBeVisible();
+  await page.getByLabel('Mission title').fill('Updated transfer');
+  await page.getByRole('button', { name: 'Save mission', exact: true }).click();
+  await expect(page.getByText('Revision 2 · Updated transfer')).toBeVisible();
+  await page.getByText('Revision 1 · Dock transfer').click();
+  await page.getByRole('button', { name: 'Restore revision 1 as draft' }).click();
+  await expect(page.getByLabel('Mission title')).toHaveValue('Dock transfer');
+  await page.getByRole('button', { name: 'Save mission', exact: true }).click();
+  await expect(page.getByText('Revision 3 · Dock transfer')).toBeVisible();
+  await expect(page.getByText('Revision 2 · Updated transfer')).toBeVisible();
+});
 test('mission editor saves dependencies and conditions, duplicates and preserves original', async ({
   page,
 }) => {

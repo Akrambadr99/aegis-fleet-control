@@ -10,6 +10,40 @@ function fixture() {
   plan.steps = [{ ...newStep('travel'), zoneId: 'Z-010' }];
   return { clock, gateway, plan };
 }
+it('retains immutable attributed revisions and ignores client ownership spoofing', async () => {
+  const { clock, gateway, plan } = fixture();
+  async function save(actorId: string, expectedRevision: number) {
+    const ticket = gateway.command(
+      { id: actorId, role: 'fleet-manager' },
+      { type: 'plan.save', id: plan.id, expectedRevision, plan },
+    );
+    clock.advance(250);
+    return ticket.promise;
+  }
+  plan.ownerId = 'spoofed';
+  await save('creator', 0);
+  const first = Object.values(gateway.getSnapshot().planRevisions)[0];
+  plan.title = 'Revised dock transfer';
+  plan.steps[0].label = 'New label';
+  gateway.advance();
+  await save('reviewer', 1);
+  const state = gateway.getSnapshot();
+  expect(state.plans[plan.id].ownerId).toBe('creator');
+  expect(Object.values(state.planRevisions)).toHaveLength(2);
+  expect(first.plan.title).toBe('Dock transfer');
+  expect(first.plan.steps[0].label).toBe('');
+  expect(Object.isFrozen(first.plan.steps[0])).toBe(true);
+  expect(Object.values(state.planRevisions)[1]).toMatchObject({
+    savedBy: 'reviewer',
+    savedAtTick: 1,
+    revision: 2,
+  });
+  await expect(save('creator', 1)).rejects.toMatchObject({ code: 'stale' });
+  expect(gateway.getSnapshot()).toBe(state);
+  expect(state.activity.at(-1)?.changes?.some((change) => change.kind === 'planRevisions')).toBe(
+    true,
+  );
+});
 it('plan validation uses topology, charger availability and robot capabilities', () => {
   const { plan } = fixture(),
     state = createSeed();

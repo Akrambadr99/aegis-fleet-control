@@ -3,7 +3,7 @@ import type { RobotHistory } from './history';
 import type { ControlCommand } from './teleoperation';
 import type { FacilityResource, ResourceReservation, ResourceCommand } from './resources';
 import type { WarehouseJob, JobCommand } from './jobs';
-import type { MissionPlan } from './planning';
+import type { MissionPlan, MissionPlanRevision } from './planning';
 export type Role = 'viewer' | 'operator' | 'fleet-manager' | 'facility-manager' | 'administrator';
 export interface Actor {
   id: string;
@@ -190,6 +190,7 @@ export interface DomainState {
   resourceReservations: Record<string, ResourceReservation>;
   jobs: Record<string, WarehouseJob>;
   plans: Record<string, MissionPlan>;
+  planRevisions: Record<string, MissionPlanRevision>;
   maintenance: Record<string, MaintenanceOrder>;
   activity: Activity[];
   replay: ReplayFrame[];

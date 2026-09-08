@@ -124,7 +124,18 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
     const before = captureEntities(state);
     state.plans[command.id] = {
       ...structuredClone(command.plan),
+      ownerId: existing?.ownerId ?? actor.id,
       revision: command.expectedRevision + 1,
+    };
+    const saved = state.plans[command.id];
+    const revisionId = JSON.stringify([saved.id, saved.revision]);
+    state.planRevisions[revisionId] = {
+      id: revisionId,
+      revision: saved.revision,
+      planId: saved.id,
+      savedBy: actor.id,
+      savedAtTick: state.tick,
+      plan: structuredClone(saved),
     };
     record(
       state,

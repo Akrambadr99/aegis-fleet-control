@@ -8,6 +8,7 @@ import { insertStep, moveStep } from './draftHistory';
 import { StepInspector } from './StepInspector';
 import { StepSequence } from './StepSequence';
 import { DependencyGraph } from './DependencyGraph';
+import { MissionRevisionHistory } from './MissionRevisionHistory';
 export function MissionPlanning() {
   const state = useDomain(),
     { gateway, actor } = useFleet();
@@ -89,6 +90,7 @@ export function MissionPlanning() {
           <span>
             {plan.revision ? 'Revision ' + plan.revision : 'Unsaved draft'}
             {dirty ? ' · Modified' : ''}
+            {' · Owner: ' + (plan.ownerId ?? actor.id)}
           </span>
         </div>
         <div className="editor-actions">
@@ -111,6 +113,7 @@ export function MissionPlanning() {
                 ...structuredClone(plan),
                 id: 'PLAN-' + crypto.randomUUID(),
                 revision: 0,
+                ownerId: actor.id,
                 title: plan.title + ' copy',
               })
             }
@@ -169,6 +172,15 @@ export function MissionPlanning() {
           {!Object.keys(state.plans).length && (
             <p>No saved plans. Drafts remain local until saved.</p>
           )}
+          <MissionRevisionHistory
+            revisions={Object.values(state.planRevisions)
+              .filter((entry) => entry.planId === plan.id)
+              .sort((a, b) => b.revision - a.revision)}
+            disabled={saving || !!denied}
+            restore={(previous) =>
+              edit({ ...structuredClone(previous), revision: history.baseline.revision })
+            }
+          />
         </nav>
         <fieldset className="mission-document" disabled={saving}>
           <legend className="sr-only">Mission draft</legend>

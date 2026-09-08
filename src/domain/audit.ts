@@ -15,6 +15,7 @@ const tables = [
   'leases',
   'maintenance',
   'plans',
+  'planRevisions',
   'jobs',
   'resources',
   'automationRules',
