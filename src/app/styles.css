@@ -2502,3 +2502,90 @@ summary:focus-visible {
     gap: 4px;
   }
 }
+
+.twin-canvas {
+  border: 1px solid var(--rule);
+  background: #edf2f2;
+}
+.twin-toolbar,
+.twin-coordinate-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 8px;
+  background: #e5ecef;
+}
+.twin-toolbar {
+  border-bottom: 1px solid var(--rule);
+}
+.twin-coordinate-bar {
+  border-top: 1px solid var(--rule);
+  font-size: 10px;
+}
+.twin-zoom,
+.twin-layers,
+.twin-coordinate-bar > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.twin-layers label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+}
+.twin-zoom output {
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  margin-left: 5px;
+}
+.twin-canvas .live-map {
+  display: block;
+  margin: 0;
+  max-height: 480px;
+}
+.live-map [role='button'] {
+  cursor: pointer;
+}
+.live-map [role='button']:focus-visible {
+  stroke: #ad6415;
+  stroke-width: 4px;
+  outline: none;
+}
+.topology-workbench > h2 {
+  font-size: 14px;
+}
+.topology-workbench > p {
+  font-size: 11px;
+}
+.topology-corridors {
+  display: flex;
+  flex-wrap: wrap;
+  border-block: 1px solid var(--rule);
+}
+.topology-corridors .resource {
+  flex: 1;
+  border: 0;
+  border-right: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 8px;
+  margin: 0;
+}
+.topology-corridors h3 {
+  font-size: 12px;
+}
+.topology-workbench .record-list {
+  columns: 2;
+}
+@media (max-width: 700px) {
+  .topology-workbench .record-list {
+    columns: 1;
+  }
+  .topology-corridors .resource {
+    min-width: 150px;
+  }
+}

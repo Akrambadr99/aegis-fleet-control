@@ -1,12 +1,12 @@
 import { useScope } from '../../hooks/useWorkspaceScope';
-import { NavigationMap } from '../facilities';
+import { DigitalTwinCanvas } from '../facilities';
 import { CommandButton } from '../../components/CommandButton';
 import { trafficConflicts } from '../../domain/selectors';
 export function TopologyPanel({ map = false }: { map?: boolean }) {
   const { state, floor, facility, change, params } = useScope();
   const robots = Object.values(state.robots).filter((r) => r.floorId === floor.id);
   return (
-    <section className="panel">
+    <section className="topology-workbench">
       <h2>{map ? 'Facility topology' : 'Corridor control'}</h2>
       <p>
         Topology revision {facility.topologyRevision} ·{' '}
@@ -14,12 +14,13 @@ export function TopologyPanel({ map = false }: { map?: boolean }) {
       </p>
       {map && (
         <>
-          <NavigationMap
+          <DigitalTwinCanvas
             floorId={floor.id}
+            selectRobot={(id) => change('robot', id)}
             label={floor.name + ' shared topology'}
             robotId={params.get('robot')}
           />
-          <p>Select a robot below to inspect shared state alongside the map.</p>
+          <p>Robot selection · Map markers and the roster open the same inspector.</p>
           <div className="control-row">
             {robots.map((r) => (
               <button key={r.id} onClick={() => change('robot', r.id)}>
@@ -29,7 +30,7 @@ export function TopologyPanel({ map = false }: { map?: boolean }) {
           </div>
         </>
       )}
-      <div className="resource-grid">
+      <div className="topology-corridors">
         {floor.corridorIds.map((id) => {
           const corridor = state.corridors[id];
           return (
