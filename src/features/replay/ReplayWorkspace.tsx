@@ -86,13 +86,6 @@ export function ReplayWorkspace() {
       </header>
       {sample ? (
         <>
-          <div className="replay-grid">
-            <div>
-              <ReplayScene state={state} frames={frames} index={index} />
-              <ReplayTelemetry frames={frames} index={index} />
-            </div>
-            <ReplayInspector sample={sample} />
-          </div>
           <ReplayTransport
             frames={frames}
             index={index}
@@ -108,6 +101,13 @@ export function ReplayWorkspace() {
               }
             }}
           />
+          <div className="replay-grid">
+            <div>
+              <ReplayScene state={state} frames={frames} index={index} />
+              <ReplayTelemetry frames={frames} index={index} />
+            </div>
+            <ReplayInspector sample={sample} />
+          </div>
           <section className="replay-event-log">
             <h2>Event markers & operator actions</h2>
             <ol>

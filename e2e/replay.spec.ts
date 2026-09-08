@@ -13,6 +13,10 @@ test('seeks and plays recorded movement without changing live state', async ({ p
   await expect(page.getByTestId('replay-position')).toHaveText(latest!);
   await expect(page.getByText(/Live tick 4/)).toBeVisible();
   await page.screenshot({ path: 'test-results/mission-replay.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByRole('button', { name: 'Play recording' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  await page.screenshot({ path: 'test-results/mission-replay-mobile.png', fullPage: true });
 });
 test('event markers reconstruct stop state while earlier frames retain running state', async ({
   page,
