@@ -1,18 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { createSeed } from '../domain/seed';
+import { maxRobotHistoryFrames } from '../domain/history';
 import { exportSnapshot } from '../domain/snapshots';
+import { FleetGateway } from '../gateway/FleetGateway';
 import { PersistentStorageAdapter, type KeyValueStorage } from './PersistentStorageAdapter';
 
 class FakeStorage implements KeyValueStorage {
   value: string | null = null;
   failWrites = false;
 
+  constructor(private readonly maxLength = Infinity) {}
+
   getItem() {
     return this.value;
   }
 
   setItem(_key: string, value: string) {
-    if (this.failWrites) throw new DOMException('Quota exceeded', 'QuotaExceededError');
+    if (this.failWrites || value.length > this.maxLength)
+      throw new DOMException('Quota exceeded', 'QuotaExceededError');
     this.value = value;
   }
 }
@@ -65,6 +70,20 @@ describe('PersistentStorageAdapter', () => {
     expect(adapter.readSnapshot()).toBe(before);
     expect(notifications).toBe(0);
     expect(candidate.revision).toBe(candidateRevision);
+  });
+
+  it('bounds motion history so a full simulation step remains persistable', () => {
+    const persistence = new FakeStorage(4_500_000);
+    const adapter = new PersistentStorageAdapter(persistence, createSeed());
+    const gateway = new FleetGateway(undefined, adapter);
+
+    gateway.advance(100);
+    gateway.advance(100);
+
+    expect(gateway.getSnapshot().tick).toBe(200);
+    expect(gateway.getSnapshot().history).toHaveLength(maxRobotHistoryFrames);
+    expect(persistence.value!.length).toBeLessThan(4_500_000);
+    expect(new PersistentStorageAdapter(persistence, createSeed()).readSnapshot().tick).toBe(200);
   });
 
   it('rejects a stale application instance without overwriting the newer persisted revision', () => {

@@ -1,4 +1,5 @@
 import type { DomainState, Robot, Mission, Route, Fault } from './model';
+export const maxRobotHistoryFrames = 3600;
 export interface RobotHistory {
   sequence: number;
   tick: number;
@@ -54,7 +55,7 @@ export function appendHistory(state: DomainState, robots: Robot[], eventId: stri
       eventId,
     });
   }
-  state.history = state.history.slice(-60000);
+  state.history = state.history.slice(-maxRobotHistoryFrames);
 }
 export function robotHistory(state: DomainState, robotId: string, missionId?: string) {
   return state.history.filter(

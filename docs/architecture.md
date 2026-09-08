@@ -48,7 +48,7 @@ RequestEngine supplies identifiable tickets with pending, confirmed, failed, can
 
 Read snapshots retain their invocation context. Route previews reject results if topology or robot revision changed. React query keys and cancellation prevent an old selected robot's preview from appearing under the new selection.
 
-FleetGateway.advance(n) deterministically moves eligible robots, drains battery, progresses missions and appends telemetry. Completion releases reservations. Low battery pauses execution. Stopped/disconnected robots do not move. Tests drive the scheduler and simulation clock explicitly without network or random wall-clock assertions.
+FleetGateway.advance(n) deterministically moves eligible robots, drains battery, progresses missions and appends telemetry. Completion releases reservations. Low battery pauses execution. Stopped/disconnected robots do not move. Tests drive the scheduler and simulation clock explicitly without network or random wall-clock assertions. Persisted robot playback retains the latest 3,600 frames, keeping the seed fleet's snapshot below a conservative browser storage budget even after repeated 100-second advances.
 
 Optimistic edits will require per-mutation overlays and revision-aware rollback. They are deliberately not represented as confirmed server state in this milestone.
 
