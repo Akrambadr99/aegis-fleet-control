@@ -176,19 +176,30 @@ export function ActivityPanel() {
     .reverse();
   const page = useCollectionPage(events, 'activityPage', 50);
   return (
-    <section className="panel">
-      <h2>Operator and system activity</h2>
-      <CollectionPager page={page} label="Activity" />
+    <section className="activity-journal">
+      <header className="activity-toolbar">
+        <h2>Operator and system activity</h2>
+        <CollectionPager page={page} label="Activity" />
+      </header>
       <OperationalAlerts />
-      <ol className="record-list">
+      <ol className="activity-entries" aria-label="Recorded activity">
         {page.items.map((event) => (
           <li key={event.id}>
-            <strong>{event.type}</strong> · {event.entityId} · {event.actorId}
-            <p>{event.details}</p>
-            <AuditDetails event={event} />
+            <span className="activity-time">Tick {event.tick}</span>
+            <div className="activity-event">
+              <strong>{event.type}</strong>
+              <span>
+                {event.entityId} · {event.actorId}
+              </span>
+            </div>
+            <div className="activity-detail">
+              <p>{event.details}</p>
+              <AuditDetails event={event} />
+            </div>
           </li>
         ))}
       </ol>
+      {!events.length && <p>No recorded events for this selection.</p>}
     </section>
   );
 }
