@@ -1,7 +1,7 @@
 .traffic-context .robot-inspector {
   width: auto;
   padding: 10px;
-  background: #e8efeb;
+  background: var(--surface-inset);
   border: 0;
 }
 .traffic-context .resource-queue {
@@ -30,7 +30,7 @@
   justify-content: space-between;
   gap: 12px;
   padding-bottom: 10px;
-  border-bottom: 2px solid #577f76;
+  border-bottom: 1px solid var(--rule);
 }
 .traffic-header h1 {
   font-size: 24px;
@@ -50,16 +50,16 @@
 .traffic-toolbar select {
   display: block;
   padding: 5px;
-  border: 1px solid #b6c9c3;
-  background: white;
+  border: 1px solid var(--rule);
+  background: var(--surface);
 }
 .traffic-layers {
   display: flex;
   gap: 12px;
   align-items: center;
   font-size: 11px;
-  border-top: 1px solid #b5c8c0;
-  border-bottom: 1px solid #b5c8c0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
   padding: 7px 0;
 }
 .traffic-layers label {
@@ -81,8 +81,8 @@
   min-width: 0;
 }
 .traffic-canvas {
-  border: 1px solid #a8bfb3;
-  background: #f9faf6;
+  border: 1px solid var(--rule);
+  background: var(--surface-inset);
 }
 .traffic-canvas svg {
   display: block;
@@ -98,7 +98,7 @@
   outline: 2px solid #ba7d25;
 }
 .traffic-context {
-  border-left: 1px solid #b0c3b9;
+  border-left: 1px solid var(--rule);
   padding-left: 12px;
 }
 .corridor-controls {
@@ -106,12 +106,12 @@
 }
 .corridor-controls > div {
   display: flex;
-  border: 1px solid #bfccc4;
+  border: 1px solid var(--rule);
 }
 .corridor-controls > div > section {
   flex: 1;
   padding: 8px;
-  border-right: 1px solid #bfccc4;
+  border-right: 1px solid var(--rule);
 }
 .corridor-controls strong,
 .corridor-controls span {
@@ -171,8 +171,8 @@
   font-size: 11px;
 }
 .traffic-context .route-register li[data-reservation='held'] {
-  border-left-color: #a66f22;
-  background: #fff8e9;
+  border-left-color: var(--rule);
+  background: var(--surface-inset);
 }
 .traffic-context .route-register li[data-reservation='released'] {
   color: var(--text-muted);
