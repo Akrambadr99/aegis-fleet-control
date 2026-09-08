@@ -21,3 +21,25 @@ it('releases completed active missions while retaining historical execution cont
   gateway.advance(100);
   expect(inspectInvariants(gateway.getSnapshot())).toEqual([]);
 });
+
+it('detects orphan leases, maintenance and job dependencies', () => {
+  const state = createSeed();
+  state.leases['orphan'] = {
+    id: 'orphan',
+    revision: 1,
+    robotId: 'missing',
+    ownerId: 'a',
+    expiresAt: 10,
+    state: 'active',
+  };
+  Object.values(state.maintenance)[0].robotId = 'missing';
+  Object.values(state.jobs)[0].dependsOn = ['missing'];
+  const rules = inspectInvariants(state).map((entry) => entry.rule);
+  expect(rules).toEqual(
+    expect.arrayContaining([
+      'Control lease robot must exist',
+      'Maintenance robot must exist',
+      'Job dependency must exist in the same facility',
+    ]),
+  );
+});

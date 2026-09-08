@@ -106,6 +106,48 @@ export function inspectInvariants(state: DomainState): InvariantViolation[] {
       reservation.id,
       'Resource reservation references must exist',
     );
+
+  for (const lease of Object.values(state.leases)) {
+    check(state.robots[lease.robotId], lease.id, 'Control lease robot must exist');
+    if (lease.state === 'active')
+      check(
+        state.robots[lease.robotId]?.controlSessionId === lease.id,
+        lease.id,
+        'Active control lease must be attached to its robot',
+      );
+  }
+  for (const order of Object.values(state.maintenance))
+    check(state.robots[order.robotId], order.id, 'Maintenance robot must exist');
+  for (const job of Object.values(state.jobs)) {
+    check(state.facilities[job.facilityId], job.id, 'Job facility must exist');
+    for (const id of job.dependsOn)
+      check(
+        state.jobs[id]?.facilityId === job.facilityId,
+        job.id,
+        'Job dependency must exist in the same facility',
+      );
+    if (job.robotId)
+      check(
+        state.robots[job.robotId]?.facilityId === job.facilityId,
+        job.id,
+        'Assigned job robot must belong to its facility',
+      );
+    if (job.missionId)
+      check(
+        state.missions[job.missionId]?.jobId === job.id,
+        job.id,
+        'Job mission must reference its job',
+      );
+  }
+  for (const mission of Object.values(state.missions)) {
+    if (mission.planId)
+      check(
+        state.plans[mission.planId]?.robotId === mission.robotId,
+        mission.id,
+        'Mission plan robot must agree',
+      );
+    if (mission.jobId) check(state.jobs[mission.jobId], mission.id, 'Mission job must exist');
+  }
   return violations;
 }
 export function assertInvariants(state: DomainState) {
