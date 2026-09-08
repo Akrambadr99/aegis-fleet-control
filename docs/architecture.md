@@ -50,6 +50,8 @@ Snapshots carry independent schema, fixture and snapshot versions plus determini
 
 Schema migrations add compatibility defaults only for the version that introduced them. Seed fixtures remain separately versioned, so a schema change does not require rewriting every deterministic fixture. Unknown future schemas, unsupported fixture versions and malformed snapshot versions fail before publication.
 
+The browser application restores canonical state from one versioned local snapshot. A commit is serialized and written before the in-memory adapter publishes it, so a storage access or quota failure leaves the visible snapshot and subscribers unchanged. Tests and explicitly supplied gateways remain isolated in memory. Corrupt persisted data fails closed rather than silently discarding operational history.
+
 ## Derived values
 
 Readiness derives from connectivity, emergency stop, battery, fault state, lease ownership and displaced charging reservations. Feasibility adds route health, distance, energy reserve and charger availability. Scenario inputs derive facility population, available chargers and closed corridors. No page persists its own copy of these values.

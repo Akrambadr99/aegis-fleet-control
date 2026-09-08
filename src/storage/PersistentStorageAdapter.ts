@@ -1,0 +1,69 @@
+import { DomainError } from '../domain/errors';
+import type { DomainState } from '../domain/model';
+import { exportSnapshot, migrateSnapshot } from '../domain/snapshots';
+import type { CanonicalStorage, EntityFor, EntityTableName } from './contracts';
+import { InMemoryStorageAdapter } from './InMemoryStorageAdapter';
+
+export const fleetSnapshotStorageKey = 'aegis.fleet.snapshot';
+
+export interface KeyValueStorage {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+}
+
+function restore(raw: string): DomainState {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new DomainError('invalid', 'Stored fleet snapshot is not valid JSON');
+  }
+  try {
+    return migrateSnapshot(parsed as DomainState).state;
+  } catch (error) {
+    if (error instanceof DomainError) throw error;
+    throw new DomainError('invalid', 'Stored fleet snapshot is malformed');
+  }
+}
+
+/**
+ * Synchronous durable storage for the browser demonstration. A write reaches the
+ * backing store before the in-memory snapshot is published, so a quota or access
+ * failure cannot expose a state that will disappear after reload.
+ */
+export class PersistentStorageAdapter implements CanonicalStorage {
+  private readonly memory: InMemoryStorageAdapter;
+
+  constructor(
+    private readonly persistence: KeyValueStorage,
+    fallback: DomainState,
+    private readonly key = fleetSnapshotStorageKey,
+  ) {
+    const raw = persistence.getItem(key);
+    this.memory = new InMemoryStorageAdapter(raw === null ? fallback : restore(raw));
+  }
+
+  readSnapshot = () => this.memory.readSnapshot();
+
+  readEntity<Table extends EntityTableName>(table: Table, id: string) {
+    return this.memory.readEntity(table, id) as Readonly<EntityFor<Table>> | undefined;
+  }
+
+  listEntities<Table extends EntityTableName>(table: Table) {
+    return this.memory.listEntities(table) as readonly Readonly<EntityFor<Table>>[];
+  }
+
+  subscribe = (listener: () => void) => this.memory.subscribe(listener);
+
+  commit(expectedRevision: number, candidate: DomainState) {
+    const current = this.memory.readSnapshot();
+    if (current.revision !== expectedRevision)
+      throw new DomainError('stale', 'Canonical state changed before the transaction committed');
+
+    const next = structuredClone(candidate);
+    next.revision = expectedRevision + 1;
+    const serialized = JSON.stringify(exportSnapshot(next));
+    this.persistence.setItem(this.key, serialized);
+    return this.memory.commit(expectedRevision, next);
+  }
+}

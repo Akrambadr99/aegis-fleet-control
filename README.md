@@ -60,7 +60,7 @@ The role selector is an explicit local simulation feature. The gateway checks ro
 
 This is an interconnected implementation with a substantial development program still ahead. Routing uses a facility navigation graph. Mission graph editing, saved revisions, templates, typed facility-resource steps, reservation arbitration, teleoperation leases, historical playback and event-driven automation are implemented. Advanced scheduling, cooperative execution, charging progression, configuration, comparative scenarios and the remaining expansion phases still require work. Simulation is stepped manually; optimistic editing has not been introduced.
 
-All operational state lasts for the application session and resets to the deterministic seed on a full reload. URL context survives reload. Telemetry retains a bounded live window; activity and command replay frames retain session history.
+Operational state is stored as a versioned browser snapshot and survives a full reload. Snapshot restoration runs deterministic schema migrations and rejects corrupt or unsupported data instead of silently replacing it. URL context also survives reload. Telemetry retains a bounded live window; activity and command replay frames retain persisted history.
 
 See [architecture](docs/architecture.md), [milestones](docs/milestones.md), [validation](docs/validation.md), and the original [product brief](docs/product-brief.md).
 

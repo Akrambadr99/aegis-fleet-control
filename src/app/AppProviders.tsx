@@ -2,6 +2,9 @@ import { MissionDraftProvider } from '../features/missions';
 import { useState, type PropsWithChildren } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FleetProvider } from './FleetProvider';
+import { FleetGateway } from '../gateway/FleetGateway';
+import { createSeed } from '../domain/seed';
+import { PersistentStorageAdapter } from '../storage/PersistentStorageAdapter';
 export function createQueryClient() {
   return new QueryClient({
     defaultOptions: {
@@ -12,9 +15,12 @@ export function createQueryClient() {
 }
 export function AppProviders({ children }: PropsWithChildren) {
   const [client] = useState(createQueryClient);
+  const [gateway] = useState(
+    () => new FleetGateway(undefined, new PersistentStorageAdapter(localStorage, createSeed())),
+  );
   return (
     <QueryClientProvider client={client}>
-      <FleetProvider>
+      <FleetProvider gateway={gateway}>
         <MissionDraftProvider>{children}</MissionDraftProvider>
       </FleetProvider>
     </QueryClientProvider>

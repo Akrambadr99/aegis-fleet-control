@@ -42,7 +42,7 @@ export class FleetGateway implements FleetQueries, FleetCommands {
   getSnapshot = () => this.storage.readSnapshot();
   subscribe = (listener: () => void) => this.storage.subscribe(listener);
   private publish(next: DomainState) {
-    this.storage.commit(this.state.revision, next);
+    return this.storage.commit(this.state.revision, next);
   }
   command(actor: Actor, command: Command, signal?: AbortSignal): Ticket<OperationResult> {
     const input = structuredClone(command),
@@ -60,13 +60,13 @@ export class FleetGateway implements FleetQueries, FleetCommands {
           },
           this.configuration,
         );
-        this.publish(next);
-        const events = next.activity.filter((event) => event.operationId === operationId);
+        const committed = this.publish(next);
+        const events = committed.activity.filter((event) => event.operationId === operationId);
         const failures = events
           .filter((event) => event.type === 'automation.failed')
           .map((event) => ({ entityId: event.entityId, message: event.details }));
         return {
-          revision: next.revision,
+          revision: committed.revision,
           operationId,
           correlationId: operationId,
           outcome: failures.length ? 'partial' : 'success',
