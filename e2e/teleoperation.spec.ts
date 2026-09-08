@@ -40,4 +40,7 @@ test('emergency stop has distinct control styling and revokes the lease', async 
   await stop.click();
   await expect(page.getByRole('button', { name: 'Move forward' })).toBeDisabled();
   await expect(page.locator('.telemetry-readout')).toContainText('emergency-stopped');
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  await page.screenshot({ path: 'test-results/teleoperation-stopped-mobile.png', fullPage: true });
 });

@@ -2844,6 +2844,59 @@ summary:focus-visible {
   background: #edf2ee;
 }
 
+.teleoperation-workspace .console-spatial {
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+}
+.teleoperation-workspace .telemetry-readout {
+  margin: var(--space-2) 0 var(--space-3);
+  border-color: var(--rule);
+}
+.teleoperation-workspace .telemetry-readout dd {
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.teleoperation-workspace .operator-console {
+  padding: var(--space-3);
+}
+.teleoperation-workspace .emergency-panel {
+  margin: var(--space-3) 0;
+  padding: var(--space-3);
+  background: #f4e8e3;
+  border: 1px solid #bb8d80;
+  border-top: 3px solid #a43731;
+}
+.teleoperation-workspace .emergency-panel h2 {
+  font-size: 13px;
+  margin: 0 0 var(--space-3);
+}
+.teleoperation-workspace .motion-console {
+  border-top: 1px solid var(--rule);
+  padding-top: var(--space-3);
+}
+.teleoperation-workspace .motion-console h2 {
+  font-size: 13px;
+  margin: 0;
+}
+.teleoperation-workspace .control-receipts ol {
+  max-height: 190px;
+  overflow-y: auto;
+}
+@media (max-width: 700px) {
+  .teleoperation-workspace .ownership-strip {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  .teleoperation-workspace .console-spatial {
+    padding-right: 0;
+  }
+  .teleoperation-workspace .telemetry-readout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .replay-workspace .replay-transport {
   margin: 0 0 var(--space-3);
   padding: var(--space-3);

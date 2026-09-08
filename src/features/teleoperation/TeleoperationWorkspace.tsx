@@ -74,11 +74,6 @@ export function TeleoperationWorkspace() {
           <h2>
             {facility.name} · {floor.name}
           </h2>
-          <NavigationMap
-            floorId={robot.floorId}
-            robotId={robot.id}
-            label="Teleoperation robot position"
-          />
           <dl className="telemetry-readout">
             <div>
               <dt>Robot state</dt>
@@ -97,6 +92,11 @@ export function TeleoperationWorkspace() {
               <dd>{robot.battery.toFixed(2)}%</dd>
             </div>
           </dl>
+          <NavigationMap
+            floorId={robot.floorId}
+            robotId={robot.id}
+            label="Teleoperation robot position"
+          />
           <section className="control-receipts">
             <h2>Acknowledged commands</h2>
             <ol>
@@ -177,7 +177,6 @@ export function TeleoperationWorkspace() {
               Take over control
             </CommandButton>
           )}
-          <ControlPad enabled={owns} pending={pending} move={move} />
           <section className="emergency-panel">
             <h2>Emergency interlock</h2>
             <CommandButton
@@ -187,6 +186,7 @@ export function TeleoperationWorkspace() {
             </CommandButton>
             <p>Latches stop, revokes control and releases traffic ownership.</p>
           </section>
+          <ControlPad enabled={owns} pending={pending} move={move} />
           <details className="link-simulation">
             <summary>Simulated link state</summary>
             <CommandButton
