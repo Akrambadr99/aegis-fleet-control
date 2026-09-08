@@ -1,3 +1,8 @@
+import {
+  assertCapabilityEnabled,
+  defaultConfiguration,
+  type OperationalConfiguration,
+} from './configuration';
 import type { Actor, Command, DomainState } from '../domain/model';
 import { applyCommand } from '../domain/transactions';
 import { assertInvariants } from '../domain/invariants';
@@ -12,13 +17,15 @@ export function executeTransaction(
   actor: Actor,
   command: Command,
   context: OperationContext,
+  config: Readonly<OperationalConfiguration> = defaultConfiguration,
 ) {
+  assertCapabilityEnabled(command, config);
   const next = structuredClone(state);
   const start = next.activity.length;
   applyCommand(next, actor, command);
   for (const event of next.activity.slice(start))
     Object.assign(event, context, { causationId: context.operationId });
-  processAutomation(next, start);
+  if (config.automatedRecovery) processAutomation(next, start);
   assertInvariants(next);
   return next;
 }

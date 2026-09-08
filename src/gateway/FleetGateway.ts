@@ -1,3 +1,4 @@
+import { defaultConfiguration, type OperationalConfiguration } from '../application/configuration';
 import { exportSnapshot, migrateSnapshot, type SnapshotEnvelope } from '../domain/snapshots';
 import { executeTransaction } from '../application/transactions';
 import { processAutomation } from './automationEngine';
@@ -26,9 +27,15 @@ function freeze<T>(value: T): T {
 export class FleetGateway {
   private state: DomainState;
   private operationSequence = 0;
+  readonly configuration: Readonly<OperationalConfiguration>;
   private listeners = new Set<() => void>();
   readonly requests: RequestEngine;
-  constructor(scheduler: Scheduler = new RealScheduler(), state: DomainState = createSeed()) {
+  constructor(
+    scheduler: Scheduler = new RealScheduler(),
+    state: DomainState = createSeed(),
+    configuration: OperationalConfiguration = defaultConfiguration,
+  ) {
+    this.configuration = Object.freeze({ ...configuration });
     this.state = freeze(structuredClone(state));
     this.requests = new RequestEngine(scheduler);
   }
@@ -55,10 +62,16 @@ export class FleetGateway {
     const operationId = 'OP-' + this.state.revision + '-' + ++this.operationSequence;
     return this.requests.run(
       () => {
-        const next = executeTransaction(this.state, identity, input, {
-          operationId,
-          correlationId: operationId,
-        });
+        const next = executeTransaction(
+          this.state,
+          identity,
+          input,
+          {
+            operationId,
+            correlationId: operationId,
+          },
+          this.configuration,
+        );
         this.publish(next);
         return { revision: next.revision };
       },
@@ -270,7 +283,7 @@ export class FleetGateway {
           'Resource ownership transition',
           [change.robot],
         );
-      processAutomation(next, eventStart);
+      if (this.configuration.automatedRecovery) processAutomation(next, eventStart);
       appendHistory(next, Object.values(next.robots));
     }
     // Retain a bounded live window; activity and replay remain session history.
