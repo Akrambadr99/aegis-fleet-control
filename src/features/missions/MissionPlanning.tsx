@@ -1,4 +1,4 @@
-import { useCollectionPage } from '../../hooks/useCollectionPage';
+import { pageCollection } from '../../application/collections';
 import { CollectionPager } from '../../components/CollectionPager';
 import { useMissionDraft } from './MissionDraftProvider';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
@@ -17,7 +17,11 @@ export function MissionPlanning() {
   const state = useDomain(),
     { gateway, actor } = useFleet();
   const { history, dispatch, saving, message, save } = useMissionDraft();
-  const library = useCollectionPage(Object.values(state.plans), 'planPage');
+  const [libraryPage, setLibraryPage] = useState(0);
+  const library = {
+    ...pageCollection(Object.values(state.plans), libraryPage),
+    setPage: setLibraryPage,
+  };
   const plan = history.present,
     key = JSON.stringify(plan),
     dirty = key !== JSON.stringify(history.baseline);
