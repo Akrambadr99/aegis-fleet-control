@@ -1,3 +1,4 @@
+import type { AutomationRule, AutomationRun, AutomationCommand } from './automation';
 import type { RobotHistory } from './history';
 import type { ControlCommand } from './teleoperation';
 import type { FacilityResource, ResourceReservation, ResourceCommand } from './resources';
@@ -166,6 +167,8 @@ export interface Telemetry {
   velocity: number;
 }
 export interface DomainState {
+  automationRules: Record<string, AutomationRule>;
+  automationRuns: AutomationRun[];
   history: RobotHistory[];
   historySequence: number;
   revision: number;
@@ -193,6 +196,7 @@ export interface DomainState {
   telemetry: Telemetry[];
 }
 export type Command =
+  | AutomationCommand
   | ControlCommand
   | ResourceCommand
   | JobCommand

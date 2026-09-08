@@ -1,3 +1,5 @@
+import { processAutomation } from './automationEngine';
+import { validateRule, evaluateRule, type RuleInput } from '../domain/automation';
 import { appendHistory } from '../domain/history';
 import { synchronizeControls } from '../domain/teleoperation';
 import { synchronizeResources } from '../domain/resources';
@@ -42,7 +44,9 @@ export class FleetGateway {
       identity = structuredClone(actor);
     return this.requests.run(() => {
       const next = structuredClone(this.state);
+      const eventStart = next.activity.length;
       applyCommand(next, identity, input);
+      processAutomation(next, eventStart);
       this.publish(next);
       return { revision: next.revision };
     }, signal);
@@ -66,6 +70,17 @@ export class FleetGateway {
         }
       }),
     );
+  }
+  validateAutomation(input: RuleInput, eventId?: string, signal?: AbortSignal) {
+    const snapshot = this.state,
+      draft = structuredClone(input);
+    return this.requests.run(() => {
+      if (this.state.revision !== snapshot.revision)
+        throw new GatewayError('stale', 'Operational events changed; validate again');
+      const issues = validateRule(snapshot, draft),
+        event = eventId ? snapshot.activity.find((e) => e.id === eventId) : undefined;
+      return { issues, targets: event ? evaluateRule(snapshot, draft, event) : [] };
+    }, signal);
   }
   rankJobCandidates(id: string, signal?: AbortSignal) {
     const snapshot = this.state;
@@ -130,6 +145,7 @@ export class FleetGateway {
       throw new GatewayError('invalid', 'Advance requires 1–100 integer ticks');
     const next = structuredClone(this.state);
     for (let t = 0; t < ticks; t++) {
+      const eventStart = next.activity.length;
       next.tick++;
       for (const change of synchronizeControls(next))
         record(
@@ -226,6 +242,7 @@ export class FleetGateway {
           'Resource ownership transition',
           [change.robot],
         );
+      processAutomation(next, eventStart);
       appendHistory(next, Object.values(next.robots));
     }
     // Retain a bounded live window; activity and replay remain session history.

@@ -17,6 +17,7 @@ const tables = [
   'plans',
   'jobs',
   'resources',
+  'automationRules',
   'resourceReservations',
 ] as const;
 export type EntityCapture = Map<string, Versioned>;

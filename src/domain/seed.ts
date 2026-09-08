@@ -1,3 +1,4 @@
+import { seedAutomation } from './automation';
 import { appendHistory } from './history';
 import { seedResources } from './resources';
 import { seedJobs } from './jobs';
@@ -7,6 +8,8 @@ import { seedMaintenance } from './maintenance';
 const key = (prefix: string, n: number) => `${prefix}-${String(n).padStart(3, '0')}`;
 export function createSeed(): DomainState {
   const state: DomainState = {
+    automationRules: {},
+    automationRuns: [],
     history: [],
     historySequence: 0,
     revision: 1,
@@ -198,6 +201,7 @@ export function createSeed(): DomainState {
   seedMaintenance(state);
   seedResources(state);
   seedJobs(state);
+  seedAutomation(state);
   appendHistory(state, Object.values(state.robots));
   return state;
 }

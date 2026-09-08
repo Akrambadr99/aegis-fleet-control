@@ -4,6 +4,7 @@ import { robotPath, routeDistance } from './navigation';
 import { maintenanceReasons, capabilityIssues } from './maintenance';
 export function canExecute(role: Role, type: Command['type']) {
   if (role === 'administrator') return true;
+  if (type.startsWith('automation.')) return role === 'fleet-manager';
   if (type === 'robot.connection') return false;
   if (type === 'resource.set') return role === 'facility-manager';
   if (type.startsWith('job.')) return role === 'fleet-manager';
