@@ -54,6 +54,8 @@ The browser application restores canonical state from one versioned local snapsh
 
 A commit is serialized and written before the in-memory adapter publishes it, so a storage access or quota failure leaves the visible snapshot and subscribers unchanged. Tests and explicitly supplied gateways remain isolated in memory. Corrupt persisted data fails closed rather than silently discarding operational history.
 
+Each persistent adapter also retains the exact source record from which it restored. Before writing, it verifies that the backing record is unchanged. A stale application instance therefore fails without overwriting a newer sequential commit made by another tab or instance. Fully simultaneous multi-tab serialization requires a future shared locking service; this synchronous browser adapter does not claim that guarantee.
+
 ## Derived values
 
 Readiness derives from connectivity, emergency stop, battery, fault state, lease ownership and displaced charging reservations. Feasibility adds route health, distance, energy reserve and charger availability. Scenario inputs derive facility population, available chargers and closed corridors. No page persists its own copy of these values.

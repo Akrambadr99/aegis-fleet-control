@@ -28,6 +28,7 @@ function restore(raw: string): DomainState {
  */
 export class PersistentStorageAdapter implements CanonicalStorage {
   private readonly memory: InMemoryStorageAdapter;
+  private persistedSource: string | null;
 
   constructor(
     private readonly persistence: KeyValueStorage,
@@ -35,6 +36,7 @@ export class PersistentStorageAdapter implements CanonicalStorage {
     private readonly key = fleetSnapshotStorageKey,
   ) {
     const raw = persistence.getItem(key);
+    this.persistedSource = raw;
     this.memory = new InMemoryStorageAdapter(raw === null ? fallback : restore(raw));
   }
 
@@ -54,11 +56,17 @@ export class PersistentStorageAdapter implements CanonicalStorage {
     const current = this.memory.readSnapshot();
     if (current.revision !== expectedRevision)
       throw new DomainError('stale', 'Canonical state changed before the transaction committed');
+    if (this.persistence.getItem(this.key) !== this.persistedSource)
+      throw new DomainError(
+        'stale',
+        'Persisted fleet state changed in another application instance',
+      );
 
     const next = structuredClone(candidate);
     next.revision = expectedRevision + 1;
     const serialized = encodePersistedSnapshot(exportSnapshot(next));
     this.persistence.setItem(this.key, serialized);
+    this.persistedSource = serialized;
     return this.memory.commit(expectedRevision, next);
   }
 }

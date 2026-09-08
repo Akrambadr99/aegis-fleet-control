@@ -65,6 +65,30 @@ describe('PersistentStorageAdapter', () => {
     expect(notifications).toBe(0);
   });
 
+  it('rejects a stale application instance without overwriting the newer persisted revision', () => {
+    const persistence = new FakeStorage();
+    const first = new PersistentStorageAdapter(persistence, createSeed());
+    const second = new PersistentStorageAdapter(persistence, createSeed());
+    const firstBefore = first.readSnapshot();
+    const firstCandidate = structuredClone(firstBefore);
+    firstCandidate.robots['R-001'].battery--;
+    first.commit(firstBefore.revision, firstCandidate);
+    const persistedByFirst = persistence.value;
+
+    const secondBefore = second.readSnapshot();
+    const secondCandidate = structuredClone(secondBefore);
+    secondCandidate.robots['R-002'].battery--;
+    expect(() => second.commit(secondBefore.revision, secondCandidate)).toThrow(
+      'changed in another application instance',
+    );
+
+    expect(persistence.value).toBe(persistedByFirst);
+    expect(second.readSnapshot()).toBe(secondBefore);
+    expect(new PersistentStorageAdapter(persistence, createSeed()).readSnapshot()).toEqual(
+      first.readSnapshot(),
+    );
+  });
+
   it('rejects corrupt and invalid persisted data instead of silently resetting it', () => {
     const persistence = new FakeStorage();
     persistence.value = '{broken';
