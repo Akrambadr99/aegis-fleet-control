@@ -1,3 +1,5 @@
+import { getMissionExecutionProjection } from '../../application/projections';
+import { OperationalAlerts } from '../../components/OperationalAlerts';
 import { useScope } from './useScope';
 import { AuditDetails } from './AuditDetails';
 import { CommandButton } from '../../components/CommandButton';
@@ -85,9 +87,7 @@ export function FaultPanel() {
 }
 export function ExecutionPanel() {
   const { state, floor, change } = useScope();
-  const missions = Object.values(state.robots)
-    .filter((r) => r.floorId === floor.id && (r.activeMissionId || r.lastMissionId))
-    .map((r) => state.missions[(r.activeMissionId ?? r.lastMissionId)!]);
+  const missions = getMissionExecutionProjection(state, floor.id);
   return (
     <section className="panel">
       <h2>Mission execution state</h2>
@@ -131,6 +131,7 @@ export function ActivityPanel() {
   return (
     <section className="panel">
       <h2>Operator and system activity</h2>
+      <OperationalAlerts />
       <ol className="record-list">
         {state.activity
           .filter(

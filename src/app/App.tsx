@@ -24,6 +24,13 @@ const SchedulerWorkspace = lazy(() =>
     default: module.SchedulerWorkspace,
   })),
 );
+const DiagnosticsWorkspace = import.meta.env.DEV
+  ? lazy(() =>
+      import('../features/diagnostics/DiagnosticsWorkspace').then((module) => ({
+        default: module.DiagnosticsWorkspace,
+      })),
+    )
+  : null;
 function RouteEffects() {
   const { pathname } = useLocation();
   useLayoutEffect(() => {
@@ -130,6 +137,9 @@ export function App() {
             <Suspense fallback={<p role="status">Loading workspace…</p>}>
               <Routes>
                 <Route path="/" element={<Overview />} />
+                {DiagnosticsWorkspace && (
+                  <Route path="/diagnostics" element={<DiagnosticsWorkspace />} />
+                )}
                 {workspaces
                   .filter((item) => item.path !== '/')
                   .map((item) => (
