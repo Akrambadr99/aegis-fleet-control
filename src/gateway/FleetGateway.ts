@@ -19,12 +19,14 @@ import { InMemoryStorageAdapter } from '../storage/InMemoryStorageAdapter';
 import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
 import { CommittedEventStream } from './CommittedEventStream';
+import { OperationalAlertProjection } from './OperationalAlertProjection';
 export class FleetGateway implements FleetQueries, FleetCommands {
   private readonly storage: CanonicalStorage;
   private operationSequence = 0;
   readonly configuration: Readonly<OperationalConfiguration>;
   readonly requests: RequestEngine;
   readonly events = new CommittedEventStream();
+  readonly alerts: OperationalAlertProjection;
   constructor(
     scheduler: Scheduler = new RealScheduler(),
     source: DomainState | CanonicalStorage = createSeed(),
@@ -33,6 +35,8 @@ export class FleetGateway implements FleetQueries, FleetCommands {
     this.configuration = Object.freeze({ ...configuration });
     this.storage = 'readSnapshot' in source ? source : new InMemoryStorageAdapter(source);
     this.requests = new RequestEngine(scheduler);
+    this.alerts = new OperationalAlertProjection(this.state);
+    this.events.subscribe((batch) => this.alerts.ingest(batch, this.state));
   }
   private get state() {
     return this.storage.readSnapshot();

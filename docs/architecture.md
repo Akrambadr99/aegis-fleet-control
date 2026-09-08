@@ -32,6 +32,8 @@ After a successful storage commit, the gateway publishes the exact event range t
 
 The React diagnostics workspace subscribes independently to canonical state, request state and event-stream state. Event-stream observers run after the complete queued delivery cycle, so they see failures from workers regardless of subscription order. The workspace reports bounded committed-batch, event and delivery-failure counts and exposes recent worker failures without polling or coupling operational screens to infrastructure details.
 
+Operational alerts are the first event-driven read model. The projection bootstraps once from durable activity, then consumes only the exact committed batches and retains a bounded immutable alert window. Facility scope is applied when an operator reads the projection, so role changes do not rebuild it. Alert React rendering subscribes to this projection instead of rescanning all canonical entities and activity after unrelated state changes.
+
 Closing a corridor invalidates affected routes, holds reservations and pauses running missions. Reopening never silently resumes execution. Explicit reroute uses the same route-candidate selector as preview, then a separate resume validates mission feasibility. The initial topology models alternative transfer lanes; arbitrary graph pathfinding is pending.
 
 Disabling a charger displaces its queue entries and increments affected robot revisions. Re-enabling it does not silently reinstate displaced ownership.

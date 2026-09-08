@@ -1,9 +1,13 @@
-import { useDomain, useFleet } from '../app/FleetProvider';
-import { getOperationalNotifications } from '../application/projections';
+import { useSyncExternalStore } from 'react';
+import { useFleet } from '../app/FleetProvider';
 export function OperationalAlerts() {
-  const state = useDomain();
-  const { actor } = useFleet();
-  const alerts = getOperationalNotifications(state, actor);
+  const { actor, gateway } = useFleet();
+  useSyncExternalStore(
+    gateway.alerts.subscribe,
+    gateway.alerts.getSnapshot,
+    gateway.alerts.getSnapshot,
+  );
+  const alerts = gateway.alerts.forActor(actor);
   return (
     <section aria-label="Operational alerts">
       <h2>Operational alerts</h2>
