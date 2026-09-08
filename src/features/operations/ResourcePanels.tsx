@@ -1,3 +1,5 @@
+import { useCollectionPage } from '../../hooks/useCollectionPage';
+import { CollectionPager } from '../../components/CollectionPager';
 import { getMissionExecutionProjection } from '../../application/projections';
 import { OperationalAlerts } from '../../components/OperationalAlerts';
 import { useScope } from '../../hooks/useWorkspaceScope';
@@ -53,10 +55,12 @@ export function FaultPanel() {
   const faults = Object.values(state.faults).filter(
     (f) => state.robots[f.robotId].facilityId === facility.id,
   );
+  const page = useCollectionPage(faults, 'faultPage');
   return (
     <section className="panel">
       <h2>Active fault triage</h2>
-      {faults.map((fault) => (
+      <CollectionPager page={page} label="Faults" />
+      {page.items.map((fault) => (
         <article className="resource" key={fault.id}>
           <h3>
             {fault.id} · {fault.severity}
@@ -128,27 +132,27 @@ export function ExecutionPanel() {
 export function ActivityPanel() {
   const { state, params } = useScope();
   const robot = params.get('robot');
+  const related = new Set(
+    state.replay.filter((frame) => frame.robotId === robot).map((frame) => frame.eventId),
+  );
+  const events = state.activity
+    .filter((event) => !robot || event.entityId === robot || related.has(event.id))
+    .slice()
+    .reverse();
+  const page = useCollectionPage(events, 'activityPage', 50);
   return (
     <section className="panel">
       <h2>Operator and system activity</h2>
+      <CollectionPager page={page} label="Activity" />
       <OperationalAlerts />
       <ol className="record-list">
-        {state.activity
-          .filter(
-            (e) =>
-              !robot ||
-              e.entityId === robot ||
-              state.replay.some((frame) => frame.eventId === e.id && frame.robotId === robot),
-          )
-          .slice(-50)
-          .reverse()
-          .map((event) => (
-            <li key={event.id}>
-              <strong>{event.type}</strong> · {event.entityId} · {event.actorId}
-              <p>{event.details}</p>
-              <AuditDetails event={event} />
-            </li>
-          ))}
+        {page.items.map((event) => (
+          <li key={event.id}>
+            <strong>{event.type}</strong> · {event.entityId} · {event.actorId}
+            <p>{event.details}</p>
+            <AuditDetails event={event} />
+          </li>
+        ))}
       </ol>
     </section>
   );

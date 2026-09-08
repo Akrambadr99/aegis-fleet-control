@@ -1,3 +1,5 @@
+import { useCollectionPage } from '../../hooks/useCollectionPage';
+import { CollectionPager } from '../../components/CollectionPager';
 import { useScope } from '../../hooks/useWorkspaceScope';
 import { CommandButton } from '../../components/CommandButton';
 export function MaintenancePanel() {
@@ -5,15 +7,17 @@ export function MaintenancePanel() {
   const orders = Object.values(state.maintenance).filter(
     (order) => state.robots[order.robotId].floorId === floor.id,
   );
+  const page = useCollectionPage(orders, 'maintenancePage');
   return (
     <section className="panel">
       <h2>Service workboard</h2>
+      <CollectionPager page={page} label="Maintenance" />
       <p>Start service, perform inspection, then verify before returning a robot to operations.</p>
       <div className="service-board">
         {(['scheduled', 'in-progress', 'verification', 'completed'] as const).map((status) => (
           <section key={status}>
             <h3>{status}</h3>
-            {orders
+            {page.items
               .filter((order) => order.status === status)
               .map((order) => (
                 <article className="resource" key={order.id}>

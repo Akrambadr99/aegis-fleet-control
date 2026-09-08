@@ -1,3 +1,5 @@
+import { useCollectionPage } from '../../hooks/useCollectionPage';
+import { CollectionPager } from '../../components/CollectionPager';
 import { useMissionDraft } from './MissionDraftProvider';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { useState } from 'react';
@@ -15,6 +17,7 @@ export function MissionPlanning() {
   const state = useDomain(),
     { gateway, actor } = useFleet();
   const { history, dispatch, saving, message, save } = useMissionDraft();
+  const library = useCollectionPage(Object.values(state.plans), 'planPage');
   const plan = history.present,
     key = JSON.stringify(plan),
     dirty = key !== JSON.stringify(history.baseline);
@@ -124,7 +127,7 @@ export function MissionPlanning() {
           >
             New mission
           </button>
-          {Object.values(state.plans).map((p) => (
+          {library.items.map((p) => (
             <button
               disabled={saving}
               key={p.id}
@@ -137,6 +140,7 @@ export function MissionPlanning() {
               </small>
             </button>
           ))}
+          <CollectionPager page={library} label="Missions" />
           {!Object.keys(state.plans).length && (
             <p>No saved plans. Drafts remain local until saved.</p>
           )}
