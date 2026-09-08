@@ -50,3 +50,19 @@ test('invalid draft disables save and mission editor fits a narrow viewport', as
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: 'test-results/mission-editor-mobile.png', fullPage: true });
 });
+
+test('unsaved mission survives cross-domain inspection and cancel retains the saved plan', async ({
+  page,
+}) => {
+  await page.goto('/missions');
+  await page.getByRole('button', { name: 'Add step' }).click();
+  await page.getByRole('button', { name: 'Save mission', exact: true }).click();
+  await expect(page.getByText('Mission plan saved')).toBeVisible();
+  await page.getByLabel('Mission title').fill('Unsaved route inspection');
+  await page.getByRole('link', { name: 'Traffic', exact: true }).click();
+  await page.getByRole('link', { name: 'Missions', exact: true }).click();
+  await expect(page.getByLabel('Mission title')).toHaveValue('Unsaved route inspection');
+  await page.getByRole('button', { name: 'Cancel draft' }).click();
+  await page.getByRole('button', { name: 'Discard changes' }).click();
+  await expect(page.getByLabel('Mission title')).toHaveValue('Dock transfer');
+});

@@ -1,3 +1,4 @@
+import { MissionDraftProvider } from '../features/missions/MissionDraftProvider';
 import { useState, type PropsWithChildren } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FleetProvider } from './FleetProvider';
@@ -13,7 +14,9 @@ export function AppProviders({ children }: PropsWithChildren) {
   const [client] = useState(createQueryClient);
   return (
     <QueryClientProvider client={client}>
-      <FleetProvider>{children}</FleetProvider>
+      <FleetProvider>
+        <MissionDraftProvider>{children}</MissionDraftProvider>
+      </FleetProvider>
     </QueryClientProvider>
   );
 }

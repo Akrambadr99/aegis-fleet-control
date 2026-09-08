@@ -1,18 +1,17 @@
+import { useMissionDraft } from './MissionDraftProvider';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDomain, useFleet } from '../../app/FleetProvider';
 import { newPlan, newStep, type MissionPlan, type PlanValidation } from '../../domain/planning';
 import { commandPermission } from '../../domain/permissions';
-import { draftReducer, initialHistory, moveStep } from './draftHistory';
+import { moveStep } from './draftHistory';
 import { StepInspector } from './StepInspector';
 import { StepSequence } from './StepSequence';
 import { DependencyGraph } from './DependencyGraph';
 export function MissionPlanning() {
   const state = useDomain(),
     { gateway, actor } = useFleet();
-  const [history, dispatch] = useReducer(draftReducer, undefined, () =>
-    initialHistory(newPlan('PLAN-' + crypto.randomUUID(), 'FAC-001', 'R-001')),
-  );
+  const { history, dispatch } = useMissionDraft();
   const plan = history.present,
     key = JSON.stringify(plan),
     dirty = key !== JSON.stringify(history.baseline);

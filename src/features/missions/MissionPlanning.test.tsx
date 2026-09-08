@@ -24,3 +24,13 @@ it('undo removes the entire step addition and redo restores it', async () => {
   await user.click(screen.getByRole('button', { name: 'Redo' }));
   expect(screen.getByRole('button', { name: 'Remove S-1' })).toBeVisible();
 });
+
+it('retains unsaved steps and undo history while inspecting another workspace', async () => {
+  const user = userEvent.setup();
+  renderApp('/missions');
+  await user.click(screen.getByRole('button', { name: 'Add step' }));
+  await user.click(screen.getByRole('link', { name: 'Traffic' }));
+  await user.click(screen.getByRole('link', { name: 'Missions' }));
+  expect(screen.getByRole('button', { name: 'Remove S-1' })).toBeVisible();
+  expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled();
+});
