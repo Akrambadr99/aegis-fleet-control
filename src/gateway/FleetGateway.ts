@@ -1,3 +1,4 @@
+import { executeTransaction } from '../application/transactions';
 import { processAutomation } from './automationEngine';
 import { validateRule, evaluateRule, type RuleInput } from '../domain/automation';
 import { appendHistory } from '../domain/history';
@@ -7,7 +8,7 @@ import { rankCandidates, synchronizeJobs } from '../domain/jobs';
 import { validatePlan, type MissionPlan } from '../domain/planning';
 import type { Actor, Command, DomainState, RoutePreview } from '../domain/model';
 import { createSeed } from '../domain/seed';
-import { applyCommand, record } from '../domain/transactions';
+import { record } from '../domain/transactions';
 import { readiness } from '../domain/selectors';
 import { commandPermission } from '../domain/permissions';
 import { assertInvariants } from '../domain/invariants';
@@ -23,6 +24,7 @@ function freeze<T>(value: T): T {
 }
 export class FleetGateway {
   private state: DomainState;
+  private operationSequence = 0;
   private listeners = new Set<() => void>();
   readonly requests: RequestEngine;
   constructor(scheduler: Scheduler = new RealScheduler(), state: DomainState = createSeed()) {
@@ -45,14 +47,19 @@ export class FleetGateway {
   command(actor: Actor, command: Command, signal?: AbortSignal): Ticket<{ revision: number }> {
     const input = structuredClone(command),
       identity = structuredClone(actor);
-    return this.requests.run(() => {
-      const next = structuredClone(this.state);
-      const eventStart = next.activity.length;
-      applyCommand(next, identity, input);
-      processAutomation(next, eventStart);
-      this.publish(next);
-      return { revision: next.revision };
-    }, signal);
+    const operationId = 'OP-' + this.state.revision + '-' + ++this.operationSequence;
+    return this.requests.run(
+      () => {
+        const next = executeTransaction(this.state, identity, input, {
+          operationId,
+          correlationId: operationId,
+        });
+        this.publish(next);
+        return { revision: next.revision };
+      },
+      signal,
+      { operationId, entityId: input.id, action: input.type, actorId: identity.id },
+    );
   }
   bulk(actor: Actor, commands: Command[]) {
     const tickets = commands.map((command) => ({

@@ -139,6 +139,9 @@ export interface AuditChange {
   next: Versioned;
 }
 export interface Activity {
+  operationId?: string;
+  correlationId?: string;
+  causationId?: string;
   id: string;
   tick: number;
   actorId: string;
