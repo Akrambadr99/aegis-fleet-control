@@ -4,6 +4,7 @@ import { shortestPath, type PathResult } from './navigation';
 import { readiness } from './selectors';
 import { robotCommitments } from './availability';
 import { newPlan, newStep } from './planning';
+import { recordPlanRevision } from './planHistory';
 import { GatewayError } from '../gateway/requests';
 export interface JobInput {
   title: string;
@@ -22,6 +23,7 @@ export interface WarehouseJob extends Versioned, JobInput {
   assignedUnits: number;
   robotId: string | null;
   missionId: string | null;
+  missionIds?: string[];
   custody: 'source' | 'robot' | 'destination';
   assignmentReason: string;
   pickupProgress: number;
@@ -177,7 +179,7 @@ function releaseAssignment(state: DomainState, job: WarehouseJob) {
     robot.revision++;
   }
 }
-export function applyJob(state: DomainState, command: JobCommand): Robot[] {
+export function applyJob(state: DomainState, command: JobCommand, actorId = 'scheduler'): Robot[] {
   const existing = state.jobs[command.id];
   if ((existing?.revision ?? 0) !== command.expectedRevision)
     throw new GatewayError('stale', 'Job changed; review the current assignment');
@@ -200,6 +202,7 @@ export function applyJob(state: DomainState, command: JobCommand): Robot[] {
       assignedUnits: 0,
       robotId: null,
       missionId: null,
+      missionIds: existing?.missionIds ?? [],
       custody: 'source',
       assignmentReason: '',
       pickupProgress: 0,
@@ -253,7 +256,7 @@ export function applyJob(state: DomainState, command: JobCommand): Robot[] {
     { ...newStep('destination'), zoneId: existing.destinationZoneId, dependsOn: ['pickup'] },
     { ...newStep('dropoff', 'dropoff'), payloadKg: existing.payloadKg, dependsOn: ['destination'] },
   ];
-  state.plans[planId] = plan;
+  recordPlanRevision(state, plan, actorId);
   state.routes[routeId] = {
     id: routeId,
     revision: 1,
@@ -287,6 +290,7 @@ export function applyJob(state: DomainState, command: JobCommand): Robot[] {
   robot.revision++;
   existing.robotId = robot.id;
   existing.missionId = missionId;
+  existing.missionIds = [...(existing.missionIds ?? []), missionId];
   existing.assignedUnits = command.units;
   existing.status = 'assigned';
   existing.custody = 'source';

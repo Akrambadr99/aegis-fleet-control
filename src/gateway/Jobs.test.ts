@@ -12,6 +12,46 @@ function ready() {
   r.position = { ...state.navigationNodes['F-001-OUT'].position };
   return state;
 }
+it('retains every generated mission and attributed plan revision across partial deliveries', async () => {
+  const clock = new ManualScheduler(),
+    gateway = new FleetGateway(clock, ready());
+  const ticket = gateway.command(
+    { id: 'dispatcher', role: 'fleet-manager' },
+    { type: 'job.assign', id: 'JOB-001', expectedRevision: 1, units: 1, reason: '' },
+  );
+  clock.advance(250);
+  await ticket.promise;
+  const snapshot = gateway.getSnapshot(),
+    job = snapshot.jobs['JOB-001'];
+  const firstMission = snapshot.missions[job.missionId!];
+  const firstPlan = snapshot.plans[firstMission.planId!];
+  expect(firstPlan.ownerId).toBe('dispatcher');
+  expect(
+    Object.values(snapshot.planRevisions).find((entry) => entry.planId === firstPlan.id),
+  ).toMatchObject({ savedBy: 'dispatcher', plan: firstPlan });
+  const state = structuredClone(snapshot);
+  state.missions[firstMission.id].status = 'completed';
+  state.missions[firstMission.id].progress = 100;
+  state.robots[firstMission.robotId].status = 'idle';
+  synchronizeJobs(state);
+  expect(state.jobs[job.id].missionId).toBeNull();
+  expect(state.jobs[job.id].missionIds).toEqual([firstMission.id]);
+  applyJob(
+    state,
+    {
+      type: 'job.assign',
+      id: job.id,
+      expectedRevision: state.jobs[job.id].revision,
+      units: 1,
+      reason: '',
+    },
+    'second-dispatcher',
+  );
+  expect(state.jobs[job.id].missionIds).toHaveLength(2);
+  expect(state.plans[firstPlan.id]).toEqual(firstPlan);
+  expect(Object.values(state.planRevisions)).toHaveLength(2);
+  expect(snapshot.jobs[job.id].missionIds).toEqual([firstMission.id]);
+});
 it('ranks real availability and rejects busy, maintenance and incapable robots', () => {
   const state = ready();
   const candidates = rankCandidates(state, state.jobs['JOB-001']);

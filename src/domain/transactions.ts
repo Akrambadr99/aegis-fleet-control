@@ -5,6 +5,7 @@ import { isResourceCommand, applyResource, releaseRobotResources } from './resou
 import { isJobCommand, applyJob } from './jobs';
 import { validatePlan } from './planning';
 import { createMissionTemplate } from './missionTemplates';
+import { recordPlanRevision } from './planHistory';
 import type { Actor, AuditChange, Command, DomainState, Robot } from './model';
 import { missionFeasibility, routeCandidates } from './selectors';
 import { GatewayError } from '../gateway/requests';
@@ -112,7 +113,7 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
   }
   if (isJobCommand(command)) {
     const before = captureEntities(state);
-    const robots = applyJob(state, command);
+    const robots = applyJob(state, command, actor.id);
     record(
       state,
       actor,
@@ -137,21 +138,14 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
     if (validation.issues.length)
       throw new GatewayError('invalid', validation.issues.map((i) => i.message).join('; '));
     const before = captureEntities(state);
-    state.plans[command.id] = {
-      ...structuredClone(command.plan),
-      ownerId: existing?.ownerId ?? actor.id,
-      revision: command.expectedRevision + 1,
-    };
-    const saved = state.plans[command.id];
-    const revisionId = JSON.stringify([saved.id, saved.revision]);
-    state.planRevisions[revisionId] = {
-      id: revisionId,
-      revision: saved.revision,
-      planId: saved.id,
-      savedBy: actor.id,
-      savedAtTick: state.tick,
-      plan: structuredClone(saved),
-    };
+    recordPlanRevision(
+      state,
+      {
+        ...command.plan,
+        revision: command.expectedRevision + 1,
+      },
+      actor.id,
+    );
     record(
       state,
       actor,

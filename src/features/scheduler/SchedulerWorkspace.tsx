@@ -4,6 +4,7 @@ import { useScope } from '../operations/useScope';
 import { JobQueue } from './JobQueue';
 import { JobEditor } from './JobEditor';
 import { CandidatePanel } from './CandidatePanel';
+import { JobHistory } from './JobHistory';
 import { useCommand } from '../../hooks/useCommand';
 import { commandPermission } from '../../domain/permissions';
 export function SchedulerWorkspace() {
@@ -88,6 +89,7 @@ export function SchedulerWorkspace() {
               setCreating(false);
             }}
           />
+          {job && <JobHistory job={job} state={state} />}
           {(creating || job) && (
             <JobEditor
               key={creating ? 'new-' + facility.id : job.id + '-' + job.revision}
