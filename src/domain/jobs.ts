@@ -5,7 +5,7 @@ import { readiness } from './selectors';
 import { robotCommitments } from './availability';
 import { newPlan, newStep } from './planning';
 import { recordPlanRevision } from './planHistory';
-import { GatewayError } from '../gateway/requests';
+import { DomainError as GatewayError } from './errors';
 export interface JobInput {
   title: string;
   facilityId: string;

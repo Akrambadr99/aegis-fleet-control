@@ -1,7 +1,7 @@
 import type { Actor, Command, DomainState, Robot } from './model';
 import { readiness } from './selectors';
 import { releaseRobotResources } from './resources';
-import { GatewayError } from '../gateway/requests';
+import { DomainError as GatewayError } from './errors';
 export type ControlCommand =
   | { type: 'control.acquire'; id: string; expectedRevision: number; duration: number }
   | { type: 'control.release'; id: string; expectedRevision: number }

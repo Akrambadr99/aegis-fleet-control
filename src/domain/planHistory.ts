@@ -1,6 +1,6 @@
 import type { DomainState } from './model';
 import type { MissionPlan } from './planning';
-import { GatewayError } from '../gateway/requests';
+import { DomainError as GatewayError } from './errors';
 
 /** Every producer of a mission plan records the same immutable revision contract. */
 export function recordPlanRevision(state: DomainState, plan: MissionPlan, actorId: string) {

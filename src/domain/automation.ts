@@ -1,6 +1,6 @@
 import { releaseControl } from './teleoperation';
 import type { Actor, Activity, Command, DomainState, Robot, Versioned } from './model';
-import { GatewayError } from '../gateway/requests';
+import { DomainError as GatewayError } from './errors';
 export const automationTriggers = [
   'robot.low-battery',
   'corridor.set',

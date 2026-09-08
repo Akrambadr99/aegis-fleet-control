@@ -1,5 +1,5 @@
 import type { DomainState } from './model';
-import { GatewayError } from '../gateway/requests';
+import { DomainError as GatewayError } from './errors';
 
 export interface InvariantViolation {
   entityId: string;

@@ -8,7 +8,7 @@ import { createMissionTemplate } from './missionTemplates';
 import { recordPlanRevision } from './planHistory';
 import type { Actor, AuditChange, Command, DomainState, Robot } from './model';
 import { missionFeasibility, routeCandidates } from './selectors';
-import { GatewayError } from '../gateway/requests';
+import { DomainError as GatewayError } from './errors';
 import { commandPermission } from './permissions';
 import { captureEntities, changedEntities } from './audit';
 import { robotPath } from './navigation';

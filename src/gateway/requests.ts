@@ -1,3 +1,4 @@
+import { DomainError as GatewayError } from '../domain/errors';
 import type { Scheduler } from './scheduler';
 export type RequestStatus =
   | 'pending'
@@ -6,15 +7,7 @@ export type RequestStatus =
   | 'cancelled'
   | 'stale'
   | 'superseded';
-export class GatewayError extends Error {
-  constructor(
-    public code: string,
-    message: string,
-  ) {
-    super(message);
-    this.name = 'GatewayError';
-  }
-}
+export { DomainError as GatewayError } from '../domain/errors';
 export interface RequestPlan {
   delay?: number;
   failure?: string;

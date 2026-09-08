@@ -40,3 +40,23 @@ it('keeps runtime domain dependencies acyclic', () => {
   for (const name of graph.keys()) visit(name, []);
   expect(cycles).toEqual([]);
 });
+
+it('keeps production domain modules independent of React, UI and infrastructure', () => {
+  const directory = join(process.cwd(), 'src', 'domain');
+  for (const name of readdirSync(directory).filter(
+    (name) => name.endsWith('.ts') && !name.endsWith('.test.ts'),
+  )) {
+    const source = ts.createSourceFile(
+      name,
+      readFileSync(join(directory, name), 'utf8'),
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    for (const statement of source.statements) {
+      if (!ts.isImportDeclaration(statement) && !ts.isExportDeclaration(statement)) continue;
+      const module = statement.moduleSpecifier;
+      if (module && ts.isStringLiteral(module))
+        expect(module.text, name).not.toMatch(/react|gateway|features|app\//);
+    }
+  }
+});

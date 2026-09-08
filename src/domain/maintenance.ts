@@ -1,6 +1,6 @@
 import { releaseRobotResources } from './resources';
 import type { Command, DomainState } from './model';
-import { GatewayError } from '../gateway/requests';
+import { DomainError as GatewayError } from './errors';
 export { capabilityIssues, maintenanceReasons } from './eligibility';
 export function applyMaintenance(
   state: DomainState,

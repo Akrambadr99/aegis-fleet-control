@@ -1,6 +1,6 @@
 import type { Command, DomainState, Robot, Versioned } from './model';
 import { readiness } from './eligibility';
-import { GatewayError } from '../gateway/requests';
+import { DomainError as GatewayError } from './errors';
 export type ResourceKind =
   | 'elevator'
   | 'narrow-corridor'

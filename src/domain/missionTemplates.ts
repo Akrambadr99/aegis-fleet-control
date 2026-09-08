@@ -1,6 +1,6 @@
 import type { Actor, DomainState, Versioned } from './model';
 import { newPlan, type MissionPlan } from './planning';
-import { GatewayError } from '../gateway/requests';
+import { DomainError as GatewayError } from './errors';
 
 export interface MissionTemplate extends Versioned {
   title: string;
