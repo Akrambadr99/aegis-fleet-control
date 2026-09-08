@@ -3,10 +3,10 @@ import type { Command } from '../domain/model';
 import { useFleet } from '../app/FleetProvider';
 export function useCommand() {
   const { gateway, actor } = useFleet();
-  const [pending, setPending] = useState(false),
+  const [pending, setPending] = useState(0),
     [message, setMessage] = useState('');
   async function run(command: Command) {
-    setPending(true);
+    setPending((count) => count + 1);
     setMessage('');
     try {
       await gateway.command(actor, command).promise;
@@ -16,8 +16,8 @@ export function useCommand() {
       setMessage(command.id + ': ' + (error instanceof Error ? error.message : 'Command failed'));
       return false;
     } finally {
-      setPending(false);
+      setPending((count) => count - 1);
     }
   }
-  return { run, pending, message };
+  return { run, pending: pending > 0, message };
 }

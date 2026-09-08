@@ -1,3 +1,5 @@
+import { useOperation } from '../hooks/useOperation';
+import { recoveryFor } from '../domain/errors';
 import { useState } from 'react';
 import type { Command } from '../domain/model';
 import { commandPermission } from '../domain/permissions';
@@ -10,6 +12,7 @@ export function CommandButton({
   children: React.ReactNode;
 }) {
   const { gateway, actor } = useFleet();
+  const { pending } = useOperation(command.id, command.type);
   const [state, setState] = useState<'idle' | 'pending' | 'confirmed' | 'failed'>('idle');
   const [message, setMessage] = useState('');
   const confirmed = useDomain();
@@ -24,20 +27,33 @@ export function CommandButton({
       setMessage('Applied');
     } catch (error) {
       setState('failed');
-      setMessage(error instanceof Error ? error.message : 'Command failed');
+      setMessage(
+        (error instanceof Error ? error.message : 'Command failed') +
+          recoveryMessage[recoveryFor(error)],
+      );
     }
   }
   return (
     <div className="command-action">
       <button
         className={command.type === 'robot.stop' ? 'emergency-stop' : undefined}
-        disabled={!allowed || state === 'pending'}
+        disabled={!allowed || pending}
         onClick={run}
       >
-        {state === 'pending' ? 'Applying…' : children}
+        {pending ? 'Applying…' : children}
       </button>
       {!allowed && <small>{denied}</small>}
       <span role={state === 'failed' ? 'alert' : 'status'}>{message}</span>
     </div>
   );
 }
+
+const recoveryMessage = {
+  refresh: ' Review the latest state before trying again.',
+  'request-access': ' Ask an authorized operator to perform this action.',
+  reacquire: ' Acquire control again before continuing.',
+  'choose-alternative': ' Choose an available resource or reservation.',
+  edit: ' Correct the inputs before trying again.',
+  retry: ' Try again when the operation is available.',
+  none: '',
+};
