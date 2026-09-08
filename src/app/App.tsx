@@ -1,16 +1,28 @@
-import { AutomationWorkspace } from '../features/automation/AutomationWorkspace';
 import { TrafficWorkspace } from '../features/traffic/TrafficWorkspace';
-import { ReplayWorkspace } from '../features/replay/ReplayWorkspace';
 import { TeleoperationWorkspace } from '../features/teleoperation/TeleoperationWorkspace';
 import { ResourcesWorkspace } from '../features/resources/ResourcesWorkspace';
-import { SchedulerWorkspace } from '../features/scheduler/SchedulerWorkspace';
 import { MissionPlanning } from '../features/missions/MissionPlanning';
-import { useLayoutEffect } from 'react';
+import { lazy, Suspense, useLayoutEffect } from 'react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { Overview } from '../features/overview/Overview';
 import { OperationsWorkspace, connectedPaths } from '../features/operations/OperationsWorkspace';
 import { workspaces, type Workspace } from '../routing/workspaces';
+const AutomationWorkspace = lazy(() =>
+  import('../features/automation/AutomationWorkspace').then((module) => ({
+    default: module.AutomationWorkspace,
+  })),
+);
+const ReplayWorkspace = lazy(() =>
+  import('../features/replay/ReplayWorkspace').then((module) => ({
+    default: module.ReplayWorkspace,
+  })),
+);
+const SchedulerWorkspace = lazy(() =>
+  import('../features/scheduler/SchedulerWorkspace').then((module) => ({
+    default: module.SchedulerWorkspace,
+  })),
+);
 function RouteEffects() {
   const { pathname } = useLocation();
   useLayoutEffect(() => {
@@ -113,39 +125,41 @@ export function App() {
         </header>
         <main id="workspace-content" tabIndex={-1}>
           <ErrorBoundary key={location.pathname}>
-            <Routes>
-              <Route path="/" element={<Overview />} />
-              {workspaces
-                .filter((item) => item.path !== '/')
-                .map((item) => (
-                  <Route
-                    key={item.path}
-                    path={item.path}
-                    element={
-                      item.path === '/automation' ? (
-                        <AutomationWorkspace />
-                      ) : item.path === '/traffic' ? (
-                        <TrafficWorkspace />
-                      ) : item.path === '/replay' ? (
-                        <ReplayWorkspace />
-                      ) : item.path === '/teleoperation' ? (
-                        <TeleoperationWorkspace />
-                      ) : item.path === '/resources' ? (
-                        <ResourcesWorkspace />
-                      ) : item.path === '/scheduler' ? (
-                        <SchedulerWorkspace />
-                      ) : item.path === '/missions' ? (
-                        <MissionPlanning />
-                      ) : connectedPaths.includes(item.path) ? (
-                        <OperationsWorkspace workspace={item} />
-                      ) : (
-                        <PlannedWorkspace workspace={item} />
-                      )
-                    }
-                  />
-                ))}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<p role="status">Loading workspace…</p>}>
+              <Routes>
+                <Route path="/" element={<Overview />} />
+                {workspaces
+                  .filter((item) => item.path !== '/')
+                  .map((item) => (
+                    <Route
+                      key={item.path}
+                      path={item.path}
+                      element={
+                        item.path === '/automation' ? (
+                          <AutomationWorkspace />
+                        ) : item.path === '/traffic' ? (
+                          <TrafficWorkspace />
+                        ) : item.path === '/replay' ? (
+                          <ReplayWorkspace />
+                        ) : item.path === '/teleoperation' ? (
+                          <TeleoperationWorkspace />
+                        ) : item.path === '/resources' ? (
+                          <ResourcesWorkspace />
+                        ) : item.path === '/scheduler' ? (
+                          <SchedulerWorkspace />
+                        ) : item.path === '/missions' ? (
+                          <MissionPlanning />
+                        ) : connectedPaths.includes(item.path) ? (
+                          <OperationsWorkspace workspace={item} />
+                        ) : (
+                          <PlannedWorkspace workspace={item} />
+                        )
+                      }
+                    />
+                  ))}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </ErrorBoundary>
         </main>
         <footer className="page-footer">

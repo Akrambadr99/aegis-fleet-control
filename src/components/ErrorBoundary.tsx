@@ -1,5 +1,8 @@
 import { Component, type ErrorInfo, type PropsWithChildren } from 'react';
-export class ErrorBoundary extends Component<PropsWithChildren, { failed: boolean }> {
+export class ErrorBoundary extends Component<
+  PropsWithChildren<{ scope?: 'application' | 'workspace' }>,
+  { failed: boolean }
+> {
   state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
@@ -11,7 +14,11 @@ export class ErrorBoundary extends Component<PropsWithChildren, { failed: boolea
     if (this.state.failed)
       return (
         <section className="empty-state" role="alert">
-          <h1>Workspace unavailable</h1>
+          <h1>
+            {this.props.scope === 'application'
+              ? 'Application unavailable'
+              : 'Workspace unavailable'}
+          </h1>
           <p>The interface could not render. Reload to restore the local demonstration.</p>
           <button onClick={() => window.location.reload()}>Reload application</button>
         </section>
