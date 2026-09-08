@@ -1,3 +1,4 @@
+import { pageCollection } from '../../application/collections';
 import { useMemo, useState } from 'react';
 import { useFleet } from '../../app/FleetProvider';
 import { readiness } from '../../domain/selectors';
@@ -21,17 +22,14 @@ export function FleetTable() {
             r.id.toLowerCase().includes(search.toLowerCase()) &&
             (status === 'all' || r.status === status),
         )
-        .sort((a, b) => (sort === 'battery' ? a.battery - b.battery : a.id.localeCompare(b.id))),
+        .sort((a, b) =>
+          sort === 'battery'
+            ? a.battery - b.battery || a.id.localeCompare(b.id)
+            : a.id.localeCompare(b.id),
+        ),
     [state.robots, facility.id, search, status, sort],
   );
-  const page = Math.max(
-    0,
-    Math.min(
-      Math.floor(Number(params.get('page')) || 0),
-      Math.max(0, Math.ceil(rows.length / 10) - 1),
-    ),
-  );
-  const visible = rows.slice(page * 10, page * 10 + 10);
+  const { page, items: visible } = pageCollection(rows, Number(params.get('page')), 10);
   async function bulkPause() {
     const ids = [...selection].filter((id) => state.robots[id].facilityId === facility.id);
     setPending(true);

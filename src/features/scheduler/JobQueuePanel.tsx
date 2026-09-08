@@ -1,3 +1,4 @@
+import { pageCollection } from '../../application/collections';
 import { useSearchParams } from 'react-router-dom';
 import type { WarehouseJob } from '../../domain/jobs';
 import { JobQueue } from './JobQueue';
@@ -30,10 +31,12 @@ export function JobQueuePanel(props: {
         value.toLowerCase().includes(query.trim().toLowerCase()),
       ),
   );
+  const page = pageCollection(jobs, Number(params.get('jobPage')), 25);
   function update(key: string, value: string) {
     setParams(
       (previous) => {
         const next = new URLSearchParams(previous);
+        if (key !== 'jobPage') next.delete('jobPage');
         if (value) next.set(key, value);
         else next.delete(key);
         return next;
@@ -77,7 +80,23 @@ export function JobQueuePanel(props: {
           Selected job {props.selected} is outside the queue filters. Its inspector remains open.
         </p>
       )}
-      <JobQueue {...props} jobs={jobs} />
+      <JobQueue {...props} jobs={page.items} />
+      {page.pages > 1 && (
+        <nav aria-label="Job pages">
+          <button disabled={!page.page} onClick={() => update('jobPage', String(page.page - 1))}>
+            Previous jobs
+          </button>
+          <span>
+            Page {page.page + 1} of {page.pages}
+          </span>
+          <button
+            disabled={page.page + 1 === page.pages}
+            onClick={() => update('jobPage', String(page.page + 1))}
+          >
+            Next jobs
+          </button>
+        </nav>
+      )}
     </>
   );
 }
