@@ -1,4 +1,18 @@
 import { test, expect } from '@playwright/test';
+test('acquiring a dispatch lock preserves an unsaved job edit and its subsequent save', async ({
+  page,
+}) => {
+  await page.goto('/scheduler');
+  await page.getByLabel('Job title').fill('Protected outbound plan');
+  await page.getByLabel('Dispatch lock reason').fill('Editing assignment requirements');
+  await page.getByRole('button', { name: 'Acquire dispatch lock' }).click();
+  await expect(page.getByRole('region', { name: 'Dispatch ownership' })).toContainText(
+    'local-operator owns dispatch',
+  );
+  await expect(page.getByLabel('Job title')).toHaveValue('Protected outbound plan');
+  await page.getByRole('button', { name: 'Save job requirements' }).click();
+  await expect(page.locator('.job-queue')).toContainText('Protected outbound plan');
+});
 test('dispatch ownership can be acquired, renewed and released from the scheduler', async ({
   page,
 }) => {

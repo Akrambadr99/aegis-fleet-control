@@ -113,3 +113,16 @@ Validation: 228 tests across 50 Vitest/React files, typecheck, lint, production
 build and eight scheduler Chromium journeys passed. Next repair: the job editor's
 revision-keyed remount currently discards unsaved fields on metadata changes;
 retain drafts across lock revisions and handle competing requirement edits explicitly.
+
+## Revision-aware job editing
+
+The editor now follows requirement snapshots rather than remounting on every job
+revision. Lock/group metadata changes preserve local fields and refresh the save
+revision. Competing requirement edits retain the draft, show current and local
+values, and require an explicit reload or reapplication of only locally edited
+fields. Untouched fields retain the latest canonical values. The submitted command
+uses the draft's reviewed revision, so subsequent races still fail atomically.
+
+Validation: 232 tests across 51 Vitest/React files, typecheck, lint and production
+build passed; all nine scheduler Chromium journeys passed. Tests include metadata
+updates, competing edits, clean refresh and an unsaved title surviving lock acquisition.

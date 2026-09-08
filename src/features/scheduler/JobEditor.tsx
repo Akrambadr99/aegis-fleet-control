@@ -2,6 +2,14 @@ import { useState } from 'react';
 import type { DomainState } from '../../domain/model';
 import type { JobInput, WarehouseJob } from '../../domain/jobs';
 import { jobKinds, jobProfiles, jobActions, type JobKind } from '../../domain/jobKinds';
+import {
+  newJobDraft,
+  jobInputSnapshot,
+  reconcileJobDraft,
+  rebaseJobDraft,
+  changedJobFields,
+  jobFieldLabels,
+} from './jobDraft';
 export function JobEditor({
   state,
   facilityId,
@@ -15,51 +23,84 @@ export function JobEditor({
   job?: WarehouseJob;
   pending: boolean;
   blockedReason?: string | null;
-  onSave: (input: JobInput) => void;
+  onSave: (input: JobInput, expectedRevision: number) => void;
 }) {
   const zones = Object.values(state.zones).filter(
     (z) => state.floors[z.floorId].facilityId === facilityId,
   );
-  const [draft, setDraft] = useState<JobInput>(() =>
-    job
-      ? {
-          title: job.title,
-          kind: job.kind ?? 'transport',
-          requiredActions: [...(job.requiredActions ?? [])],
-          facilityId: job.facilityId,
-          sourceZoneId: job.sourceZoneId,
-          destinationZoneId: job.destinationZoneId,
-          payloadKg: job.payloadKg,
-          units: job.units,
-          priority: job.priority,
-          deadlineTick: job.deadlineTick,
-          dependsOn: [...job.dependsOn],
-        }
-      : {
-          title: 'Dock transfer request',
-          kind: 'transport',
-          requiredActions: [],
-          facilityId,
-          sourceZoneId: zones[1]?.id ?? '',
-          destinationZoneId: zones[4]?.id ?? '',
-          payloadKg: 60,
-          units: 4,
-          priority: 3,
-          deadlineTick: state.tick + 1800,
-          dependsOn: [],
-        },
+  const [session, setSession] = useState(() =>
+    newJobDraft(
+      job
+        ? jobInputSnapshot(job)
+        : {
+            title: 'Dock transfer request',
+            kind: 'transport',
+            requiredActions: [],
+            facilityId,
+            sourceZoneId: zones[1]?.id ?? '',
+            destinationZoneId: zones[4]?.id ?? '',
+            payloadKg: 60,
+            units: 4,
+            priority: 3,
+            deadlineTick: state.tick + 1800,
+            dependsOn: [],
+          },
+      job?.revision ?? 0,
+    ),
   );
-  const patch = (value: Partial<JobInput>) => setDraft({ ...draft, ...value });
+  const draft = session.draft;
+  const incoming = job ? jobInputSnapshot(job) : session.baseline;
+  if (job && job.revision !== session.observedRevision)
+    setSession(reconcileJobDraft(session, incoming, job.revision));
+  const conflict = session.baselineRevision !== session.observedRevision;
+  const patch = (value: Partial<JobInput>) =>
+    setSession((previous) => ({ ...previous, draft: { ...previous.draft, ...value } }));
   return (
     <form
       className="job-editor"
       onSubmit={(e) => {
         e.preventDefault();
-        onSave(draft);
+        if (!conflict && !pending && !blockedReason) onSave(draft, session.baselineRevision);
       }}
     >
       <h2>{job ? 'Job requirements' : 'New warehouse job'}</h2>
       {blockedReason && <p role="status">{blockedReason}</p>}
+      {conflict && job && (
+        <section role="alert">
+          <p>
+            This job's requirements changed. Your edits are retained. Changed fields:{' '}
+            {changedJobFields(session.baseline, incoming)
+              .map((key) => jobFieldLabels[key])
+              .join(', ')}
+            .
+          </p>
+          <dl>
+            {changedJobFields(session.baseline, incoming).map((key) => (
+              <div key={key}>
+                <dt>{jobFieldLabels[key]}</dt>
+                <dd>
+                  Current: {String(incoming[key] ?? 'None')} · Your draft:{' '}
+                  {String(draft[key] ?? 'None')}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => setSession(newJobDraft(incoming, job.revision))}
+          >
+            Reload current requirements
+          </button>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => setSession(rebaseJobDraft(session, incoming, job.revision))}
+          >
+            Apply my edited fields
+          </button>
+        </section>
+      )}
       <fieldset
         disabled={
           pending ||
@@ -195,7 +236,9 @@ export function JobEditor({
               </label>
             ))}
         </fieldset>
-        <button type="submit">{job ? 'Save job requirements' : 'Create job'}</button>
+        <button type="submit" disabled={conflict}>
+          {job ? 'Save job requirements' : 'Create job'}
+        </button>
       </fieldset>
     </form>
   );

@@ -106,7 +106,7 @@ export function SchedulerWorkspace() {
           {job && <JobHistory job={job} state={state} />}
           {(creating || job) && (
             <JobEditor
-              key={creating ? 'new-' + facility.id : job.id + '-' + job.revision}
+              key={creating ? 'new-' + facility.id : job.id}
               state={state}
               facilityId={facility.id}
               job={creating ? undefined : job}
@@ -115,13 +115,13 @@ export function SchedulerWorkspace() {
                 facilityPermission(actor, facility.id, 'job.save') ??
                 (!creating && job ? dispatchLockConflict(job, actor.id, state.tick) : null)
               }
-              onSave={async (input) => {
+              onSave={async (input, expectedRevision) => {
                 const id = creating ? 'JOB-' + crypto.randomUUID() : job.id;
                 if (
                   await run({
                     type: 'job.save',
                     id,
-                    expectedRevision: creating ? 0 : job.revision,
+                    expectedRevision,
                     input,
                   })
                 ) {
