@@ -1,3 +1,4 @@
+import { appendHistory } from '../domain/history';
 import { synchronizeControls } from '../domain/teleoperation';
 import { synchronizeResources } from '../domain/resources';
 import { rankCandidates, synchronizeJobs } from '../domain/jobs';
@@ -225,6 +226,7 @@ export class FleetGateway {
           'Resource ownership transition',
           [change.robot],
         );
+      appendHistory(next, Object.values(next.robots));
     }
     // Retain a bounded live window; activity and replay remain session history.
     next.telemetry = next.telemetry.slice(-2400);

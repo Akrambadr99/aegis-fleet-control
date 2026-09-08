@@ -1,3 +1,4 @@
+import type { RobotHistory } from './history';
 import type { ControlCommand } from './teleoperation';
 import type { FacilityResource, ResourceReservation, ResourceCommand } from './resources';
 import type { WarehouseJob, JobCommand } from './jobs';
@@ -165,6 +166,8 @@ export interface Telemetry {
   velocity: number;
 }
 export interface DomainState {
+  history: RobotHistory[];
+  historySequence: number;
   revision: number;
   tick: number;
   facilities: Record<string, Facility>;

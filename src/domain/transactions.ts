@@ -1,3 +1,4 @@
+import { appendHistory } from './history';
 import { isControlCommand, applyControl } from './teleoperation';
 import { isResourceCommand, applyResource, releaseRobotResources } from './resources';
 import { isJobCommand, applyJob } from './jobs';
@@ -44,6 +45,7 @@ export function record(
     changes,
   };
   state.activity.push(event);
+  appendHistory(state, robots, event.id);
   robots.forEach((robot) => frame(state, robot, event.id));
 }
 export function applyCommand(state: DomainState, actor: Actor, command: Command) {

@@ -1,3 +1,4 @@
+import { appendHistory } from './history';
 import { seedResources } from './resources';
 import { seedJobs } from './jobs';
 import type { DomainState } from './model';
@@ -6,6 +7,8 @@ import { seedMaintenance } from './maintenance';
 const key = (prefix: string, n: number) => `${prefix}-${String(n).padStart(3, '0')}`;
 export function createSeed(): DomainState {
   const state: DomainState = {
+    history: [],
+    historySequence: 0,
     revision: 1,
     tick: 0,
     facilities: {},
@@ -195,5 +198,6 @@ export function createSeed(): DomainState {
   seedMaintenance(state);
   seedResources(state);
   seedJobs(state);
+  appendHistory(state, Object.values(state.robots));
   return state;
 }
