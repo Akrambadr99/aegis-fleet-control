@@ -1,20 +1,16 @@
+import { advanceDomain } from '../application/processing';
 import { defaultConfiguration, type OperationalConfiguration } from '../application/configuration';
 import { exportSnapshot, migrateSnapshot, type SnapshotEnvelope } from '../domain/snapshots';
 import { executeTransaction } from '../application/transactions';
-import { processAutomation } from './automationEngine';
 import { validateRule, evaluateRule, type RuleInput } from '../domain/automation';
-import { appendHistory } from '../domain/history';
-import { synchronizeControls } from '../domain/teleoperation';
-import { synchronizeResources } from '../domain/resources';
-import { rankCandidates, synchronizeJobs } from '../domain/jobs';
+import { rankCandidates } from '../domain/jobs';
 import { validatePlan, type MissionPlan } from '../domain/planning';
 import type { Actor, Command, DomainState, RoutePreview } from '../domain/model';
 import { createSeed } from '../domain/seed';
-import { record } from '../domain/transactions';
 import { readiness } from '../domain/selectors';
 import { commandPermission } from '../domain/permissions';
 import { assertInvariants } from '../domain/invariants';
-import { robotPath, positionOnRoute } from '../domain/navigation';
+import { robotPath } from '../domain/navigation';
 import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
 function freeze<T>(value: T): T {
@@ -180,114 +176,6 @@ export class FleetGateway {
     }, signal);
   }
   advance(ticks = 1) {
-    if (!Number.isInteger(ticks) || ticks < 1 || ticks > 100)
-      throw new GatewayError('invalid', 'Advance requires 1–100 integer ticks');
-    const next = structuredClone(this.state);
-    for (let t = 0; t < ticks; t++) {
-      const eventStart = next.activity.length;
-      next.tick++;
-      for (const change of synchronizeControls(next))
-        record(
-          next,
-          { id: 'clock', role: 'administrator' },
-          'control.lost',
-          change.robot.id,
-          change.reason,
-          [change.robot],
-        );
-      for (const change of synchronizeResources(next))
-        record(
-          next,
-          { id: 'clock', role: 'administrator' },
-          change.event,
-          change.resourceId,
-          'Resource ownership transition',
-          [change.robot],
-        );
-      for (const robot of Object.values(next.robots)) {
-        const mission = robot.activeMissionId ? next.missions[robot.activeMissionId] : null;
-        let velocity = 0;
-        if (robot.connected && robot.status === 'running' && mission?.status === 'running') {
-          robot.position = positionOnRoute(
-            next,
-            next.routes[mission.routeId],
-            Math.min(100, mission.progress + 1),
-          );
-          robot.battery = Math.max(0, Number((robot.battery - 0.1).toFixed(1)));
-          robot.revision++;
-          velocity = 1.2;
-          mission.progress = Math.min(100, mission.progress + 1);
-          mission.revision++;
-          if (mission.progress === 100) {
-            mission.status = 'completed';
-            robot.status = 'idle';
-            robot.lastMissionId = mission.id;
-            robot.activeMissionId = null;
-            const route = next.routes[mission.routeId];
-            route.reservationState = 'released';
-            route.revision++;
-            record(
-              next,
-              { id: 'clock', role: 'administrator' },
-              'mission.completed',
-              mission.id,
-              'Mission completed',
-              [robot],
-            );
-          } else if (robot.battery < 20) {
-            robot.status = 'paused';
-            mission.status = 'paused';
-            mission.pauseReason = 'Battery reserve reached';
-            const route = next.routes[mission.routeId];
-            route.reservationState = 'held';
-            route.revision++;
-            record(
-              next,
-              { id: 'clock', role: 'administrator' },
-              'robot.low-battery',
-              robot.id,
-              'Mission paused at battery reserve',
-              [robot],
-            );
-          }
-        }
-        next.telemetry.push({
-          robotId: robot.id,
-          tick: next.tick,
-          battery: robot.battery,
-          x: robot.position.x,
-          y: robot.position.y,
-          velocity,
-        });
-      }
-      for (const change of synchronizeJobs(next))
-        record(
-          next,
-          { id: 'clock', role: 'administrator' },
-          change.event,
-          change.job.id,
-          change.job.title +
-            ' · ' +
-            change.job.completedUnits +
-            '/' +
-            change.job.units +
-            ' delivered',
-          [change.robot],
-        );
-      for (const change of synchronizeResources(next))
-        record(
-          next,
-          { id: 'clock', role: 'administrator' },
-          change.event,
-          change.resourceId,
-          'Resource ownership transition',
-          [change.robot],
-        );
-      if (this.configuration.automatedRecovery) processAutomation(next, eventStart);
-      appendHistory(next, Object.values(next.robots));
-    }
-    // Retain a bounded live window; activity and replay remain session history.
-    next.telemetry = next.telemetry.slice(-2400);
-    this.publish(next);
+    this.publish(advanceDomain(this.state, ticks, this.configuration));
   }
 }

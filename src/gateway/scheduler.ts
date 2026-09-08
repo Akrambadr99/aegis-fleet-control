@@ -1,3 +1,4 @@
+import { DomainError } from '../domain/errors';
 export interface Scheduler {
   schedule(delay: number, callback: () => void): () => void;
 }
@@ -12,6 +13,8 @@ export class ManualScheduler implements Scheduler {
   private sequence = 0;
   private jobs = new Map<number, { at: number; callback: () => void }>();
   schedule(delay: number, callback: () => void) {
+    if (!Number.isFinite(delay) || delay < 0)
+      throw new DomainError('invalid', 'Delay must be finite and nonnegative');
     const id = ++this.sequence;
     this.jobs.set(id, { at: this.now + delay, callback });
     return () => {
@@ -19,7 +22,8 @@ export class ManualScheduler implements Scheduler {
     };
   }
   advance(milliseconds: number) {
-    if (milliseconds < 0) throw new Error('Clock cannot move backward');
+    if (!Number.isFinite(milliseconds) || milliseconds < 0)
+      throw new DomainError('invalid', 'Clock advance must be finite and nonnegative');
     const target = this.now + milliseconds;
     while (true) {
       const next = [...this.jobs]
@@ -31,6 +35,18 @@ export class ManualScheduler implements Scheduler {
       next[1].callback();
     }
     this.now = target;
+  }
+  inspectPending() {
+    return [...this.jobs]
+      .map(([id, job]) => ({ id, at: job.at }))
+      .sort((a, b) => a.at - b.at || a.id - b.id);
+  }
+  get time() {
+    return this.now;
+  }
+  runNext() {
+    const next = this.inspectPending()[0];
+    if (next) this.advance(next.at - this.now);
   }
   get pending() {
     return this.jobs.size;
