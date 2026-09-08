@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { FleetGateway } from '../gateway/FleetGateway';
 import { ManualScheduler } from '../gateway/scheduler';
-import { defaultConfiguration } from './configuration';
+import { defaultConfiguration, assertCapabilityEnabled } from './configuration';
 it('rejects disabled routing before any canonical state change and captures configuration', async () => {
   const clock = new ManualScheduler();
   const config = { ...defaultConfiguration, advancedRouting: false };
@@ -58,4 +58,17 @@ it('returns partial operation results and preserves causal attribution for faile
   const root = events.find((event) => event.type === 'corridor.set')!;
   expect(events.find((event) => event.type === 'automation.failed')?.causationId).toBe(root.id);
   expect(events.every((event) => event.correlationId === result.correlationId)).toBe(true);
+});
+
+it('disabling automatic scheduling retains explicit manual assignment capability', () => {
+  const config = { ...defaultConfiguration, automaticScheduling: false };
+  const command = {
+    type: 'job.assign' as const,
+    id: 'job',
+    expectedRevision: 1,
+    units: 1,
+    reason: 'Operator assignment',
+  };
+  expect(() => assertCapabilityEnabled(command, config)).toThrow('disabled');
+  expect(() => assertCapabilityEnabled({ ...command, robotId: 'R-004' }, config)).not.toThrow();
 });

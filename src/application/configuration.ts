@@ -15,7 +15,7 @@ export function assertCapabilityEnabled(
   config: Readonly<OperationalConfiguration>,
 ) {
   const capability =
-    command.type === 'job.assign'
+    command.type === 'job.assign' && !command.robotId
       ? 'automaticScheduling'
       : command.type === 'robot.reroute'
         ? 'advancedRouting'
