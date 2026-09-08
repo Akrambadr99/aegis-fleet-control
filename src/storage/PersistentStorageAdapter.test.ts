@@ -27,6 +27,7 @@ describe('PersistentStorageAdapter', () => {
     candidate.robots['R-001'].revision++;
 
     first.commit(before.revision, candidate);
+    expect(JSON.parse(persistence.value!).formatVersion).toBe(1);
     const restored = new PersistentStorageAdapter(persistence, createSeed());
 
     expect(restored.readSnapshot().revision).toBe(before.revision + 1);
@@ -74,6 +75,20 @@ describe('PersistentStorageAdapter', () => {
     persistence.value = JSON.stringify(invalid);
     expect(() => new PersistentStorageAdapter(persistence, createSeed())).toThrow(
       'Robot battery must be a bounded percentage',
+    );
+  });
+
+  it('rejects a persisted snapshot whose checked payload was altered', () => {
+    const persistence = new FakeStorage();
+    const adapter = new PersistentStorageAdapter(persistence, createSeed());
+    const before = adapter.readSnapshot();
+    adapter.commit(before.revision, structuredClone(before));
+    const record = JSON.parse(persistence.value!);
+    record.snapshot.state.tick++;
+    persistence.value = JSON.stringify(record);
+
+    expect(() => new PersistentStorageAdapter(persistence, createSeed())).toThrow(
+      'checksum mismatch',
     );
   });
 });

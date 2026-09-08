@@ -50,7 +50,9 @@ Snapshots carry independent schema, fixture and snapshot versions plus determini
 
 Schema migrations add compatibility defaults only for the version that introduced them. Seed fixtures remain separately versioned, so a schema change does not require rewriting every deterministic fixture. Unknown future schemas, unsupported fixture versions, malformed roots, incomplete canonical table shapes, discontinuous migration histories and revision metadata mismatches fail before publication.
 
-The browser application restores canonical state from one versioned local snapshot. A commit is serialized and written before the in-memory adapter publishes it, so a storage access or quota failure leaves the visible snapshot and subscribers unchanged. Tests and explicitly supplied gateways remain isolated in memory. Corrupt persisted data fails closed rather than silently discarding operational history.
+The browser application restores canonical state from one versioned local snapshot. Persisted records carry their own format version and deterministic corruption checksum around the schema-versioned payload. The checksum detects accidental or partial alteration; it is not an authenticity signature. Legacy plain snapshots still enter the migration pipeline, while altered records and unknown storage formats fail closed.
+
+A commit is serialized and written before the in-memory adapter publishes it, so a storage access or quota failure leaves the visible snapshot and subscribers unchanged. Tests and explicitly supplied gateways remain isolated in memory. Corrupt persisted data fails closed rather than silently discarding operational history.
 
 ## Derived values
 

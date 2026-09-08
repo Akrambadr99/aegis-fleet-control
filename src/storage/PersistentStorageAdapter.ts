@@ -3,6 +3,7 @@ import type { DomainState } from '../domain/model';
 import { exportSnapshot, migrateSnapshot } from '../domain/snapshots';
 import type { CanonicalStorage, EntityFor, EntityTableName } from './contracts';
 import { InMemoryStorageAdapter } from './InMemoryStorageAdapter';
+import { decodePersistedSnapshot, encodePersistedSnapshot } from './snapshotCodec';
 
 export const fleetSnapshotStorageKey = 'aegis.fleet.snapshot';
 
@@ -12,14 +13,8 @@ export interface KeyValueStorage {
 }
 
 function restore(raw: string): DomainState {
-  let parsed: unknown;
   try {
-    parsed = JSON.parse(raw);
-  } catch {
-    throw new DomainError('invalid', 'Stored fleet snapshot is not valid JSON');
-  }
-  try {
-    return migrateSnapshot(parsed as DomainState).state;
+    return migrateSnapshot(decodePersistedSnapshot(raw)).state;
   } catch (error) {
     if (error instanceof DomainError) throw error;
     throw new DomainError('invalid', 'Stored fleet snapshot is malformed');
@@ -62,7 +57,7 @@ export class PersistentStorageAdapter implements CanonicalStorage {
 
     const next = structuredClone(candidate);
     next.revision = expectedRevision + 1;
-    const serialized = JSON.stringify(exportSnapshot(next));
+    const serialized = encodePersistedSnapshot(exportSnapshot(next));
     this.persistence.setItem(this.key, serialized);
     return this.memory.commit(expectedRevision, next);
   }
