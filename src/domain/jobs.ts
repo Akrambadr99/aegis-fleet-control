@@ -22,6 +22,7 @@ export interface JobInput {
   dependsOn: string[];
 }
 export interface WarehouseJob extends Versioned, JobInput {
+  attempts?: JobAttempt[];
   status: 'queued' | 'assigned' | 'in-progress' | 'partially-completed' | 'completed' | 'cancelled';
   completedUnits: number;
   assignedUnits: number;
@@ -31,6 +32,18 @@ export interface WarehouseJob extends Versioned, JobInput {
   custody: 'source' | 'robot' | 'destination';
   assignmentReason: string;
   pickupProgress: number;
+}
+export interface JobAttempt {
+  missionId: string;
+  robotId: string;
+  units: number;
+  assignedAt: number;
+  assignedBy: string;
+  reason: string;
+  outcome: 'active' | 'released' | 'completed';
+  endedAt?: number;
+  endedBy?: string;
+  endReason?: string;
 }
 export type JobCommand =
   | { type: 'job.save'; id: string; expectedRevision: number; input: JobInput }
@@ -43,7 +56,8 @@ export type JobCommand =
       units: number;
       reason: string;
     }
-  | { type: 'job.cancel'; id: string; expectedRevision: number; reason: string };
+  | { type: 'job.cancel'; id: string; expectedRevision: number; reason: string }
+  | { type: 'job.release'; id: string; expectedRevision: number; reason: string };
 export function isJobCommand(command: Command): command is JobCommand {
   return command.type.startsWith('job.');
 }
@@ -172,18 +186,26 @@ function validateInput(state: DomainState, id: string, input: JobInput) {
   if (input.dependsOn.some((dep) => visit(dep, new Set())))
     throw new GatewayError('invalid', 'Job dependencies contain a cycle');
 }
-function releaseAssignment(state: DomainState, job: WarehouseJob) {
+function releaseAssignment(state: DomainState, job: WarehouseJob, actorId: string, reason: string) {
   if (job.custody === 'robot')
     throw new GatewayError(
       'invalid',
       'Payload is in robot custody; finish delivery before reassignment or cancellation',
     );
   if (!job.missionId || !job.robotId) return;
+  const attempt = job.attempts?.find((entry) => entry.missionId === job.missionId);
+  if (attempt)
+    Object.assign(attempt, {
+      outcome: 'released',
+      endedAt: state.tick,
+      endedBy: actorId,
+      endReason: reason,
+    });
   const mission = state.missions[job.missionId],
     robot = state.robots[job.robotId];
   releaseRobotResources(state, robot.id, mission.id);
   mission.status = 'cancelled';
-  mission.pauseReason = 'Job assignment released';
+  mission.pauseReason = 'Job assignment released: ' + reason;
   mission.revision++;
   const route = state.routes[mission.routeId];
   route.reservationState = 'released';
@@ -233,6 +255,7 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
       robotId: null,
       missionId: null,
       missionIds: existing?.missionIds ?? [],
+      attempts: existing?.attempts ?? [],
       custody: 'source',
       assignmentReason: '',
       pickupProgress: 0,
@@ -243,11 +266,18 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
   if (['completed', 'cancelled'].includes(existing.status))
     throw new GatewayError('invalid', 'Job is already closed');
   const affected: Robot[] = existing.robotId ? [state.robots[existing.robotId]] : [];
-  if (command.type === 'job.cancel') {
+  if (command.type === 'job.cancel' || command.type === 'job.release') {
     if (!command.reason.trim())
-      throw new GatewayError('invalid', 'Cancellation reason is required');
-    releaseAssignment(state, existing);
-    existing.status = 'cancelled';
+      throw new GatewayError('invalid', 'Release or cancellation reason is required');
+    if (command.type === 'job.release' && !existing.missionId)
+      throw new GatewayError('invalid', 'Job has no assignment to release');
+    releaseAssignment(state, existing, actorId, command.reason);
+    existing.status =
+      command.type === 'job.cancel'
+        ? 'cancelled'
+        : existing.completedUnits
+          ? 'partially-completed'
+          : 'queued';
     existing.assignmentReason = command.reason;
     existing.robotId = null;
     existing.missionId = null;
@@ -275,7 +305,7 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
     throw new GatewayError('stale', 'Robot state changed; review candidate ranking');
   if (command.robotId && !command.reason.trim())
     throw new GatewayError('invalid', 'Manual assignment reasoning is required');
-  releaseAssignment(state, existing);
+  releaseAssignment(state, existing, actorId, command.reason || 'Automatic reassignment');
   const robot = state.robots[candidate.robotId],
     path = candidate.path!,
     missionId = 'M-' + existing.id + '-' + (existing.revision + 1),
@@ -329,6 +359,18 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
   existing.assignmentReason = command.robotId
     ? command.reason
     : 'Automatic ranking: shortest eligible delivery with battery reserve';
+  existing.attempts = [
+    ...(existing.attempts ?? []),
+    {
+      missionId,
+      robotId: robot.id,
+      units: command.units,
+      assignedAt: state.tick,
+      assignedBy: actorId,
+      reason: existing.assignmentReason,
+      outcome: 'active',
+    },
+  ];
   existing.revision++;
   const resourceIds = Object.values(state.resources)
     .filter((r) => [existing.sourceZoneId, existing.destinationZoneId].includes(r.zoneId))
@@ -359,6 +401,14 @@ export function synchronizeJobs(state: DomainState) {
       changes.push({ robot, job, event: cargo ? 'job.picked-up' : 'job.started' });
     }
     if (mission.status === 'completed') {
+      const attempt = job.attempts?.find((entry) => entry.missionId === mission.id);
+      if (attempt)
+        Object.assign(attempt, {
+          outcome: 'completed',
+          endedAt: state.tick,
+          endedBy: 'clock',
+          endReason: 'Mission completed',
+        });
       job.completedUnits += job.assignedUnits;
       job.assignedUnits = 0;
       job.status = job.completedUnits === job.units ? 'completed' : 'partially-completed';

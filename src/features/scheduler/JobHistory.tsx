@@ -14,6 +14,21 @@ export function JobHistory({ job, state }: { job: WarehouseJob; state: DomainSta
             <p>
               Plan {mission.planId} · {mission.progress}% route completion
             </p>
+            {job.attempts
+              ?.filter((attempt) => attempt.missionId === mission.id)
+              .map((attempt) => (
+                <div key={attempt.missionId}>
+                  <p>
+                    {attempt.units} units · assigned by {attempt.assignedBy} at tick{' '}
+                    {attempt.assignedAt} · {attempt.reason}
+                  </p>
+                  <p>
+                    Attempt {attempt.outcome}
+                    {attempt.endedAt !== undefined &&
+                      ` at tick ${attempt.endedAt} by ${attempt.endedBy}: ${attempt.endReason}`}
+                  </p>
+                </div>
+              ))}
           </li>
         ))}
       </ol>

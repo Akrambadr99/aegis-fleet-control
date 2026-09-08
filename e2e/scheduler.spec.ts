@@ -1,4 +1,21 @@
 import { test, expect } from '@playwright/test';
+test('released dispatch keeps its mission history and can be retried from the queue', async ({
+  page,
+}) => {
+  await page.goto('/scheduler');
+  await page.getByRole('button', { name: 'Advance 100 seconds' }).click();
+  await page.getByRole('button', { name: 'Assign best candidate' }).click();
+  await page.getByLabel('Release reason').fill('Dock unavailable until next shift');
+  await page.getByRole('button', { name: 'Release assignment', exact: true }).click();
+  const history = page.getByRole('region', { name: 'Job mission history' });
+  await expect(history).toContainText('Attempt released');
+  await expect(history).toContainText('Dock unavailable until next shift');
+  await page.getByRole('button', { name: 'Assign best candidate' }).click();
+  await expect(history.locator('li')).toHaveCount(2);
+  await expect(history).toContainText('Attempt active');
+  await page.getByRole('button', { name: 'Advance 100 seconds' }).click();
+  await expect(history).toContainText('Attempt completed');
+});
 test('inspection job requirements persist and filter robot capability eligibility', async ({
   page,
 }) => {

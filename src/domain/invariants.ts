@@ -120,6 +120,31 @@ export function inspectInvariants(state: DomainState): InvariantViolation[] {
     check(state.robots[order.robotId], order.id, 'Maintenance robot must exist');
   for (const job of Object.values(state.jobs)) {
     check(state.facilities[job.facilityId], job.id, 'Job facility must exist');
+    check(
+      new Set(job.attempts?.map((attempt) => attempt.missionId)).size ===
+        (job.attempts?.length ?? 0),
+      job.id,
+      'Job attempts must have unique missions',
+    );
+    for (const attempt of job.attempts ?? []) {
+      check(
+        state.missions[attempt.missionId]?.jobId === job.id &&
+          state.missions[attempt.missionId]?.robotId === attempt.robotId,
+        job.id,
+        'Job attempt mission and robot must agree',
+      );
+      check(
+        Number.isInteger(attempt.units) && attempt.units > 0,
+        job.id,
+        'Job attempt units must be positive integers',
+      );
+      if (attempt.outcome === 'active')
+        check(
+          job.missionId === attempt.missionId && job.robotId === attempt.robotId,
+          job.id,
+          'Active job attempt must own current assignment',
+        );
+    }
     for (const id of job.dependsOn)
       check(
         state.jobs[id]?.facilityId === job.facilityId,

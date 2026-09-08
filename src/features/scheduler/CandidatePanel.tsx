@@ -10,6 +10,7 @@ export function CandidatePanel({ job }: { job: WarehouseJob }) {
     { gateway, actor } = useFleet(),
     { run, pending, message } = useCommand();
   const [selected, setSelected] = useState(''),
+    [releaseReason, setReleaseReason] = useState(''),
     [reason, setReason] = useState(''),
     [units, setUnits] = useState(1);
   const candidates = useQuery({
@@ -115,6 +116,29 @@ export function CandidatePanel({ job }: { job: WarehouseJob }) {
       )}
       {job.assignmentReason && (
         <p className="assignment-reason">Last decision: {job.assignmentReason}</p>
+      )}
+      {job.missionId && !closed && (
+        <fieldset disabled={pending || !!denied || job.custody === 'robot'}>
+          <legend>Return assignment to queue</legend>
+          <label>
+            Release reason
+            <input value={releaseReason} onChange={(e) => setReleaseReason(e.target.value)} />
+          </label>
+          <button
+            disabled={!releaseReason.trim()}
+            onClick={() =>
+              run({
+                type: 'job.release',
+                id: job.id,
+                expectedRevision: job.revision,
+                reason: releaseReason,
+              })
+            }
+          >
+            Release assignment
+          </button>
+          <p>Releases this mission and its reservations. Dispatch again to create a new attempt.</p>
+        </fieldset>
       )}
       {message && <p role="status">{message}</p>}
     </section>

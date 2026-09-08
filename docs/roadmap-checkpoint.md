@@ -53,3 +53,17 @@ filtering. The resulting workspace screenshot was inspected. This is a Stage F
 slice, not completion: the simulation still advances route progress at a fixed
 rate and does not execute individual plan actions. Job grouping, explicit retry
 history and partial-success bulk dispatch remain unfinished.
+
+## Assignment release and retry history
+
+Assignments can now be returned to the queue before payload pickup with an
+explicit reason. The cancelled mission, released reservations and attributed
+attempt remain inspectable. Re-dispatch creates a new mission and attempt;
+completion records the successful attempt without counting released units.
+Gateway revision and custody checks reject releases that arrive after pickup,
+and facility-scoped permission checks also apply to release. History invariants
+connect each attempt to its mission, robot and current ownership.
+
+Validation: 209 tests across 46 Vitest/React files, typecheck, lint and production
+build passed. All five scheduler Chromium journeys passed, including release,
+retry and completion with both attempts visible in mission history.
