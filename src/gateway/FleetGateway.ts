@@ -1,3 +1,4 @@
+import { synchronizeControls } from '../domain/teleoperation';
 import { synchronizeResources } from '../domain/resources';
 import { rankCandidates, synchronizeJobs } from '../domain/jobs';
 import { validatePlan, type MissionPlan } from '../domain/planning';
@@ -129,6 +130,15 @@ export class FleetGateway {
     const next = structuredClone(this.state);
     for (let t = 0; t < ticks; t++) {
       next.tick++;
+      for (const change of synchronizeControls(next))
+        record(
+          next,
+          { id: 'clock', role: 'administrator' },
+          'control.lost',
+          change.robot.id,
+          change.reason,
+          [change.robot],
+        );
       for (const change of synchronizeResources(next))
         record(
           next,

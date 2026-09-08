@@ -1,3 +1,4 @@
+import type { ControlCommand } from './teleoperation';
 import type { FacilityResource, ResourceReservation, ResourceCommand } from './resources';
 import type { WarehouseJob, JobCommand } from './jobs';
 import type { MissionPlan } from './planning';
@@ -189,6 +190,7 @@ export interface DomainState {
   telemetry: Telemetry[];
 }
 export type Command =
+  | ControlCommand
   | ResourceCommand
   | JobCommand
   | { type: 'plan.save'; id: string; expectedRevision: number; plan: MissionPlan }
