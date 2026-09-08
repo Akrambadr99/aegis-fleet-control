@@ -99,6 +99,7 @@ export function MissionPlanning() {
             Cancel draft
           </button>
           <button
+            className="button-primary"
             disabled={
               saving ||
               !!denied ||

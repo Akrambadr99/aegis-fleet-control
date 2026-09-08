@@ -39,7 +39,7 @@ export function MissionTemplateLibrary({
     }
   }
   return (
-    <section className="validation-tray" aria-label="Mission templates">
+    <section className="mission-template-library" aria-label="Mission templates">
       <h2>Mission templates</h2>
       <p>
         Templates keep the saved step graph for this facility. Each use creates a new draft and
