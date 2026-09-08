@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Command } from '../domain/model';
-import { canExecute } from '../domain/selectors';
-import { useFleet } from '../app/FleetProvider';
+import { commandPermission } from '../domain/permissions';
+import { useFleet, useDomain } from '../app/FleetProvider';
 export function CommandButton({
   command,
   children,
@@ -12,7 +12,9 @@ export function CommandButton({
   const { gateway, actor } = useFleet();
   const [state, setState] = useState<'idle' | 'pending' | 'confirmed' | 'failed'>('idle');
   const [message, setMessage] = useState('');
-  const allowed = canExecute(actor.role, command.type);
+  const confirmed = useDomain();
+  const denied = commandPermission(confirmed, actor, command);
+  const allowed = !denied;
   async function run() {
     setState('pending');
     setMessage('');
@@ -30,7 +32,7 @@ export function CommandButton({
       <button disabled={!allowed || state === 'pending'} onClick={run}>
         {state === 'pending' ? 'Applying…' : children}
       </button>
-      {!allowed && <small>Role cannot execute</small>}
+      {!allowed && <small>{denied}</small>}
       <span role={state === 'failed' ? 'alert' : 'status'}>{message}</span>
     </div>
   );

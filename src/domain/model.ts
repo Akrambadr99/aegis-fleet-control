@@ -2,6 +2,7 @@ export type Role = 'viewer' | 'operator' | 'fleet-manager' | 'facility-manager' 
 export interface Actor {
   id: string;
   role: Role;
+  facilityIds?: string[];
 }
 export interface Versioned {
   id: string;
@@ -93,6 +94,12 @@ export interface ControlLease extends Versioned {
   expiresAt: number;
   state: 'active' | 'released';
 }
+export interface AuditChange {
+  kind: string;
+  entityId: string;
+  previous: Versioned | null;
+  next: Versioned;
+}
 export interface Activity {
   id: string;
   tick: number;
@@ -100,6 +107,10 @@ export interface Activity {
   type: string;
   entityId: string;
   details: string;
+  timestamp?: string;
+  actorRole?: Role;
+  reason?: string;
+  changes?: AuditChange[];
 }
 export interface ReplayFrame {
   tick: number;

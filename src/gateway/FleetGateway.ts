@@ -33,7 +33,7 @@ export class FleetGateway {
   }
   command(actor: Actor, command: Command, signal?: AbortSignal): Ticket<{ revision: number }> {
     const input = structuredClone(command),
-      identity = { ...actor };
+      identity = structuredClone(actor);
     return this.requests.run(() => {
       const next = structuredClone(this.state);
       applyCommand(next, identity, input);

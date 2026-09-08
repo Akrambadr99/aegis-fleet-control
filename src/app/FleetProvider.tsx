@@ -11,6 +11,8 @@ const FleetContext = createContext<{
   gateway: FleetGateway;
   actor: Actor;
   setRole: (role: Role) => void;
+  controlScope: string;
+  setControlScope: (scope: string) => void;
 } | null>(null);
 export function FleetProvider({
   children,
@@ -18,8 +20,21 @@ export function FleetProvider({
 }: { gateway?: FleetGateway } & PropsWithChildren) {
   const [gateway] = useState(() => provided ?? new FleetGateway());
   const [role, setRole] = useState<Role>('administrator');
+  const [controlScope, setControlScope] = useState('all');
   return (
-    <FleetContext.Provider value={{ gateway, actor: { id: 'local-operator', role }, setRole }}>
+    <FleetContext.Provider
+      value={{
+        gateway,
+        actor: {
+          id: 'local-operator',
+          role,
+          facilityIds: controlScope === 'all' ? undefined : [controlScope],
+        },
+        setRole,
+        controlScope,
+        setControlScope,
+      }}
+    >
       {children}
     </FleetContext.Provider>
   );

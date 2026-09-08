@@ -1,0 +1,38 @@
+import type { Actor, Command, DomainState } from './model';
+import { canExecute } from './selectors';
+export function commandFacility(state: DomainState, command: Command): string | undefined {
+  switch (command.type) {
+    case 'corridor.set': {
+      const corridor = state.corridors[command.id];
+      return corridor ? state.floors[corridor.floorId]?.facilityId : undefined;
+    }
+    case 'charger.set':
+      return state.chargers[command.id]?.facilityId;
+    case 'fault.acknowledge': {
+      const fault = state.faults[command.id];
+      return fault ? state.robots[fault.robotId]?.facilityId : undefined;
+    }
+    default:
+      return state.robots[command.id]?.facilityId;
+  }
+}
+export function facilityPermission(
+  actor: Actor,
+  facilityId: string,
+  type: Command['type'],
+): string | null {
+  if (!canExecute(actor.role, type)) return 'Your role cannot execute this command';
+  if (actor.facilityIds && !actor.facilityIds.includes(facilityId))
+    return 'This facility is outside your control scope';
+  return null;
+}
+export function commandPermission(
+  state: DomainState,
+  actor: Actor,
+  command: Command,
+): string | null {
+  const facilityId = commandFacility(state, command);
+  if (!canExecute(actor.role, command.type)) return 'Your role cannot execute this command';
+  if (!facilityId) return 'Entity no longer exists';
+  return facilityPermission(actor, facilityId, command.type);
+}

@@ -1,4 +1,5 @@
 import { useScope } from './useScope';
+import { AuditDetails } from './AuditDetails';
 import { CommandButton } from '../../components/CommandButton';
 import { missionFeasibility, simulationInputs } from '../../domain/selectors';
 export function ChargingPanel() {
@@ -167,6 +168,7 @@ export function ActivityPanel({ replay = false }: { replay?: boolean }) {
             <li key={event.id}>
               <strong>{event.type}</strong> · {event.entityId} · {event.actorId}
               <p>{event.details}</p>
+              <AuditDetails event={event} />
             </li>
           ))}
       </ol>

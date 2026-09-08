@@ -27,7 +27,7 @@ export const connectedPaths = [
 ];
 export function OperationsWorkspace({ workspace }: { workspace: Workspace }) {
   const { state, facility, floor, change } = useScope(),
-    { gateway, actor, setRole } = useFleet();
+    { gateway, actor, setRole, controlScope, setControlScope } = useFleet();
   const panels: Record<string, React.ReactNode> = {
     '/fleet': <FleetTable key={facility.id} />,
     '/facilities': <TopologyPanel map />,
@@ -79,6 +79,17 @@ export function OperationsWorkspace({ workspace }: { workspace: Workspace }) {
                 <option key={role}>{role}</option>
               ),
             )}
+          </select>
+        </label>
+        <label>
+          Control scope
+          <select value={controlScope} onChange={(event) => setControlScope(event.target.value)}>
+            <option value="all">All facilities</option>
+            {Object.values(state.facilities).map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
           </select>
         </label>
         <button onClick={() => gateway.advance()}>Advance simulation</button>

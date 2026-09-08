@@ -34,3 +34,16 @@ New evidence includes atomic corridor/charger/stop propagation; immutable snapsh
 The foundation browser history, recovery, keyboard and offline-service independence tests remain. Fixture-specific overview assertions were updated to the authoritative seed and the traffic placeholder assertion now verifies the real workspace.
 
 These are local results. Full navigation-graph simulation, optimistic editors, mission graphs, automated recovery rules, production authentication and full replay remain unimplemented, as recorded in the milestone table.
+
+# Scoped permissions and structured audit milestone
+
+Node 20.19.5 / npm 10.8.2, locally validated on Windows, 2026-09-08:
+
+- Typecheck passed.
+- Vitest/RTL: 62 tests passed across 6 files.
+- Chromium: 18 journeys passed.
+- Production build passed: JS 310.13 kB / 97.72 kB gzip.
+- Added authorization coverage for every command type, empty grants, mixed-facility partial results, request-owned actor snapshots, before/after audit completeness and immutable history.
+- Browser evidence verifies cross-workspace grant persistence, retained read access, disabled out-of-scope commands and inspectable cross-domain changes.
+
+The preceding milestone validation records remain historical snapshots of their own implementations.

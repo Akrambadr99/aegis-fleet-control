@@ -1,6 +1,8 @@
-import type { Actor, Command, DomainState, Robot } from './model';
-import { canExecute, missionFeasibility, routeCandidates } from './selectors';
+import type { Actor, AuditChange, Command, DomainState, Robot } from './model';
+import { missionFeasibility, routeCandidates } from './selectors';
 import { GatewayError } from '../gateway/requests';
+import { commandPermission } from './permissions';
+import { captureEntities, changedEntities } from './audit';
 function frame(state: DomainState, robot: Robot, eventId: string) {
   const mission = robot.activeMissionId ? state.missions[robot.activeMissionId] : null;
   state.replay.push({
@@ -21,6 +23,7 @@ export function record(
   entityId: string,
   details: string,
   robots: Robot[],
+  changes?: AuditChange[],
 ) {
   const event = {
     id: `EV-${state.revision}-${state.activity.length}`,
@@ -29,13 +32,18 @@ export function record(
     type,
     entityId,
     details,
+    timestamp: new Date(Date.UTC(2026, 0, 1) + state.tick * 1000).toISOString(),
+    actorRole: actor.role,
+    reason: details,
+    changes,
   };
   state.activity.push(event);
   robots.forEach((robot) => frame(state, robot, event.id));
 }
 export function applyCommand(state: DomainState, actor: Actor, command: Command) {
-  if (!canExecute(actor.role, command.type))
-    throw new GatewayError('forbidden', 'Your role cannot execute this command');
+  const denied = commandPermission(state, actor, command);
+  if (denied)
+    throw new GatewayError(denied === 'Entity no longer exists' ? 'missing' : 'forbidden', denied);
   const table =
     command.type === 'corridor.set'
       ? state.corridors
@@ -48,6 +56,7 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
   if (!entity) throw new GatewayError('missing', 'Entity no longer exists');
   if (entity.revision !== command.expectedRevision)
     throw new GatewayError('stale', 'Entity changed; review its current revision and retry');
+  const before = captureEntities(state);
   const impacted: Robot[] = [];
   if (command.type === 'corridor.set') {
     const corridor = state.corridors[command.id];
@@ -178,5 +187,6 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
     command.id,
     `${command.type} applied; ${impacted.length} robot(s) affected`,
     impacted,
+    changedEntities(before, state),
   );
 }

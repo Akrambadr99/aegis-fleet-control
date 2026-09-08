@@ -61,3 +61,11 @@ This is an early interconnected implementation, not the finished long-term produ
 All operational state lasts for the application session and resets to the deterministic seed on a full reload. URL context survives reload. Telemetry retains a bounded live window; activity and command replay frames retain session history.
 
 See [architecture](docs/architecture.md), [milestones](docs/milestones.md), [validation](docs/validation.md), and the original [product brief](docs/product-brief.md).
+
+## Scoped control and audit history
+
+Use **Control scope** to grant command access to one facility while retaining read access to the others. Role and facility eligibility are enforced by the gateway as well as visible controls. Commands keep the actor grant captured when issued.
+
+After a command, open **Activity** and expand **Inspect changes** to review immutable before/after records for affected robots, missions, routes and facility resources.
+
+Changes are delivered as coherent commits after typecheck, tests, build and diff review. Read-only actions do not generate filler commits. See the expanded [product requirements](docs/expansion-brief.md).

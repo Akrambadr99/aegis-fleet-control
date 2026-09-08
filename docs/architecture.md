@@ -57,3 +57,17 @@ Fleet filtering, sorting and pagination limit visible rows. Map scope is one flo
 Extend the actual product rather than adding disconnected placeholder CRUD pages. Every future workflow must prove downstream consequences, failure rollback, permissions and revision ownership in both domain tests and observable React behavior.
 
 Long-term targets are 20+ domains, 150+ meaningful components, 100+ focused modules, 500+ behavior tests, 40+ Chromium journeys and 100+ genuine commits. These are growth targets, never reasons to create filler.
+
+## Facility-scoped authorization and command audit
+
+An actor's optional facilityIds grant constrains every domain command, including administrator commands. Omitted means all facilities; an empty list grants no control. Read-only access remains available across facilities. UI control eligibility and the gateway share the same permission resolver, which resolves corridors through their floor and faults through their robot.
+
+Each asynchronous command deep-copies its actor grant at invocation. Changing the local simulation role or scope governs subsequent commands; it does not revoke already-issued commands. Production authentication and live grant revocation are separate future work.
+
+Successful commands record immutable before/after snapshots for every entity whose revision changed, alongside actor, role, action, entity and a deterministic simulation timestamp. The simulation epoch is 2026-01-01 UTC. Activity exposes native expandable details. Failed commands do not produce successful-command audit entries. Seed history and simulation tick events do not claim complete historical before/after snapshots.
+
+The expanded product brief is retained in expansion-brief.md. Its scale targets supersede the earlier long-term estimates; they remain architectural goals rather than quotas.
+
+## Commit discipline
+
+Every coherent implementation milestone must pass typecheck, tests and production build, receive a diff review, and be committed with a meaningful message. Run browser journeys for affected integration flows and periodically run the full suite. Commit related documentation with its implementation. Do not squash unrelated capabilities together, invent historical work, or create empty commits for read-only inspection and test execution.

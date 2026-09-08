@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useFleet } from '../../app/FleetProvider';
-import { readiness, canExecute } from '../../domain/selectors';
+import { readiness } from '../../domain/selectors';
 import { useScope } from './useScope';
+import { facilityPermission } from '../../domain/permissions';
 export function FleetTable() {
   const { state, facility, params, change } = useScope(),
     { gateway, actor } = useFleet();
@@ -68,7 +69,7 @@ export function FleetTable() {
           disabled={
             pending ||
             ![...selection].some((id) => state.robots[id].facilityId === facility.id) ||
-            !canExecute(actor.role, 'robot.pause')
+            !!facilityPermission(actor, facility.id, 'robot.pause')
           }
           onClick={bulkPause}
         >
