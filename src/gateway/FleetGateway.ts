@@ -1,3 +1,4 @@
+import { exportSnapshot, migrateSnapshot, type SnapshotEnvelope } from '../domain/snapshots';
 import { executeTransaction } from '../application/transactions';
 import { processAutomation } from './automationEngine';
 import { validateRule, evaluateRule, type RuleInput } from '../domain/automation';
@@ -30,6 +31,10 @@ export class FleetGateway {
   constructor(scheduler: Scheduler = new RealScheduler(), state: DomainState = createSeed()) {
     this.state = freeze(structuredClone(state));
     this.requests = new RequestEngine(scheduler);
+  }
+  exportSnapshot = () => exportSnapshot(this.state);
+  static fromSnapshot(snapshot: DomainState | SnapshotEnvelope, scheduler?: Scheduler) {
+    return new FleetGateway(scheduler, migrateSnapshot(snapshot).state);
   }
   getSnapshot = () => this.state;
   subscribe = (listener: () => void) => {
