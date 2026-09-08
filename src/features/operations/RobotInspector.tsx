@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useFleet } from '../../app/FleetProvider';
-import { useScope } from './useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { readiness, missionFeasibility } from '../../domain/selectors';
 import { CommandButton } from '../../components/CommandButton';
 export function RobotInspector() {

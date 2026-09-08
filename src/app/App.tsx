@@ -1,32 +1,32 @@
 import { GlobalSearch } from '../components/GlobalSearch';
-import { TrafficWorkspace } from '../features/traffic/TrafficWorkspace';
-import { TeleoperationWorkspace } from '../features/teleoperation/TeleoperationWorkspace';
-import { ResourcesWorkspace } from '../features/resources/ResourcesWorkspace';
-import { MissionPlanning } from '../features/missions/MissionPlanning';
+import { TrafficWorkspace } from '../features/traffic';
+import { TeleoperationWorkspace } from '../features/teleoperation';
+import { ResourcesWorkspace } from '../features/resources';
+import { MissionPlanning } from '../features/missions';
 import { lazy, Suspense, useLayoutEffect } from 'react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { ErrorBoundary } from '../components/ErrorBoundary';
-import { Overview } from '../features/overview/Overview';
-import { OperationsWorkspace, connectedPaths } from '../features/operations/OperationsWorkspace';
+import { Overview } from '../features/overview';
+import { OperationsWorkspace, connectedPaths } from '../features/operations';
 import { workspaces, type Workspace } from '../routing/workspaces';
 const AutomationWorkspace = lazy(() =>
-  import('../features/automation/AutomationWorkspace').then((module) => ({
+  import('../features/automation').then((module) => ({
     default: module.AutomationWorkspace,
   })),
 );
 const ReplayWorkspace = lazy(() =>
-  import('../features/replay/ReplayWorkspace').then((module) => ({
+  import('../features/replay').then((module) => ({
     default: module.ReplayWorkspace,
   })),
 );
 const SchedulerWorkspace = lazy(() =>
-  import('../features/scheduler/SchedulerWorkspace').then((module) => ({
+  import('../features/scheduler').then((module) => ({
     default: module.SchedulerWorkspace,
   })),
 );
 const DiagnosticsWorkspace = import.meta.env.DEV
   ? lazy(() =>
-      import('../features/diagnostics/DiagnosticsWorkspace').then((module) => ({
+      import('../features/diagnostics').then((module) => ({
         default: module.DiagnosticsWorkspace,
       })),
     )

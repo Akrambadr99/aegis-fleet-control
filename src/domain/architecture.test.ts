@@ -60,3 +60,29 @@ it('keeps production domain modules independent of React, UI and infrastructure'
     }
   }
 });
+
+it('prevents application infrastructure reversal and private cross-feature imports', () => {
+  const walk = (directory: string): string[] =>
+    readdirSync(directory, { withFileTypes: true }).flatMap((entry) =>
+      entry.isDirectory() ? walk(join(directory, entry.name)) : [join(directory, entry.name)],
+    );
+  for (const file of walk(join(process.cwd(), 'src')).filter(
+    (file) => /\.tsx?$/.test(file) && !file.includes('.test.'),
+  )) {
+    const source = ts.createSourceFile(
+      file,
+      readFileSync(file, 'utf8'),
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    for (const statement of source.statements) {
+      if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier))
+        continue;
+      const dependency = statement.moduleSpecifier.text;
+      if (file.replaceAll('\\', '/').includes('/application/'))
+        expect(dependency, file).not.toMatch(/gateway|features|react/);
+      if (file.replaceAll('\\', '/').includes('/features/'))
+        expect(dependency, file).not.toMatch(/^\.\.\/[^.][^/]*\//);
+    }
+  }
+});

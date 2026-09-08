@@ -1,5 +1,5 @@
-import { useScope } from './useScope';
-import { NavigationMap } from '../facilities/NavigationMap';
+import { useScope } from '../../hooks/useWorkspaceScope';
+import { NavigationMap } from '../facilities';
 import { CommandButton } from '../../components/CommandButton';
 import { trafficConflicts } from '../../domain/selectors';
 export function TopologyPanel({ map = false }: { map?: boolean }) {

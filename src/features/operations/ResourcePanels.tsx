@@ -1,6 +1,6 @@
 import { getMissionExecutionProjection } from '../../application/projections';
 import { OperationalAlerts } from '../../components/OperationalAlerts';
-import { useScope } from './useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { AuditDetails } from './AuditDetails';
 import { CommandButton } from '../../components/CommandButton';
 import { missionFeasibility, simulationInputs } from '../../domain/selectors';

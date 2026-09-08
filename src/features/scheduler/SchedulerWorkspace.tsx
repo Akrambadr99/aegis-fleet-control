@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useFleet } from '../../app/FleetProvider';
-import { useScope } from '../operations/useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { JobQueuePanel } from './JobQueuePanel';
 import { JobDependencies } from './JobDependencies';
 import { JobEditor } from './JobEditor';

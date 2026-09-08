@@ -2,7 +2,7 @@ import { pageCollection } from '../../application/collections';
 import { useMemo, useState } from 'react';
 import { useFleet } from '../../app/FleetProvider';
 import { readiness } from '../../domain/selectors';
-import { useScope } from './useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { facilityPermission } from '../../domain/permissions';
 export function FleetTable() {
   const { state, facility, params, change } = useScope(),

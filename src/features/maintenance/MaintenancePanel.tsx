@@ -1,4 +1,4 @@
-import { useScope } from '../operations/useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { CommandButton } from '../../components/CommandButton';
 export function MaintenancePanel() {
   const { state, floor, change } = useScope();

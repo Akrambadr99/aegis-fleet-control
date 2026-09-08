@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useScope } from '../operations/useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { useCommand } from '../../hooks/useCommand';
 import { CommandButton } from '../../components/CommandButton';
 import { RuleEditor } from './RuleEditor';

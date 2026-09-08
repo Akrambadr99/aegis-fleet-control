@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useScope } from '../operations/useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { useFleet } from '../../app/FleetProvider';
 import type { Role } from '../../domain/model';
 import { trafficConflicts } from '../../domain/selectors';
 import { TrafficMap, type TrafficLayers } from './TrafficMap';
 import { CorridorControls } from './CorridorControls';
-import { RobotInspector } from '../operations/RobotInspector';
-import { ResourceQueue } from '../resources/ResourceQueue';
+import { RobotInspector } from '../operations';
+import { ResourceQueue } from '../resources';
 export function TrafficWorkspace() {
   const { state, floor, facility, params, change } = useScope(),
     { gateway, actor, setRole, controlScope, setControlScope } = useFleet();

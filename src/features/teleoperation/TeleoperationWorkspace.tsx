@@ -1,9 +1,9 @@
 import { ownsLease } from '../../domain/ownership';
 import { useState } from 'react';
-import { useScope } from '../operations/useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { useFleet } from '../../app/FleetProvider';
 import { CommandButton } from '../../components/CommandButton';
-import { NavigationMap } from '../facilities/NavigationMap';
+import { NavigationMap } from '../facilities';
 import { commandPermission } from '../../domain/permissions';
 import { ControlPad } from './ControlPad';
 import { useMotionKeyboard } from './useMotionKeyboard';

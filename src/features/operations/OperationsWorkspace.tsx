@@ -1,7 +1,7 @@
 import { useFleet } from '../../app/FleetProvider';
-import { MaintenancePanel } from '../maintenance/MaintenancePanel';
+import { MaintenancePanel } from '../maintenance';
 import type { Role } from '../../domain/model';
-import { useScope } from './useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { FleetTable } from './FleetTable';
 import { TopologyPanel } from './TopologyPanel';
 import {

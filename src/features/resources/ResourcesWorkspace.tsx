@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useScope } from '../operations/useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { useFleet } from '../../app/FleetProvider';
 import { resourceOwners } from '../../domain/resources';
 import { ResourceQueue } from './ResourceQueue';

@@ -1,5 +1,5 @@
 import type { FacilitySnapshot } from './snapshot';
-import { NavigationMap } from '../facilities/NavigationMap';
+import { NavigationMap } from '../facilities';
 export function FacilityPreview({ facility }: { facility: FacilitySnapshot }) {
   return (
     <NavigationMap

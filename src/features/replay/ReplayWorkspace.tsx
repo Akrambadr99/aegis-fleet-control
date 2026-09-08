@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useScope } from '../operations/useScope';
+import { useScope } from '../../hooks/useWorkspaceScope';
 import { robotHistory } from '../../domain/history';
 import { ReplayTransport } from './ReplayTransport';
 import { ReplayScene } from './ReplayScene';
