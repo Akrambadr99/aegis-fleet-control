@@ -1,3 +1,4 @@
+import { supportsRobotAction } from './capabilities';
 import type { DomainState, Versioned } from './model';
 import { shortestPath } from './navigation';
 import { readiness } from './selectors';
@@ -141,8 +142,7 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
       // Control nodes add no work; downstream dependencies determine the critical path.
       duration = 0;
     } else if (step.kind === 'navigate') {
-      if (robot && !robot.capabilities.actions.includes('navigate'))
-        issue('Robot cannot navigate', step.id);
+      if (robot && !supportsRobotAction(robot, 'navigate')) issue('Robot cannot navigate', step.id);
       const zone = state.zones[step.zoneId];
       const target = Object.values(state.navigationNodes).find((n) => n.zoneId === step.zoneId);
       if (!zone || state.floors[zone.floorId]?.facilityId !== plan.facilityId)
@@ -159,16 +159,11 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
     } else if (step.kind === 'pickup' || step.kind === 'dropoff') {
       if (!Number.isFinite(step.payloadKg) || step.payloadKg <= 0)
         issue('Payload must be a positive weight', step.id);
-      if (
-        robot &&
-        (!robot.capabilities.actions.includes('lift') ||
-          step.payloadKg > robot.capabilities.payloadKg)
-      )
+      if (robot && !supportsRobotAction(robot, 'lift', step.payloadKg))
         issue('Robot cannot handle this payload', step.id);
       duration = 15;
     } else if (step.kind === 'inspect') {
-      if (robot && !robot.capabilities.actions.includes('inspect'))
-        issue('Robot cannot inspect', step.id);
+      if (robot && !supportsRobotAction(robot, 'inspect')) issue('Robot cannot inspect', step.id);
       duration = step.seconds;
     } else if (step.kind === 'charge') {
       const charger = state.chargers[step.chargerId];
