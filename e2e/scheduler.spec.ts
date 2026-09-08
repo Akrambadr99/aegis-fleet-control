@@ -1,4 +1,23 @@
 import { test, expect } from '@playwright/test';
+test('queue filters survive reload and dependency navigation preserves query context', async ({
+  page,
+}) => {
+  await page.goto('/scheduler?facility=FAC-001&job=JOB-001&keep=yes');
+  await page.getByLabel('Search jobs').fill('JOB-002');
+  await page.getByRole('combobox', { name: 'Job status', exact: true }).selectOption('queued');
+  await expect(page.getByText('1 of 2 jobs shown')).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel('Search jobs')).toHaveValue('JOB-002');
+  await page
+    .getByRole('region', { name: 'Job dependency graph' })
+    .getByRole('button', { name: 'JOB-002' })
+    .click();
+  await expect(page).toHaveURL(/job=JOB-002/);
+  await expect(page).toHaveURL(/keep=yes/);
+  await expect(page.getByRole('combobox', { name: 'Job status', exact: true })).toHaveValue(
+    'queued',
+  );
+});
 test('dispatch creates linked execution and records partial delivery', async ({ page }) => {
   await page.goto('/scheduler');
   await expect(page.getByText('Robot has active mission workload').first()).toBeVisible();

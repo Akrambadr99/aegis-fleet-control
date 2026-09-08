@@ -1892,3 +1892,25 @@ button.emergency-stop:hover {
     grid-template-columns: 1fr;
   }
 }
+.job-filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+.job-filterbar label {
+  display: grid;
+  gap: 0.25rem;
+  flex: 1 1 10rem;
+}
+.job-dependency-graph {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem;
+  margin-block: 1rem;
+}
+.job-dependency-graph > div {
+  padding: 0.75rem;
+  border-inline-start: 3px solid #78918a;
+  background: #f1f5f3;
+}
