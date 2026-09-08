@@ -12,6 +12,7 @@ export interface EventDeliveryFailure {
 }
 
 type EventListener = (batch: CommittedEventBatch) => void;
+type StateListener = () => void;
 
 function freeze<T>(value: T): T {
   if (value && typeof value === 'object' && !Object.isFrozen(value)) {
@@ -24,6 +25,7 @@ function freeze<T>(value: T): T {
 /** Ordered post-commit delivery for in-process workers and integrations. */
 export class CommittedEventStream {
   private readonly listeners = new Set<EventListener>();
+  private readonly stateListeners = new Set<StateListener>();
   private batches: readonly CommittedEventBatch[] = [];
   private failures: readonly EventDeliveryFailure[] = [];
   private queue: CommittedEventBatch[] = [];
@@ -37,6 +39,11 @@ export class CommittedEventStream {
     return () => this.listeners.delete(listener);
   };
 
+  subscribeState = (listener: StateListener) => {
+    this.stateListeners.add(listener);
+    return () => this.stateListeners.delete(listener);
+  };
+
   publish(revision: number, events: readonly Activity[]) {
     if (!events.length) return;
     const batch = freeze({
@@ -45,7 +52,10 @@ export class CommittedEventStream {
     }) as CommittedEventBatch;
     this.batches = Object.freeze([...this.batches, batch].slice(-256));
     this.queue.push(batch);
-    this.drain();
+    if (!this.delivering) {
+      this.drain();
+      this.notifyStateListeners(this.batches[this.batches.length - 1]);
+    }
   }
 
   private drain() {
@@ -69,6 +79,21 @@ export class CommittedEventStream {
       }
     } finally {
       this.delivering = false;
+    }
+  }
+
+  private notifyStateListeners(batch: CommittedEventBatch) {
+    for (const listener of [...this.stateListeners]) {
+      try {
+        listener();
+      } catch (error) {
+        const failure = freeze({
+          revision: batch.revision,
+          eventIds: batch.events.map((event) => event.id),
+          message: error instanceof Error ? error.message : 'Event state subscriber failed',
+        });
+        this.failures = Object.freeze([...this.failures, failure].slice(-100));
+      }
     }
   }
 }

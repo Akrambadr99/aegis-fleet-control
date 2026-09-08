@@ -51,3 +51,19 @@ it('isolates subscriber failures and preserves order across reentrant publicatio
     { revision: 2, eventIds: ['EV-2'], message: 'worker unavailable' },
   ]);
 });
+
+it('notifies state observers after reentrant delivery and failure collection', () => {
+  const stream = new CommittedEventStream();
+  const snapshots: string[] = [];
+  stream.subscribeState(() => {
+    snapshots.push(`${stream.getBatches().length}/${stream.getDeliveryFailures().length}`);
+  });
+  stream.subscribe((batch) => {
+    if (batch.revision === 1) stream.publish(2, [event('EV-2')]);
+    throw new Error('worker unavailable');
+  });
+
+  stream.publish(1, [event('EV-1')]);
+
+  expect(snapshots).toEqual(['2/2']);
+});

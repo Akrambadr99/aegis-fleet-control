@@ -30,6 +30,8 @@ The application transaction layer clones the current snapshot, applies domain be
 
 After a successful storage commit, the gateway publishes the exact event range to an ordered in-process event stream. Simulation events use the same path. Reentrant publication is queued, event batches are detached and immutable, and subscriber failures enter a bounded diagnostic ledger without changing a confirmed command into a reported failure. Persisted activity remains the durable history; the live stream is a post-commit integration surface for workers attached to the current application instance.
 
+The React diagnostics workspace subscribes independently to canonical state, request state and event-stream state. Event-stream observers run after the complete queued delivery cycle, so they see failures from workers regardless of subscription order. The workspace reports bounded committed-batch, event and delivery-failure counts and exposes recent worker failures without polling or coupling operational screens to infrastructure details.
+
 Closing a corridor invalidates affected routes, holds reservations and pauses running missions. Reopening never silently resumes execution. Explicit reroute uses the same route-candidate selector as preview, then a separate resume validates mission feasibility. The initial topology models alternative transfer lanes; arbitrary graph pathfinding is pending.
 
 Disabling a charger displaces its queue entries and increments affected robot revisions. Re-enabling it does not silently reinstate displaced ownership.

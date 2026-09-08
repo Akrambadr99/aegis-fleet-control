@@ -10,6 +10,16 @@ export function DiagnosticsWorkspace() {
     gateway.requests.getOperations,
     gateway.requests.getOperations,
   );
+  const eventBatches = useSyncExternalStore(
+    gateway.events.subscribeState,
+    gateway.events.getBatches,
+    gateway.events.getBatches,
+  );
+  const eventDeliveryFailures = useSyncExternalStore(
+    gateway.events.subscribeState,
+    gateway.events.getDeliveryFailures,
+    gateway.events.getDeliveryFailures,
+  );
   const queries = useQueryClient().getQueryCache();
   const [, refresh] = useState(0);
   useEffect(() => queries.subscribe(() => refresh((value) => value + 1)), [queries]);
@@ -23,6 +33,24 @@ export function DiagnosticsWorkspace() {
       </p>
       <h2>Integrity</h2>
       <p>{violations.length ? JSON.stringify(violations) : 'All checked invariants hold'}</p>
+      <h2>Event delivery</h2>
+      <p>
+        Committed batches {eventBatches.length} · Events{' '}
+        {eventBatches.reduce((count, batch) => count + batch.events.length, 0)} · Delivery failures{' '}
+        {eventDeliveryFailures.length}
+      </p>
+      {eventDeliveryFailures.length > 0 && (
+        <ol aria-label="Event delivery failures">
+          {eventDeliveryFailures
+            .slice(-10)
+            .reverse()
+            .map((failure, index) => (
+              <li key={`${failure.revision}-${index}`}>
+                Revision {failure.revision} · {failure.eventIds.join(', ')} · {failure.message}
+              </li>
+            ))}
+        </ol>
+      )}
       <h2>Query state</h2>
       <ul>
         {queries.getAll().map((query) => (
