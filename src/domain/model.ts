@@ -1,3 +1,4 @@
+import type { WarehouseJob, JobCommand } from './jobs';
 import type { MissionPlan } from './planning';
 export type Role = 'viewer' | 'operator' | 'fleet-manager' | 'facility-manager' | 'administrator';
 export interface Actor {
@@ -80,7 +81,9 @@ export interface Mission extends Versioned {
   facilityId: string;
   destinationId: string;
   routeId: string;
-  status: 'running' | 'paused' | 'completed' | 'draft';
+  status: 'running' | 'paused' | 'completed' | 'draft' | 'cancelled';
+  jobId?: string;
+  planId?: string;
   priority: number;
   progress: number;
   pauseReason: string | null;
@@ -174,6 +177,7 @@ export interface DomainState {
   reservations: Record<string, Reservation>;
   faults: Record<string, Fault>;
   leases: Record<string, ControlLease>;
+  jobs: Record<string, WarehouseJob>;
   plans: Record<string, MissionPlan>;
   maintenance: Record<string, MaintenanceOrder>;
   activity: Activity[];
@@ -181,6 +185,7 @@ export interface DomainState {
   telemetry: Telemetry[];
 }
 export type Command =
+  | JobCommand
   | { type: 'plan.save'; id: string; expectedRevision: number; plan: MissionPlan }
   | {
       type: 'maintenance.start' | 'maintenance.verify' | 'maintenance.complete';

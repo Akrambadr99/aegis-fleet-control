@@ -2,6 +2,11 @@ import type { Actor, Command, DomainState } from './model';
 import { canExecute } from './selectors';
 export function commandFacility(state: DomainState, command: Command): string | undefined {
   switch (command.type) {
+    case 'job.save':
+      return state.jobs[command.id]?.facilityId ?? command.input.facilityId;
+    case 'job.assign':
+    case 'job.cancel':
+      return state.jobs[command.id]?.facilityId;
     case 'plan.save':
       return state.plans[command.id]?.facilityId ?? command.plan.facilityId;
     case 'maintenance.start':

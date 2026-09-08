@@ -3,6 +3,7 @@ import { robotPath, routeDistance } from './navigation';
 import { maintenanceReasons, capabilityIssues } from './maintenance';
 export function canExecute(role: Role, type: Command['type']) {
   if (role === 'administrator') return true;
+  if (type.startsWith('job.')) return role === 'fleet-manager';
   if (type === 'plan.save') return role === 'fleet-manager';
   if (type.startsWith('maintenance.')) return role === 'fleet-manager';
   if (type === 'corridor.set' || type === 'charger.set') return role === 'facility-manager';

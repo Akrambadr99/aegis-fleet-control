@@ -1,3 +1,4 @@
+import { rankCandidates, synchronizeJobs } from '../domain/jobs';
 import { validatePlan, type MissionPlan } from '../domain/planning';
 import type { Actor, Command, DomainState, RoutePreview } from '../domain/model';
 import { createSeed } from '../domain/seed';
@@ -62,6 +63,15 @@ export class FleetGateway {
         }
       }),
     );
+  }
+  rankJobCandidates(id: string, signal?: AbortSignal) {
+    const snapshot = this.state;
+    return this.requests.run(() => {
+      if (this.state.revision !== snapshot.revision)
+        throw new GatewayError('stale', 'Fleet state changed; refresh candidates');
+      if (!snapshot.jobs[id]) throw new GatewayError('missing', 'Job not found');
+      return rankCandidates(snapshot, snapshot.jobs[id]);
+    }, signal);
   }
   validateMissionPlan(plan: MissionPlan, signal?: AbortSignal) {
     const snapshot = this.state,
@@ -173,6 +183,20 @@ export class FleetGateway {
         });
       }
     }
+    for (const change of synchronizeJobs(next))
+      record(
+        next,
+        { id: 'clock', role: 'administrator' },
+        change.event,
+        change.job.id,
+        change.job.title +
+          ' · ' +
+          change.job.completedUnits +
+          '/' +
+          change.job.units +
+          ' delivered',
+        [change.robot],
+      );
     // Retain a bounded live window; activity and replay remain session history.
     next.telemetry = next.telemetry.slice(-2400);
     this.publish(next);

@@ -1,3 +1,4 @@
+import { isJobCommand, applyJob } from './jobs';
 import { validatePlan } from './planning';
 import type { Actor, AuditChange, Command, DomainState, Robot } from './model';
 import { missionFeasibility, routeCandidates } from './selectors';
@@ -47,6 +48,20 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
   const denied = commandPermission(state, actor, command);
   if (denied)
     throw new GatewayError(denied === 'Entity no longer exists' ? 'missing' : 'forbidden', denied);
+  if (isJobCommand(command)) {
+    const before = captureEntities(state);
+    const robots = applyJob(state, command);
+    record(
+      state,
+      actor,
+      command.type,
+      command.id,
+      state.jobs[command.id].assignmentReason || state.jobs[command.id].title,
+      robots,
+      changedEntities(before, state),
+    );
+    return;
+  }
   if (command.type === 'plan.save') {
     const existing = state.plans[command.id];
     if ((existing?.revision ?? 0) !== command.expectedRevision)
