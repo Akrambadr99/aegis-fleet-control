@@ -13,7 +13,7 @@
 }
 .service-register {
   background: var(--surface);
-  border-top: 3px solid #5c6972;
+  border-top: 1px solid var(--rule);
 }
 .service-register-header {
   display: flex;
@@ -24,7 +24,7 @@
 }
 .service-register-header p {
   margin: 4px 0 0;
-  color: #526875;
+  color: var(--text-muted);
   font-size: 11px;
 }
 .service-sequence {
@@ -32,7 +32,7 @@
   list-style: none;
   margin: 0;
   padding: 0 12px;
-  background: #e6ecef;
+  background: transparent;
   border-block: 1px solid var(--rule);
 }
 .service-sequence li {
@@ -45,7 +45,7 @@
 }
 .service-sequence li + li::before {
   content: '→';
-  color: #637784;
+  color: var(--text-muted);
   margin-right: 4px;
 }
 .service-sequence strong {
@@ -58,21 +58,21 @@
 .service-table th,
 .service-table td {
   text-align: left;
-  padding: 9px 10px;
-  font-size: 11px;
-  border-bottom: 1px solid #d2dce2;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--rule);
   vertical-align: top;
 }
 .service-table th {
-  color: #546976;
-  background: #f5f7f8;
+  color: var(--text-muted);
+  background: var(--surface-inset);
   font-weight: 600;
 }
 .service-table td small {
   display: block;
   margin-top: 4px;
   font-family: Consolas, monospace;
-  color: #546976;
+  color: var(--text-muted);
 }
 .service-table .command-action {
   margin: 0;
@@ -82,7 +82,7 @@
   text-align: left;
 }
 .service-state {
-  border-left: 3px solid #728896;
+  border-left: 2px solid var(--rule);
   padding-left: 6px;
   white-space: nowrap;
 }
@@ -100,8 +100,8 @@
 }
 .service-context {
   padding: 12px;
-  border-top: 2px solid #5c6972;
-  background: #edf1f3;
+  border-top: 1px solid var(--rule);
+  background: var(--surface-inset);
 }
 .service-context p {
   max-width: 75ch;
