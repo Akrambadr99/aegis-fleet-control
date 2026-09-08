@@ -17,3 +17,11 @@ export function chargerCapabilities(charger: Charger) {
 export function resourceCapabilities(resource: FacilityResource) {
   return { kind: resource.kind, available: resource.available, capacity: resource.capacity };
 }
+
+export function supportsMissionAction(
+  robot: Robot,
+  action: keyof typeof capabilityRegistry,
+  payloadKg = 0,
+) {
+  return supportsRobotAction(robot, capabilityRegistry[action].robotAction, payloadKg);
+}

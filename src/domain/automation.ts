@@ -1,3 +1,4 @@
+import { chargerCapabilities } from './capabilities';
 import { releaseControl } from './teleoperation';
 import type { Actor, Activity, Command, DomainState, Robot, Versioned } from './model';
 import { DomainError as GatewayError } from './errors';
@@ -175,7 +176,7 @@ export function applyAutomationCommand(
     if (previous && ['queued', 'charging'].includes(previous.state))
       throw new GatewayError('unchanged', 'Charging is already scheduled');
     const chargers = Object.values(state.chargers)
-      .filter((c) => c.floorId === robot.floorId && c.available)
+      .filter((c) => c.floorId === robot.floorId && chargerCapabilities(c).charge)
       .sort(
         (a, b) =>
           Object.values(state.reservations).filter(

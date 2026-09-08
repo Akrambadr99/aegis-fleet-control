@@ -1,3 +1,4 @@
+import { getFleetOperationalProjection } from '../../application/projections';
 import type { DomainState } from '../../domain/model';
 export const facilities = [
   { id: 'northstar', domainId: 'FAC-001' },
@@ -9,7 +10,8 @@ export function resolveFacility(state: DomainState, id: string | null) {
   const entry = facilities.find((f) => f.id === id || f.domainId === id) ?? facilities[0],
     facility = state.facilities[entry.domainId],
     floor = state.floors[facility.floorIds[0]];
-  const robots = Object.values(state.robots).filter((r) => r.facilityId === facility.id),
+  const operational = getFleetOperationalProjection(state, facility.id);
+  const robots = operational.robots,
     missions = Object.values(state.missions).filter((m) => m.facilityId === facility.id);
   const active = robots.filter((r) => r.status === 'running').length,
     charging = robots.filter((r) => r.status === 'charging').length,
@@ -35,7 +37,7 @@ export function resolveFacility(state: DomainState, id: string | null) {
     attention,
     missions: missions.filter((m) => m.status === 'completed').length,
     throughput: Math.round((active / robots.length) * 100),
-    available: robots.filter((r) => r.status === 'idle' && r.connected).length,
+    available: operational.ready.filter((r) => r.status === 'idle').length,
 
     activity: Object.values(state.faults)
       .filter((f) => state.robots[f.robotId].facilityId === facility.id && f.status !== 'resolved')

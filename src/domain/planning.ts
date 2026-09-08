@@ -1,4 +1,4 @@
-import { supportsRobotAction } from './capabilities';
+import { supportsMissionAction, chargerCapabilities, resourceCapabilities } from './capabilities';
 import type { DomainState, Versioned } from './model';
 import { shortestPath } from './navigation';
 import { readiness } from './selectors';
@@ -142,7 +142,8 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
       // Control nodes add no work; downstream dependencies determine the critical path.
       duration = 0;
     } else if (step.kind === 'navigate') {
-      if (robot && !supportsRobotAction(robot, 'navigate')) issue('Robot cannot navigate', step.id);
+      if (robot && !supportsMissionAction(robot, 'navigate'))
+        issue('Robot cannot navigate', step.id);
       const zone = state.zones[step.zoneId];
       const target = Object.values(state.navigationNodes).find((n) => n.zoneId === step.zoneId);
       if (!zone || state.floors[zone.floorId]?.facilityId !== plan.facilityId)
@@ -159,15 +160,19 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
     } else if (step.kind === 'pickup' || step.kind === 'dropoff') {
       if (!Number.isFinite(step.payloadKg) || step.payloadKg <= 0)
         issue('Payload must be a positive weight', step.id);
-      if (robot && !supportsRobotAction(robot, 'lift', step.payloadKg))
+      if (robot && !supportsMissionAction(robot, step.kind, step.payloadKg))
         issue('Robot cannot handle this payload', step.id);
       duration = 15;
     } else if (step.kind === 'inspect') {
-      if (robot && !supportsRobotAction(robot, 'inspect')) issue('Robot cannot inspect', step.id);
+      if (robot && !supportsMissionAction(robot, 'inspect')) issue('Robot cannot inspect', step.id);
       duration = step.seconds;
     } else if (step.kind === 'charge') {
       const charger = state.chargers[step.chargerId];
-      if (!charger || charger.facilityId !== plan.facilityId || !charger.available)
+      if (
+        !charger ||
+        charger.facilityId !== plan.facilityId ||
+        !chargerCapabilities(charger).charge
+      )
         issue('Choose an available charger in this facility', step.id);
       else {
         if (!canReachFacilityTarget(state, cursor, charger))
@@ -187,7 +192,11 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
       duration = step.seconds;
     } else if (isResourceStep(step.kind)) {
       const resource = state.resources[step.resourceId];
-      if (!resource || resource.facilityId !== plan.facilityId || !resource.available)
+      if (
+        !resource ||
+        resource.facilityId !== plan.facilityId ||
+        !resourceCapabilities(resource).available
+      )
         issue('Choose an available resource in this facility', step.id);
       else if (resourceStepKinds[step.kind] && resource.kind !== resourceStepKinds[step.kind])
         issue('This action requires a ' + resourceStepKinds[step.kind] + ' resource', step.id);

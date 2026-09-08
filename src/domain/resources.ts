@@ -1,3 +1,4 @@
+import { resourceCapabilities } from './capabilities';
 import type { Command, DomainState, Robot, Versioned } from './model';
 import { readiness } from './eligibility';
 import { DomainError as GatewayError } from './errors';
@@ -128,7 +129,11 @@ export function synchronizeResources(state: DomainState) {
       !robot.connected ||
       ['maintenance', 'emergency-stopped'].includes(robot.status) ||
       (!!mission && ['completed', 'cancelled'].includes(mission.status));
-    if (lease.expiresTick <= state.tick || unavailable || !resource.available) {
+    if (
+      lease.expiresTick <= state.tick ||
+      unavailable ||
+      !resourceCapabilities(resource).available
+    ) {
       lease.state = lease.expiresTick <= state.tick ? 'expired' : 'released';
       lease.revision++;
       resource.revision++;
@@ -152,7 +157,7 @@ export function synchronizeResources(state: DomainState) {
     if (
       group.some(
         (r) =>
-          !state.resources[r.resourceId].available ||
+          !resourceCapabilities(state.resources[r.resourceId]).available ||
           resourceOwners(state, r.resourceId).length >= state.resources[r.resourceId].capacity,
       )
     )

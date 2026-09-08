@@ -1,4 +1,4 @@
-import { supportsRobotAction } from './capabilities';
+import { supportsMissionAction } from './capabilities';
 import { reserveMissionResources, releaseRobotResources } from './resources';
 import type { DomainState, Robot, Versioned, Command } from './model';
 import { shortestPath, type PathResult } from './navigation';
@@ -85,7 +85,7 @@ export function rankCandidates(state: DomainState, job: WarehouseJob): RobotCand
     .filter((r) => r.facilityId === job.facilityId)
     .map((robot) => {
       const reasons = [...readiness(state, robot), ...robotCommitments(state, robot)];
-      if (!supportsRobotAction(robot, 'lift', job.payloadKg))
+      if (!supportsMissionAction(robot, 'pickup', job.payloadKg))
         reasons.push('Payload capability mismatch');
       if (job.dependsOn.some((id) => state.jobs[id]?.status !== 'completed'))
         reasons.push('Predecessor job incomplete');
