@@ -48,7 +48,7 @@ Optimistic edits will require per-mutation overlays and revision-aware rollback.
 
 Snapshots carry independent schema, fixture and snapshot versions plus deterministic migration history. Migration functions are registered one version at a time; restoration walks each required step in order, never mutates the supplied snapshot, and validates the final canonical state. Current exports begin at the current schema with an empty migration history, while restored historical snapshots retain the exact steps applied during restoration.
 
-Schema migrations add compatibility defaults only for the version that introduced them. Seed fixtures remain separately versioned, so a schema change does not require rewriting every deterministic fixture. Unknown future schemas, unsupported fixture versions and malformed snapshot versions fail before publication.
+Schema migrations add compatibility defaults only for the version that introduced them. Seed fixtures remain separately versioned, so a schema change does not require rewriting every deterministic fixture. Unknown future schemas, unsupported fixture versions, malformed roots, incomplete canonical table shapes, discontinuous migration histories and revision metadata mismatches fail before publication.
 
 The browser application restores canonical state from one versioned local snapshot. A commit is serialized and written before the in-memory adapter publishes it, so a storage access or quota failure leaves the visible snapshot and subscribers unchanged. Tests and explicitly supplied gateways remain isolated in memory. Corrupt persisted data fails closed rather than silently discarding operational history.
 

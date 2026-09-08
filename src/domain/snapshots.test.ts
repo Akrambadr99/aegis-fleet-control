@@ -62,3 +62,41 @@ it('rejects unknown schemas, fixtures and malformed snapshot versions', () => {
   expect(() => migrateSnapshot({ ...exported, fixtureVersion: 99 })).toThrow('Unsupported');
   expect(() => migrateSnapshot({ ...exported, snapshotVersion: -1 })).toThrow('snapshot version');
 });
+
+it('rejects malformed roots and incomplete canonical state shapes as domain errors', () => {
+  for (const input of [null, [], 'snapshot', { schemaVersion, fixtureVersion }]) {
+    let failure: unknown;
+    try {
+      migrateSnapshot(input);
+    } catch (error) {
+      failure = error;
+    }
+    expect(failure).toMatchObject({ code: 'invalid' });
+  }
+
+  const incomplete = exportSnapshot(createSeed());
+  delete (incomplete.state as Partial<typeof incomplete.state>).plans;
+  expect(() => migrateSnapshot(incomplete)).toThrow('canonical state shape');
+});
+
+it('rejects discontinuous migration provenance and revision metadata mismatches', () => {
+  const exported = exportSnapshot(createSeed());
+  expect(() =>
+    migrateSnapshot({
+      ...exported,
+      migrationHistory: [
+        { from: 1, to: 2 },
+        { from: 3, to: 4 },
+      ],
+    }),
+  ).toThrow('migration history');
+  expect(() =>
+    migrateSnapshot({
+      ...exported,
+      migrationHistory: [{ from: 1, to: 2 }],
+    }),
+  ).toThrow('does not match');
+  expect(() =>
+    migrateSnapshot({ ...exported, snapshotVersion: exported.snapshotVersion + 1 }),
+  ).toThrow('does not match canonical revision');
+});
