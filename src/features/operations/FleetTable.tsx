@@ -42,7 +42,7 @@ export function FleetTable() {
     setPending(false);
   }
   return (
-    <section className="panel">
+    <section className="fleet-roster">
       <div className="control-row">
         <label>
           Find robot
@@ -64,6 +64,7 @@ export function FleetTable() {
           </select>
         </label>
         <button
+          className="button-primary"
           disabled={
             pending ||
             ![...selection].some((id) => state.robots[id].facilityId === facility.id) ||
@@ -74,7 +75,7 @@ export function FleetTable() {
           {pending ? 'Pausing selected robots…' : 'Pause selected'}
         </button>
       </div>
-      <p>
+      <p className="fleet-selection-summary">
         {rows.length} robots · {selection.size} selected
       </p>
       <div className="table-scroll">
@@ -92,7 +93,11 @@ export function FleetTable() {
           </thead>
           <tbody>
             {visible.map((robot) => (
-              <tr key={robot.id}>
+              <tr
+                key={robot.id}
+                data-selected={selection.has(robot.id)}
+                data-inspected={params.get('robot') === robot.id}
+              >
                 <td>
                   <input
                     type="checkbox"

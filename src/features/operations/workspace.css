@@ -1,6 +1,72 @@
 .charger-dot {
   background: #547aaa;
 }
+.fleet-roster {
+  min-width: 0;
+  background: var(--surface);
+  border-block: 1px solid var(--rule);
+}
+.fleet-roster > .control-row {
+  padding-inline: var(--space-3);
+}
+.fleet-selection-summary {
+  color: var(--text-muted);
+  margin: var(--space-2) var(--space-3);
+  font-size: 12px;
+}
+.fleet-roster caption {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.fleet-roster th,
+.fleet-roster td {
+  padding: 4px 12px;
+  height: 38px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.fleet-roster thead th {
+  background: var(--surface-inset);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.fleet-roster tbody tr:hover {
+  background: var(--surface-inset);
+}
+.fleet-roster tbody tr[data-selected='true'] {
+  background: var(--selection);
+}
+.fleet-roster tbody tr[data-inspected='true'] {
+  box-shadow: inset 3px 0 var(--accent);
+}
+.fleet-roster tbody th {
+  text-align: left;
+}
+.fleet-roster .text-button {
+  font-weight: 600;
+  padding-inline: 0;
+}
+.fleet-roster > ul:empty {
+  display: none;
+}
+.fleet-roster > ul {
+  padding-inline: 28px;
+}
+.robot-inspector.panel {
+  border: 0;
+  border-left: 1px solid var(--rule);
+  background: var(--surface-inset);
+  border-radius: 0;
+  padding: var(--space-4);
+}
+.robot-inspector .eyebrow {
+  margin-top: var(--space-4);
+}
+.robot-inspector h3 {
+  font-size: 13px;
+}
 .operations-layout {
   display: flex;
   align-items: flex-start;
