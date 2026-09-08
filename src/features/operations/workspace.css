@@ -1,0 +1,244 @@
+.charger-dot {
+  background: #547aaa;
+}
+.operations-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+.operations-content {
+  min-width: 0;
+  flex: 1;
+}
+.robot-inspector {
+  width: 310px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 15px;
+}
+.robot-inspector h2 {
+  font-size: 24px;
+  margin-top: 15px;
+}
+.robot-inspector h3 {
+  margin-top: 22px;
+}
+.robot-inspector p,
+.robot-inspector li {
+  font-size: 12px;
+}
+.record-list {
+  padding-left: 20px;
+  font-size: 12px;
+}
+.record-list li {
+  padding: 9px;
+  border-bottom: 1px solid #e7eef1;
+}
+@media (max-width: 1200px) {
+  .operations-layout {
+    flex-direction: column;
+  }
+  .robot-inspector {
+    position: static;
+    width: 100%;
+  }
+  .operations-content {
+    width: 100%;
+  }
+}
+.audit-change > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.audit-change pre {
+  max-height: 260px;
+  overflow: auto;
+  max-width: 100%;
+  font-size: 11px;
+  background: #f3f6f8;
+  padding: 10px;
+}
+.audit-change > div > div {
+  min-width: 0;
+}
+@media (max-width: 700px) {
+  .audit-change > div {
+    grid-template-columns: 1fr;
+  }
+}
+.robot-inspector {
+  width: 280px;
+}
+.robot-inspector h2 {
+  font-size: 20px;
+  margin-top: 8px;
+}
+.robot-inspector h3 {
+  margin-top: 14px;
+}
+@media (max-width: 700px) {
+  .robot-inspector {
+    width: 100%;
+  }
+}
+.charging-deck > h2,
+.fault-triage h2,
+.execution-register > h2 {
+  font-size: 14px;
+}
+.charger-lane {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  border: 1px solid var(--rule);
+  margin-top: 10px;
+  background: var(--surface);
+}
+.charger-terminal {
+  padding: 10px 12px;
+  border-right: 1px solid var(--rule);
+  background: #e9eff2;
+}
+.charger-terminal h3 {
+  margin: 0;
+  font-family: Consolas, monospace;
+  font-size: 14px;
+}
+.charger-terminal p {
+  margin: 6px 0;
+  font-size: 11px;
+}
+.charger-queue {
+  margin: 0;
+  padding: 0 12px 0 32px;
+}
+.charger-queue li {
+  padding: 10px 6px;
+  border-bottom: 1px solid #d5e0e5;
+}
+.charger-queue li:last-child {
+  border-bottom: 0;
+}
+.charger-queue li > span {
+  margin-left: 12px;
+  font-size: 11px;
+}
+.charger-queue small {
+  display: block;
+  color: #526875;
+  font-size: 11px;
+}
+.fault-triage > header {
+  border-bottom: 2px solid #a25329;
+  padding-bottom: 10px;
+}
+.fault-strip {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr) 190px;
+  align-items: start;
+  gap: 12px;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--rule);
+  border-left: 3px solid #b27d30;
+  background: #fffaf2;
+}
+.fault-strip[data-severity='critical'] {
+  border-left-color: #a52a26;
+  background: #fff4f1;
+}
+.fault-strip h3 {
+  font-size: 12px;
+  margin: 0;
+}
+.fault-strip p {
+  margin: 5px 0;
+  font-size: 11px;
+}
+.fault-strip .command-action {
+  margin: 0;
+}
+.execution-row {
+  display: grid;
+  grid-template-columns: 160px 170px minmax(0, 1fr) 120px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: white;
+  border-top: 1px solid var(--rule);
+}
+.execution-row h3 {
+  margin: 0;
+  font-size: 12px;
+}
+.execution-row p {
+  margin: 4px 0;
+  font-size: 11px;
+}
+.execution-progress span,
+.execution-progress small {
+  display: block;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.execution-progress progress {
+  width: 100%;
+  height: 6px;
+}
+.execution-interlock {
+  border-left: 3px solid #b57627;
+  padding-left: 8px;
+  color: #80501b;
+}
+.execution-row .command-action {
+  margin: 0;
+}
+@media (max-width: 1100px) {
+  .execution-row {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+  .fault-strip {
+    grid-template-columns: 130px minmax(0, 1fr);
+  }
+  .fault-strip > .command-action {
+    grid-column: 2;
+  }
+}
+@media (max-width: 550px) {
+  .charger-lane {
+    grid-template-columns: 125px minmax(0, 1fr);
+  }
+  .execution-row,
+  .fault-strip {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fault-strip > .command-action {
+    grid-column: auto;
+  }
+}
+.charger-queue-empty {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  padding: 0 16px;
+  color: #526875;
+  font-size: 11px;
+}
+.telemetry-register {
+  border-top: 2px solid #467089;
+  background: var(--surface);
+  padding: 10px 12px;
+}
+.telemetry-register h2 {
+  font-size: 14px;
+}
+.telemetry-register td {
+  font-family: Consolas, monospace;
+  font-size: 11px;
+}
+.telemetry-register td:nth-child(2) {
+  font-family: inherit;
+}
+.telemetry-register > button {
+  margin-top: 10px;
+}

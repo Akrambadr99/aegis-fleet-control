@@ -1,0 +1,342 @@
+.scheduler-workspace button {
+  padding: 6px 9px;
+  border-radius: 3px;
+}
+.scheduler-workspace input,
+.scheduler-workspace select {
+  padding: 6px;
+  border: 1px solid #b2bfc5;
+  background: white;
+  max-width: 100%;
+}
+.dispatch-timeline {
+  display: flex;
+  gap: 4px;
+  overflow: auto;
+  border-bottom: 1px solid #adbdc7;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+.dispatch-timeline button {
+  min-width: 165px;
+  background: #e0e8ed;
+  color: #233e50;
+  text-align: left;
+  border-left: 3px solid #668ba3;
+}
+.dispatch-timeline span,
+.dispatch-timeline strong {
+  display: block;
+  font-size: 12px;
+}
+.dispatch-timeline progress {
+  width: 100%;
+  height: 5px;
+}
+.scheduler-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 18px;
+  align-items: start;
+}
+.job-queue td strong,
+.job-queue td small {
+  display: block;
+}
+.job-queue td {
+  padding: 8px;
+  font-size: 12px;
+  vertical-align: top;
+}
+.job-editor {
+  margin-top: 18px;
+  border-top: 2px solid #7994a5;
+  padding-top: 12px;
+}
+.job-editor fieldset {
+  border: 0;
+  padding: 0;
+  margin: 8px 0;
+}
+.job-editor .check-label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.job-editor .check-label input {
+  width: auto;
+  margin: 4px 0;
+}
+.candidate-panel {
+  border-left: 1px solid #afc0cc;
+  padding: 0 0 0 16px;
+}
+.candidate-list {
+  max-height: 390px;
+  overflow: auto;
+  border-top: 1px solid #bdcad2;
+}
+.scheduler-workspace .candidate {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: #213d50;
+  border-bottom: 1px solid #bfccd4;
+  text-align: left;
+  padding: 9px 5px;
+}
+.candidate span {
+  display: block;
+  font-size: 11px;
+}
+.scheduler-workspace .selected-candidate {
+  background: #dce9f2;
+  box-shadow: inset 3px 0 #4f7c9c;
+}
+.job-cancellation {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid #bbc8d0;
+  padding: 12px 0;
+  margin-top: 15px;
+}
+.job-cancellation span {
+  font-size: 12px;
+}
+@media (max-width: 1050px) {
+  .scheduler-grid {
+    grid-template-columns: 1fr;
+  }
+  .candidate-panel {
+    border-left: 0;
+    padding: 15px 0;
+    border-top: 1px solid #afc0cc;
+  }
+}
+@media (max-width: 650px) {
+  .job-cancellation {
+    display: block;
+  }
+}
+.job-filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+.job-filterbar label {
+  display: grid;
+  gap: 0.25rem;
+  flex: 1 1 10rem;
+}
+.job-dependency-graph {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 1rem;
+  margin-block: 1rem;
+}
+.job-dependency-graph > div {
+  padding: 0.75rem;
+  border-inline-start: 3px solid #78918a;
+  background: #f1f5f3;
+}
+.job-batch-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+  padding: 12px 0;
+  margin-bottom: 12px;
+  border-block: 1px solid #bdcbd2;
+}
+.job-batch-controls > p,
+.job-batch-controls > [role='status'] {
+  flex-basis: 100%;
+  margin: 0;
+}
+.job-batch-controls label {
+  display: grid;
+  gap: 4px;
+}
+.job-batch-controls input {
+  width: 110px;
+}
+.job-batch-controls ul {
+  max-height: 150px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+.job-groups-panel {
+  margin-block: 12px;
+  border-top: 1px solid #bdcbd2;
+  padding-block: 10px;
+}
+.job-groups-panel summary {
+  cursor: pointer;
+  font-weight: 650;
+}
+.dispatch-group {
+  border-left: 3px solid #688c8b;
+  padding: 10px;
+  margin-block: 10px;
+}
+.dispatch-group header {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.dispatch-group button {
+  margin: 4px 6px 4px 0;
+}
+.job-lock-panel {
+  border-block: 1px solid #bdcbd2;
+  margin-block: 12px;
+  padding-block: 8px;
+}
+.job-lock-panel input[type='number'] {
+  width: 100px;
+}
+.job-lock-panel button {
+  margin: 6px 6px 0 0;
+}
+.dispatch-lanes {
+  border-block: 1px solid var(--rule);
+  margin-bottom: 12px;
+}
+.dispatch-lanes > header {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  padding: 8px;
+  background: #e6edf1;
+}
+.dispatch-lanes h2 {
+  font-size: 12px;
+}
+.dispatch-lanes header span {
+  font-size: 11px;
+  color: #526875;
+}
+.scheduler-workspace .dispatch-lanes button {
+  display: grid;
+  grid-template-columns: 130px 1.2fr 1fr 130px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #d0dce2;
+  border-left: 3px solid transparent;
+  background: #fff;
+  color: #203b4c;
+  padding: 8px;
+  text-align: left;
+  border-radius: 0;
+}
+.scheduler-workspace .dispatch-lanes button[aria-pressed='true'] {
+  border-left-color: #237569;
+  background: #e6efed;
+}
+.dispatch-lanes small {
+  display: block;
+  font-size: 10px;
+  color: #526875;
+  margin-top: 3px;
+}
+.dispatch-lanes strong small {
+  display: inline;
+  margin-left: 8px;
+}
+.scheduler-grid {
+  grid-template-columns: minmax(0, 1fr) 370px;
+  gap: 14px;
+}
+.candidate-panel {
+  position: sticky;
+  top: 12px;
+  padding-left: 12px;
+}
+.candidate-panel h2 {
+  font-size: 14px;
+}
+.candidate-panel h3 {
+  font-size: 12px;
+  margin: 10px 0 6px;
+}
+.job-lock-panel {
+  padding: 8px 0;
+}
+.job-lock-panel p {
+  margin: 6px 0;
+  font-size: 11px;
+}
+.job-lock-panel fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 6px;
+  padding: 8px;
+  margin: 0;
+  border: 1px solid var(--rule);
+  background: #e9eff2;
+}
+.job-lock-panel label {
+  display: grid;
+  gap: 4px;
+  font-size: 11px;
+  flex: 1;
+}
+.job-lock-panel label input {
+  width: 100%;
+  min-width: 70px;
+}
+.job-lock-panel button {
+  font-size: 11px;
+}
+.candidate-list {
+  max-height: 42vh;
+}
+.candidate .candidate-measurements {
+  display: grid;
+  grid-template-columns: 1fr 48px 48px 84px;
+  align-items: baseline;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.candidate-measurements > span {
+  text-align: right;
+  font-size: 10px;
+}
+.candidate-blocked {
+  color: #83521c;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+.candidate-ready {
+  color: #256e54;
+  margin-top: 4px;
+}
+.scheduler-workspace .candidate {
+  padding: 7px 5px;
+  border-radius: 0;
+}
+@media (max-width: 1150px) {
+  .scheduler-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .candidate-panel {
+    position: static;
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+@media (max-width: 650px) {
+  .scheduler-workspace .dispatch-lanes button {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+  .dispatch-lanes > header {
+    align-items: start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}

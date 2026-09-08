@@ -1,0 +1,129 @@
+.service-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 16px;
+  overflow-x: auto;
+}
+.service-board > section {
+  min-width: 0;
+}
+.service-board h3 {
+  font-size: 13px;
+  text-transform: capitalize;
+}
+.service-register {
+  background: var(--surface);
+  border-top: 3px solid #5c6972;
+}
+.service-register-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+}
+.service-register-header p {
+  margin: 4px 0 0;
+  color: #526875;
+  font-size: 11px;
+}
+.service-sequence {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0 12px;
+  background: #e6ecef;
+  border-block: 1px solid var(--rule);
+}
+.service-sequence li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 16px 9px 0;
+  margin-right: 20px;
+  font-size: 11px;
+}
+.service-sequence li + li::before {
+  content: '→';
+  color: #637784;
+  margin-right: 4px;
+}
+.service-sequence strong {
+  font-variant-numeric: tabular-nums;
+}
+.service-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.service-table th,
+.service-table td {
+  text-align: left;
+  padding: 9px 10px;
+  font-size: 11px;
+  border-bottom: 1px solid #d2dce2;
+  vertical-align: top;
+}
+.service-table th {
+  color: #546976;
+  background: #f5f7f8;
+  font-weight: 600;
+}
+.service-table td small {
+  display: block;
+  margin-top: 4px;
+  font-family: Consolas, monospace;
+  color: #546976;
+}
+.service-table .command-action {
+  margin: 0;
+}
+.service-table .command-action button {
+  font-size: 11px;
+  text-align: left;
+}
+.service-state {
+  border-left: 3px solid #728896;
+  padding-left: 6px;
+  white-space: nowrap;
+}
+.service-state-in-progress {
+  border-color: #b17313;
+  color: #795000;
+}
+.service-state-verification {
+  border-color: #3d6396;
+  color: #294f7e;
+}
+.service-state-completed {
+  border-color: #317760;
+  color: #235f4c;
+}
+.service-context {
+  padding: 12px;
+  border-top: 2px solid #5c6972;
+  background: #edf1f3;
+}
+.service-context p {
+  max-width: 75ch;
+  font-size: 11px;
+  margin: 6px 0;
+}
+.service-context span {
+  font-family: Consolas, monospace;
+  font-size: 11px;
+}
+.service-empty {
+  padding: 12px;
+}
+@media (max-width: 700px) {
+  .service-sequence {
+    flex-wrap: wrap;
+  }
+  .service-register-header {
+    align-items: start;
+    flex-direction: column;
+  }
+  .service-table {
+    min-width: 660px;
+  }
+}

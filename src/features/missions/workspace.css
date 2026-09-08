@@ -1,0 +1,237 @@
+.mission-workspace button {
+  padding: 6px 9px;
+  border-radius: 3px;
+}
+.mission-editor-layout {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  border-bottom: 1px solid #bac9c4;
+}
+.plan-library {
+  border-right: 1px solid #bac9c4;
+  padding: 8px 12px 12px 0;
+}
+.plan-library button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 8px 0;
+}
+.plan-library button small,
+.step-select small {
+  display: block;
+  font-size: 11px;
+  opacity: 0.8;
+}
+.plan-library p {
+  font-size: 12px;
+}
+.mission-document {
+  border: 0;
+  padding: 0 0 12px 14px;
+  min-width: 0;
+  margin: 0;
+}
+.mission-metadata {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 10px;
+}
+.mission-workspace label {
+  display: block;
+  font-size: 12px;
+}
+.mission-workspace input,
+.mission-workspace select {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #adbeb6;
+  background: white;
+  color: #203444;
+  margin: 4px 0 10px;
+}
+.sequence-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-top: 1px solid #c5d1cb;
+  border-bottom: 1px solid #c5d1cb;
+  padding: 8px 0;
+  margin: 8px 0;
+  font-size: 11px;
+}
+.sequence-and-inspector {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 14px;
+  min-height: 300px;
+}
+.step-sequence ol {
+  padding: 0;
+  list-style: none;
+}
+.step-sequence li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  border-bottom: 1px solid #bdcbc5;
+  padding: 8px 4px;
+}
+.step-sequence li.selected {
+  background: #e0eee7;
+  box-shadow: inset 3px 0 #31715f;
+}
+.step-number {
+  font-family: monospace;
+  color: #687e74;
+}
+.mission-workspace .step-select {
+  background: transparent;
+  color: #203444;
+  text-align: left;
+}
+.step-order {
+  display: flex;
+  gap: 2px;
+}
+.step-dependencies {
+  grid-column: 2 / -1;
+  font-size: 11px;
+  margin: 2px 0;
+  color: #5b7068;
+}
+.step-inspector {
+  border-left: 1px solid #bccdc3;
+  padding: 8px 12px;
+  background: #edf2ee;
+}
+.step-inspector fieldset {
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #b8c8bf;
+}
+.step-inspector .check-label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.step-inspector .check-label input {
+  width: auto;
+  margin: 4px 0;
+}
+.dependency-strip {
+  overflow: auto;
+  border-top: 1px solid #becdc4;
+  padding-top: 10px;
+}
+.dependency-strip svg {
+  width: 100%;
+  min-width: 480px;
+  max-height: 180px;
+}
+.validation-tray {
+  background: #e9efeb;
+  border-left: 3px solid #5b8473;
+  padding: 10px 14px;
+  margin-top: 12px;
+}
+.validation-tray p,
+.validation-tray li {
+  font-size: 12px;
+}
+@media (max-width: 1100px) {
+  .mission-editor-layout {
+    grid-template-columns: 140px minmax(0, 1fr);
+  }
+  .sequence-and-inspector {
+    grid-template-columns: 1fr;
+  }
+  .step-inspector {
+    border-left: 0;
+    border-top: 1px solid #b8c8bf;
+  }
+}
+@media (max-width: 700px) {
+  .mission-editor-layout {
+    grid-template-columns: 1fr;
+  }
+  .plan-library {
+    border-right: 0;
+    border-bottom: 1px solid #bac9c4;
+  }
+  .mission-document {
+    padding-left: 0;
+  }
+  .mission-metadata {
+    grid-template-columns: 1fr;
+  }
+}
+.mission-workspace .mission-editor-layout {
+  grid-template-columns: 160px minmax(0, 1fr);
+}
+.mission-workspace .sequence-and-inspector {
+  grid-template-columns: minmax(0, 1fr) 310px;
+  min-height: 0;
+  align-items: start;
+}
+.mission-properties {
+  border-left: 1px solid var(--rule);
+  background: #edf2ee;
+}
+.mission-properties .step-inspector {
+  border-left: 0;
+  background: transparent;
+}
+.mission-properties .validation-tray {
+  margin: 0;
+  border-left: 0;
+  border-top: 3px solid var(--accent-planning);
+  padding: var(--space-3);
+}
+.mission-properties .validation-tray ul {
+  padding-left: 16px;
+}
+.mission-properties h2 {
+  font-size: 13px;
+}
+.mission-properties h3 {
+  font-size: 12px;
+}
+.mission-properties .validation-tray p,
+.mission-properties .validation-tray li {
+  font-size: 11px;
+}
+.mission-sequence-column {
+  min-width: 0;
+}
+.mission-sequence-column .dependency-strip {
+  margin-top: var(--space-3);
+}
+.mission-workspace .sequence-toolbar {
+  background: var(--surface-inset);
+  padding: var(--space-2);
+}
+.mission-workspace .step-sequence li {
+  background: var(--surface);
+  border-left: 3px solid transparent;
+}
+.mission-workspace .step-sequence li.selected {
+  border-left-color: var(--accent-planning);
+  box-shadow: none;
+  background: #e5eee1;
+}
+@media (max-width: 1100px) {
+  .mission-workspace .sequence-and-inspector {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mission-properties {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
+}
+@media (max-width: 700px) {
+  .mission-workspace .mission-editor-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
