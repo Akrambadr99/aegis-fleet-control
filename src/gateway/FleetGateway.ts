@@ -18,11 +18,13 @@ import type { CanonicalStorage } from '../storage/contracts';
 import { InMemoryStorageAdapter } from '../storage/InMemoryStorageAdapter';
 import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
+import { CommittedEventStream } from './CommittedEventStream';
 export class FleetGateway implements FleetQueries, FleetCommands {
   private readonly storage: CanonicalStorage;
   private operationSequence = 0;
   readonly configuration: Readonly<OperationalConfiguration>;
   readonly requests: RequestEngine;
+  readonly events = new CommittedEventStream();
   constructor(
     scheduler: Scheduler = new RealScheduler(),
     source: DomainState | CanonicalStorage = createSeed(),
@@ -65,6 +67,7 @@ export class FleetGateway implements FleetQueries, FleetCommands {
           transaction.eventRange.start,
           transaction.eventRange.start + transaction.eventRange.length,
         );
+        this.events.publish(committed.revision, events);
         const failures = events
           .filter((event) => event.type === 'automation.failed')
           .map((event) => ({ entityId: event.entityId, message: event.details }));
@@ -201,6 +204,8 @@ export class FleetGateway implements FleetQueries, FleetCommands {
     }, signal);
   }
   advance(ticks = 1) {
-    this.publish(advanceDomain(this.state, ticks, this.configuration));
+    const eventStart = this.state.activity.length;
+    const committed = this.publish(advanceDomain(this.state, ticks, this.configuration));
+    this.events.publish(committed.revision, committed.activity.slice(eventStart));
   }
 }

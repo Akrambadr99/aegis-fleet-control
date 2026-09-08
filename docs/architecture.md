@@ -28,6 +28,8 @@ Independent resources can complete in any order. Competing writes to one resourc
 
 The application transaction layer clones the current snapshot, applies domain behavior and automation, and enforces invariants before returning a candidate plus the exact range of events it created. The storage adapter then checks the expected canonical revision and publishes the candidate atomically. Command receipts consume only that bounded committed event range, so their cost does not grow with retained audit history. A stale or invalid candidate leaves the previous snapshot and subscribers untouched.
 
+After a successful storage commit, the gateway publishes the exact event range to an ordered in-process event stream. Simulation events use the same path. Reentrant publication is queued, event batches are detached and immutable, and subscriber failures enter a bounded diagnostic ledger without changing a confirmed command into a reported failure. Persisted activity remains the durable history; the live stream is a post-commit integration surface for workers attached to the current application instance.
+
 Closing a corridor invalidates affected routes, holds reservations and pauses running missions. Reopening never silently resumes execution. Explicit reroute uses the same route-candidate selector as preview, then a separate resume validates mission feasibility. The initial topology models alternative transfer lanes; arbitrary graph pathfinding is pending.
 
 Disabling a charger displaces its queue entries and increments affected robot revisions. Re-enabling it does not silently reinstate displaced ownership.

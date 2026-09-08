@@ -37,6 +37,32 @@ it('cancelled work leaves no domain events and leaves a diagnostic outcome', asy
   clock.advance(500);
   expect(gateway.getSnapshot()).toBe(before);
   expect(gateway.requests.getOperations()[0].status).toBe('cancelled');
+  expect(gateway.events.getBatches()).toHaveLength(0);
+});
+
+it('publishes committed events after state visibility without letting worker failures reject commands', async () => {
+  const clock = new ManualScheduler();
+  const gateway = new FleetGateway(clock);
+  const expectedRevision = gateway.getSnapshot().revision + 1;
+  const observed: { revision: number; visibleRevision: number }[] = [];
+  gateway.events.subscribe((batch) => {
+    observed.push({ revision: batch.revision, visibleRevision: gateway.getSnapshot().revision });
+    throw new Error('background worker unavailable');
+  });
+
+  const ticket = gateway.command(actor, {
+    type: 'robot.stop',
+    id: 'R-001',
+    expectedRevision: 1,
+  });
+  clock.advance(250);
+
+  await expect(ticket.promise).resolves.toMatchObject({ revision: expectedRevision });
+  expect(observed).toEqual([{ revision: expectedRevision, visibleRevision: expectedRevision }]);
+  expect(gateway.events.getBatches()[0].events[0].operationId).toBe(
+    gateway.requests.getOperations()[0].operationId,
+  );
+  expect(gateway.events.getDeliveryFailures()[0].message).toBe('background worker unavailable');
 });
 
 it('returns the bounded event range owned by a transaction without mutating its source', () => {
