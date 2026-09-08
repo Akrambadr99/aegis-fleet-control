@@ -7,7 +7,8 @@ import { JobEditor } from './JobEditor';
 import { CandidatePanel } from './CandidatePanel';
 import { JobHistory } from './JobHistory';
 import { useCommand } from '../../hooks/useCommand';
-import { commandPermission } from '../../domain/permissions';
+import { commandPermission, facilityPermission } from '../../domain/permissions';
+import { dispatchLockConflict } from '../../domain/jobLocks';
 export function SchedulerWorkspace() {
   const { state, facility, params, change } = useScope(),
     { gateway, actor } = useFleet(),
@@ -110,6 +111,10 @@ export function SchedulerWorkspace() {
               facilityId={facility.id}
               job={creating ? undefined : job}
               pending={pending}
+              blockedReason={
+                facilityPermission(actor, facility.id, 'job.save') ??
+                (!creating && job ? dispatchLockConflict(job, actor.id, state.tick) : null)
+              }
               onSave={async (input) => {
                 const id = creating ? 'JOB-' + crypto.randomUUID() : job.id;
                 if (
@@ -138,6 +143,7 @@ export function SchedulerWorkspace() {
           <button
             disabled={
               pending ||
+              !!dispatchLockConflict(job, actor.id, state.tick) ||
               !cancelReason.trim() ||
               !!(cancel && commandPermission(state, actor, cancel))
             }

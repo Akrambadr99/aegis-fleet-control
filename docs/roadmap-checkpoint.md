@@ -99,3 +99,17 @@ passed; all seven scheduler Chromium journeys passed. Gateway coverage proves bo
 hold/assignment completion orders, membership conflicts, closure rules, scoped
 permissions, audit changes, referential integrity and legacy migration. The next
 scheduler phase adds dispatcher ownership and richer assignment decisions.
+
+## Dispatcher ownership
+
+Job dispatch locks use shared lease rules for acquire, renew, release and timed
+expiry. Only the owning dispatcher can modify locked jobs or group them; an
+administrator may explicitly take over with a reason. Takeover changes the job
+revision, invalidating earlier pending edits. Expiry records before/after audit
+state, and terminal jobs release their lock. UI controls reflect ownership and
+facility scope. Safety controls on robots remain independent of dispatch locks.
+
+Validation: 228 tests across 50 Vitest/React files, typecheck, lint, production
+build and eight scheduler Chromium journeys passed. Next repair: the job editor's
+revision-keyed remount currently discards unsaved fields on metadata changes;
+retain drafts across lock revisions and handle competing requirement edits explicitly.

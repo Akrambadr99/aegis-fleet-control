@@ -3,6 +3,7 @@ import { DomainError as GatewayError } from '../domain/errors';
 import { synchronizeControls } from '../domain/teleoperation';
 import { synchronizeResources } from '../domain/resources';
 import { synchronizeJobs } from '../domain/jobs';
+import { expireDispatchLocks } from '../domain/jobLocks';
 import { positionOnRoute } from '../domain/navigation';
 import { appendHistory } from '../domain/history';
 import { record } from '../domain/transactions';
@@ -19,6 +20,16 @@ export function advanceDomain(
   for (let t = 0; t < ticks; t++) {
     const eventStart = next.activity.length;
     next.tick++;
+    for (const { job, previous } of expireDispatchLocks(next))
+      record(
+        next,
+        { id: 'clock', role: 'administrator' },
+        'dispatch-lock.expired',
+        job.id,
+        'Dispatch lock expired',
+        [],
+        [{ kind: 'jobs', entityId: job.id, previous, next: structuredClone(job) }],
+      );
     for (const change of synchronizeControls(next))
       record(
         next,

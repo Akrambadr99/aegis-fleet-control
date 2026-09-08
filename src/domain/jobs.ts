@@ -8,6 +8,7 @@ import { robotCommitments } from './availability';
 import { newPlan } from './planning';
 import { recordPlanRevision } from './planHistory';
 import { DomainError as GatewayError } from './errors';
+import { assertDispatchOwnership, type JobDispatchLock } from './jobLocks';
 export interface JobInput {
   kind?: JobKind;
   requiredActions?: RobotAction[];
@@ -22,6 +23,7 @@ export interface JobInput {
   dependsOn: string[];
 }
 export interface WarehouseJob extends Versioned, JobInput {
+  dispatchLock?: JobDispatchLock;
   groupId?: string;
   attempts?: JobAttempt[];
   status: 'queued' | 'assigned' | 'in-progress' | 'partially-completed' | 'completed' | 'cancelled';
@@ -233,6 +235,7 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
   const existing = state.jobs[command.id];
   if ((existing?.revision ?? 0) !== command.expectedRevision)
     throw new GatewayError('stale', 'Job changed; review the current assignment');
+  if (existing) assertDispatchOwnership(existing, actorId, state.tick);
   if (command.type === 'job.save') {
     if (
       existing &&
@@ -270,6 +273,7 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
       missionIds: existing?.missionIds ?? [],
       attempts: existing?.attempts ?? [],
       groupId: existing?.groupId,
+      dispatchLock: existing?.dispatchLock,
       custody: 'source',
       assignmentReason: '',
       pickupProgress: 0,
@@ -296,6 +300,8 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
     existing.robotId = null;
     existing.missionId = null;
     existing.assignedUnits = 0;
+    if (command.type === 'job.cancel' && existing.dispatchLock)
+      existing.dispatchLock.state = 'released';
     existing.revision++;
     return affected;
   }
@@ -433,6 +439,7 @@ export function synchronizeJobs(state: DomainState) {
       job.completedUnits += job.assignedUnits;
       job.assignedUnits = 0;
       job.status = job.completedUnits === job.units ? 'completed' : 'partially-completed';
+      if (job.status === 'completed' && job.dispatchLock) job.dispatchLock.state = 'released';
       job.custody = job.status === 'completed' ? 'destination' : 'source';
       job.robotId = null;
       job.missionId = null;

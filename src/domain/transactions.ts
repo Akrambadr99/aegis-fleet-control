@@ -5,6 +5,7 @@ import { isControlCommand, applyControl } from './teleoperation';
 import { isResourceCommand, applyResource, releaseRobotResources } from './resources';
 import { isJobCommand, applyJob } from './jobs';
 import { applyJobGroup } from './jobGroups';
+import { applyJobLock } from './jobLocks';
 import { validatePlan } from './planning';
 import { createMissionTemplate } from './missionTemplates';
 import { recordPlanRevision } from './planHistory';
@@ -57,6 +58,25 @@ export function applyCommand(state: DomainState, actor: Actor, command: Command)
   const denied = commandPermission(state, actor, command);
   if (denied)
     throw new GatewayError(denied === 'Entity no longer exists' ? 'missing' : 'forbidden', denied);
+  if (
+    command.type === 'dispatch-lock.acquire' ||
+    command.type === 'dispatch-lock.renew' ||
+    command.type === 'dispatch-lock.release' ||
+    command.type === 'dispatch-lock.takeover'
+  ) {
+    const before = captureEntities(state);
+    applyJobLock(state, actor, command);
+    record(
+      state,
+      actor,
+      command.type,
+      command.id,
+      state.jobs[command.id].dispatchLock!.reason,
+      [],
+      changedEntities(before, state),
+    );
+    return;
+  }
   if (command.type === 'job-group.create' || command.type === 'job-group.set') {
     const before = captureEntities(state);
     applyJobGroup(state, command, actor.id);

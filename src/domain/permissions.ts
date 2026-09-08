@@ -22,6 +22,10 @@ export function commandFacility(state: DomainState, command: Command): string | 
     case 'job.save':
       return state.jobs[command.id]?.facilityId ?? command.input.facilityId;
     case 'job.assign':
+    case 'dispatch-lock.acquire':
+    case 'dispatch-lock.renew':
+    case 'dispatch-lock.release':
+    case 'dispatch-lock.takeover':
     case 'job.release':
     case 'job.cancel':
       return state.jobs[command.id]?.facilityId;

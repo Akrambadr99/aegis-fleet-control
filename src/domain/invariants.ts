@@ -120,6 +120,15 @@ export function inspectInvariants(state: DomainState): InvariantViolation[] {
     check(state.robots[order.robotId], order.id, 'Maintenance robot must exist');
   for (const job of Object.values(state.jobs)) {
     check(state.facilities[job.facilityId], job.id, 'Job facility must exist');
+    if (job.dispatchLock?.state === 'active')
+      check(
+        !!job.dispatchLock.ownerId &&
+          Number.isFinite(job.dispatchLock.expiresAt) &&
+          job.dispatchLock.expiresAt > state.tick &&
+          !['completed', 'cancelled'].includes(job.status),
+        job.id,
+        'Dispatch ownership must be live and belong to an open job',
+      );
     if (job.groupId)
       check(
         state.jobGroups[job.groupId]?.jobIds.includes(job.id) &&

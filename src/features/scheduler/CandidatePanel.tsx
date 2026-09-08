@@ -5,6 +5,8 @@ import type { WarehouseJob } from '../../domain/jobs';
 import { useCommand } from '../../hooks/useCommand';
 import { commandPermission } from '../../domain/permissions';
 import { jobProfiles } from '../../domain/jobKinds';
+import { dispatchLockConflict } from '../../domain/jobLocks';
+import { JobLockPanel } from './JobLockPanel';
 export function CandidatePanel({ job }: { job: WarehouseJob }) {
   const state = useDomain(),
     { gateway, actor } = useFleet(),
@@ -26,10 +28,12 @@ export function CandidatePanel({ job }: { job: WarehouseJob }) {
     units,
     reason: '',
   };
-  const denied = commandPermission(state, actor, automatic);
+  const denied =
+    commandPermission(state, actor, automatic) ?? dispatchLockConflict(job, actor.id, state.tick);
   return (
     <section className="candidate-panel">
       <h2>Robot candidates · {job.id}</h2>
+      <JobLockPanel job={job} />
       <p>
         {job.completedUnits}/{job.units} completed
         {jobProfiles[job.kind ?? 'transport'].cargo && <> · Custody: {job.custody}</>}

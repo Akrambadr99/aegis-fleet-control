@@ -5,6 +5,7 @@ import type { ControlCommand } from './teleoperation';
 import type { FacilityResource, ResourceReservation, ResourceCommand } from './resources';
 import type { WarehouseJob, JobCommand } from './jobs';
 import type { JobGroup, JobGroupCommand } from './jobGroups';
+import type { JobLockCommand } from './jobLocks';
 import type { MissionPlan, MissionPlanRevision } from './planning';
 import type { MissionTemplate, TemplateCommand } from './missionTemplates';
 export type Role = 'viewer' | 'operator' | 'fleet-manager' | 'facility-manager' | 'administrator';
@@ -213,6 +214,7 @@ export type Command =
   | ResourceCommand
   | JobCommand
   | JobGroupCommand
+  | JobLockCommand
   | { type: 'plan.save'; id: string; expectedRevision: number; plan: MissionPlan }
   | {
       type: 'maintenance.start' | 'maintenance.verify' | 'maintenance.complete';

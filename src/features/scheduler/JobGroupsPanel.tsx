@@ -4,6 +4,7 @@ import { useDomain, useFleet } from '../../app/FleetProvider';
 import { useCommand } from '../../hooks/useCommand';
 import type { JobGroup } from '../../domain/jobGroups';
 import { facilityPermission } from '../../domain/permissions';
+import { dispatchLockConflict } from '../../domain/jobLocks';
 
 function JobGroupRow({ group, select }: { group: JobGroup; select: (ids: string[]) => void }) {
   const state = useDomain(),
@@ -111,6 +112,7 @@ export function JobGroupsPanel({
       const job = state.jobs[id];
       return (
         job &&
+        !dispatchLockConflict(job, actor.id, state.tick) &&
         !job.groupId &&
         job.facilityId === facilityId &&
         ['queued', 'partially-completed'].includes(job.status)

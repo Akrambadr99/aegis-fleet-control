@@ -1991,3 +1991,14 @@ button.emergency-stop:hover {
 .dispatch-group button {
   margin: 4px 6px 4px 0;
 }
+.job-lock-panel {
+  border-block: 1px solid #bdcbd2;
+  margin-block: 12px;
+  padding-block: 8px;
+}
+.job-lock-panel input[type='number'] {
+  width: 100px;
+}
+.job-lock-panel button {
+  margin: 6px 6px 0 0;
+}

@@ -1,5 +1,6 @@
 import type { DomainState, Versioned } from './model';
 import { DomainError } from './errors';
+import { assertDispatchOwnership } from './jobLocks';
 
 export interface JobGroup extends Versioned {
   title: string;
@@ -52,6 +53,7 @@ export function applyJobGroup(state: DomainState, command: JobGroupCommand, acto
         throw new DomainError('invalid', 'Group jobs must belong to its facility');
       if (job.revision !== target.expectedRevision)
         throw new DomainError('stale', 'Job ' + job.id + ' changed before grouping');
+      assertDispatchOwnership(job, actorId, state.tick);
       if (job.groupId || !['queued', 'partially-completed'].includes(job.status))
         throw new DomainError(
           'conflict',

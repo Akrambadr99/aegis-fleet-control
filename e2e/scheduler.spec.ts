@@ -1,4 +1,18 @@
 import { test, expect } from '@playwright/test';
+test('dispatch ownership can be acquired, renewed and released from the scheduler', async ({
+  page,
+}) => {
+  await page.goto('/scheduler');
+  const panel = page.getByRole('region', { name: 'Dispatch ownership' });
+  await panel.getByLabel('Dispatch lock reason').fill('Preparing outbound batch');
+  await panel.getByRole('button', { name: 'Acquire dispatch lock' }).click();
+  await expect(panel).toContainText('local-operator owns dispatch until tick 120');
+  await panel.getByLabel('Lock duration seconds').fill('240');
+  await panel.getByRole('button', { name: 'Renew dispatch lock' }).click();
+  await expect(panel).toContainText('local-operator owns dispatch until tick 240');
+  await panel.getByRole('button', { name: 'Release dispatch lock' }).click();
+  await expect(panel).toContainText('No active dispatcher lock');
+});
 test('dispatch group holds block new assignments until explicitly released', async ({ page }) => {
   await page.goto('/scheduler');
   await page.getByRole('button', { name: 'Advance 100 seconds' }).click();

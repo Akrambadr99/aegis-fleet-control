@@ -5,6 +5,8 @@ import { readiness, capabilityIssues } from './eligibility';
 export { readiness } from './eligibility';
 export function canExecute(role: Role, type: Command['type']) {
   if (role === 'administrator') return true;
+  if (type === 'dispatch-lock.takeover') return false;
+  if (type.startsWith('dispatch-lock.')) return role === 'fleet-manager';
   if (type.startsWith('automation.')) return role === 'fleet-manager';
   if (type === 'robot.connection') return false;
   if (type === 'resource.set') return role === 'facility-manager';

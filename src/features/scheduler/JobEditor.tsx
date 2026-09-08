@@ -7,12 +7,14 @@ export function JobEditor({
   facilityId,
   job,
   pending,
+  blockedReason,
   onSave,
 }: {
   state: DomainState;
   facilityId: string;
   job?: WarehouseJob;
   pending: boolean;
+  blockedReason?: string | null;
   onSave: (input: JobInput) => void;
 }) {
   const zones = Object.values(state.zones).filter(
@@ -57,8 +59,13 @@ export function JobEditor({
       }}
     >
       <h2>{job ? 'Job requirements' : 'New warehouse job'}</h2>
+      {blockedReason && <p role="status">{blockedReason}</p>}
       <fieldset
-        disabled={pending || (!!job && !['queued', 'partially-completed'].includes(job.status))}
+        disabled={
+          pending ||
+          !!blockedReason ||
+          (!!job && !['queued', 'partially-completed'].includes(job.status))
+        }
       >
         <label>
           Job title

@@ -10,6 +10,7 @@ export type DomainEventType =
   | 'job.delivered'
   | 'job.started'
   | 'job.completed'
+  | 'dispatch-lock.expired'
   | 'resource.expired'
   | 'resource.released'
   | 'resource.acquired'
