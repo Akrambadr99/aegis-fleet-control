@@ -20,6 +20,11 @@ export function DiagnosticsWorkspace() {
     gateway.events.getDeliveryFailures,
     gateway.events.getDeliveryFailures,
   );
+  const workers = useSyncExternalStore(
+    gateway.workers.subscribe,
+    gateway.workers.getSnapshot,
+    gateway.workers.getSnapshot,
+  );
   const queries = useQueryClient().getQueryCache();
   const [, refresh] = useState(0);
   useEffect(() => queries.subscribe(() => refresh((value) => value + 1)), [queries]);
@@ -51,6 +56,16 @@ export function DiagnosticsWorkspace() {
             ))}
         </ol>
       )}
+      <h2>Background workers</h2>
+      <ol aria-label="Background workers">
+        {workers.map((worker) => (
+          <li key={worker.id}>
+            {worker.id} · {worker.state} · pending {worker.pendingBatches} · last revision{' '}
+            {worker.lastProcessedRevision ?? 'none'}
+            {worker.lastError ? ` · ${worker.lastError}` : ''}
+          </li>
+        ))}
+      </ol>
       <h2>Query state</h2>
       <ul>
         {queries.getAll().map((query) => (

@@ -20,6 +20,7 @@ import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
 import { CommittedEventStream } from './CommittedEventStream';
 import { OperationalAlertProjection } from './OperationalAlertProjection';
+import { BackgroundWorkerHost } from './BackgroundWorkerHost';
 export class FleetGateway implements FleetQueries, FleetCommands {
   private readonly storage: CanonicalStorage;
   private operationSequence = 0;
@@ -27,6 +28,7 @@ export class FleetGateway implements FleetQueries, FleetCommands {
   readonly requests: RequestEngine;
   readonly events = new CommittedEventStream();
   readonly alerts: OperationalAlertProjection;
+  readonly workers: BackgroundWorkerHost;
   constructor(
     scheduler: Scheduler = new RealScheduler(),
     source: DomainState | CanonicalStorage = createSeed(),
@@ -36,7 +38,12 @@ export class FleetGateway implements FleetQueries, FleetCommands {
     this.storage = 'readSnapshot' in source ? source : new InMemoryStorageAdapter(source);
     this.requests = new RequestEngine(scheduler);
     this.alerts = new OperationalAlertProjection(this.state);
-    this.events.subscribe((batch) => this.alerts.ingest(batch, this.state));
+    this.workers = new BackgroundWorkerHost(scheduler);
+    this.workers.register({
+      id: 'operational-alerts',
+      handle: (batch) => this.alerts.ingest(batch, this.state),
+    });
+    this.events.subscribe(this.workers.enqueue);
   }
   private get state() {
     return this.storage.readSnapshot();

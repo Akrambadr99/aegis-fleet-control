@@ -10,6 +10,13 @@ import { DiagnosticsWorkspace } from './DiagnosticsWorkspace';
 it('observes committed event batches and isolated worker failures', async () => {
   const clock = new ManualScheduler();
   const gateway = new FleetGateway(clock);
+  gateway.workers.register({
+    id: 'offline-export',
+    retryDelays: [],
+    handle() {
+      throw new Error('export worker unavailable');
+    },
+  });
   render(
     <QueryClientProvider client={createQueryClient()}>
       <FleetProvider gateway={gateway}>
@@ -28,9 +35,13 @@ it('observes committed event batches and isolated worker failures', async () => 
   );
   act(() => clock.advance(250));
   await ticket.promise;
+  await Promise.resolve();
 
   expect(screen.getByText('Committed batches 1 · Events 1 · Delivery failures 1')).toBeVisible();
   expect(screen.getByRole('list', { name: 'Event delivery failures' })).toHaveTextContent(
     'index worker unavailable',
+  );
+  expect(screen.getByRole('list', { name: 'Background workers' })).toHaveTextContent(
+    'offline-export · failed · pending 1 · last revision none · export worker unavailable',
   );
 });

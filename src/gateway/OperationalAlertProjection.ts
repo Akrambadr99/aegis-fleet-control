@@ -9,10 +9,12 @@ import type { CommittedEventBatch } from './CommittedEventStream';
 /** Bounded read model maintained from the exact post-commit event batches. */
 export class OperationalAlertProjection {
   private alerts: readonly Readonly<OperationalAlert>[];
+  private seenEventIds: Set<string>;
   private readonly listeners = new Set<() => void>();
 
   constructor(state: DomainState) {
     this.alerts = this.freeze(projectOperationalAlerts(state, state.activity).slice(-200));
+    this.seenEventIds = new Set(this.alerts.map((alert) => alert.id));
   }
 
   getSnapshot = () => this.alerts;
@@ -23,9 +25,12 @@ export class OperationalAlertProjection {
   };
 
   ingest(batch: CommittedEventBatch, state: DomainState) {
-    const projected = projectOperationalAlerts(state, batch.events);
+    const projected = projectOperationalAlerts(state, batch.events).filter(
+      (alert) => !this.seenEventIds.has(alert.id),
+    );
     if (!projected.length) return;
     this.alerts = this.freeze([...this.alerts, ...projected].slice(-200));
+    this.seenEventIds = new Set(this.alerts.map((alert) => alert.id));
     this.listeners.forEach((listener) => listener());
   }
 
