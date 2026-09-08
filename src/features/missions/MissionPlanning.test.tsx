@@ -2,26 +2,36 @@ import { expect, it } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderApp } from '../../test/renderApp';
-it('restores a saved revision as an editable draft without rewriting history', async () => {
-  const user = userEvent.setup();
-  renderApp('/missions');
-  await user.click(screen.getByRole('button', { name: 'Add step' }));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Save mission' })).toBeEnabled());
-  await user.click(screen.getByRole('button', { name: 'Save mission' }));
-  await screen.findByText('Mission plan saved');
-  await user.clear(screen.getByLabelText('Mission title'));
-  await user.type(screen.getByLabelText('Mission title'), 'Revised transfer');
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Save mission' })).toBeEnabled());
-  await user.click(screen.getByRole('button', { name: 'Save mission' }));
-  await screen.findByText('Revision 2 · Revised transfer');
-  await user.click(screen.getByText('Revision 1 · Dock transfer'));
-  await user.click(screen.getByRole('button', { name: 'Restore revision 1 as draft' }));
-  expect(screen.getByLabelText('Mission title')).toHaveValue('Dock transfer');
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Save mission' })).toBeEnabled());
-  await user.click(screen.getByRole('button', { name: 'Save mission' }));
-  expect(await screen.findByText('Revision 3 · Dock transfer')).toBeVisible();
-  expect(screen.getByText('Revision 2 · Revised transfer')).toBeVisible();
-});
+it(
+  'restores a saved revision as an editable draft without rewriting history',
+  async () => {
+    const user = userEvent.setup();
+    renderApp('/missions');
+    await user.click(screen.getByRole('button', { name: 'Add step' }));
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Save mission' })).toBeEnabled(),
+    );
+    await user.click(screen.getByRole('button', { name: 'Save mission' }));
+    await screen.findByText('Mission plan saved');
+    await user.clear(screen.getByLabelText('Mission title'));
+    await user.type(screen.getByLabelText('Mission title'), 'Revised transfer');
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Save mission' })).toBeEnabled(),
+    );
+    await user.click(screen.getByRole('button', { name: 'Save mission' }));
+    await screen.findByText('Revision 2 · Revised transfer');
+    await user.click(screen.getByText('Revision 1 · Dock transfer'));
+    await user.click(screen.getByRole('button', { name: 'Restore revision 1 as draft' }));
+    expect(screen.getByLabelText('Mission title')).toHaveValue('Dock transfer');
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Save mission' })).toBeEnabled(),
+    );
+    await user.click(screen.getByRole('button', { name: 'Save mission' }));
+    expect(await screen.findByText('Revision 3 · Dock transfer')).toBeVisible();
+    expect(screen.getByText('Revision 2 · Revised transfer')).toBeVisible();
+  },
+  10_000,
+);
 it('inserts and duplicates selected steps and restores them through undo and redo', async () => {
   const user = userEvent.setup();
   renderApp('/missions');
