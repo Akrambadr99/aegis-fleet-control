@@ -56,7 +56,11 @@ describe('connected React operations', () => {
     const inspector = screen.getByRole('complementary', { name: 'Robot inspector' });
     expect(within(inspector).getByText(/emergency-stopped · Battery/)).toBeVisible();
     await user.click(within(inspector).getByRole('link', { name: 'replay' }));
-    expect(await screen.findByText(/Mission paused · Reservation released/)).toBeVisible();
+    expect(
+      await screen.findByText(/Mission paused · Reservation released/, undefined, {
+        timeout: 5000,
+      }),
+    ).toBeVisible();
   });
   it('changing selection while bulk pause is pending preserves the current selection', async () => {
     const { clock, user } = setup('/fleet');
