@@ -57,29 +57,48 @@ export function SchedulerWorkspace() {
           <button onClick={() => setCreating(true)}>New warehouse job</button>
         </div>
       </header>
-      <div className="dispatch-timeline" aria-label="Job deadlines">
+      <section className="dispatch-lanes" aria-label="Job deadlines">
+        <header>
+          <h2>Assignment lanes</h2>
+          <span>Owner · robot commitment · delivery deadline</span>
+        </header>
         {jobs
           .filter((j) => !['completed', 'cancelled'].includes(j.status))
           .map((j) => (
             <button
               key={j.id}
+              aria-pressed={job?.id === j.id}
               onClick={() => {
                 change('job', j.id);
                 setCreating(false);
               }}
             >
-              <strong>{j.id}</strong>
+              <strong>
+                {j.id} <small>P{j.priority}</small>
+              </strong>
               <span>
-                P{j.priority} · due {j.deadlineTick}
+                {j.robotId ?? 'Awaiting robot'}
+                <small>
+                  {j.status} · {j.completedUnits}/{j.units} delivered
+                </small>
               </span>
-              <progress
-                max={j.units}
-                value={j.completedUnits}
-                aria-label={j.id + ' delivery completion'}
-              />
+              <span>
+                {j.dispatchLock?.state === 'active' && j.dispatchLock.expiresAt > state.tick
+                  ? j.dispatchLock.ownerId
+                  : 'No dispatch owner'}
+                <small>
+                  {j.dispatchLock?.state === 'active' && j.dispatchLock.expiresAt > state.tick
+                    ? `Lease expires ${j.dispatchLock.expiresAt}`
+                    : 'Ownership available'}
+                </small>
+              </span>
+              <span className={j.deadlineTick < state.tick ? 'overdue' : undefined}>
+                Due tick {j.deadlineTick}
+                <small>{Math.max(0, j.deadlineTick - state.tick)} s remaining</small>
+              </span>
             </button>
           ))}
-      </div>
+      </section>
       <div className="scheduler-grid">
         <div>
           <JobDispatchQueue

@@ -2361,3 +2361,144 @@ summary:focus-visible {
     min-width: 660px;
   }
 }
+
+.dispatch-lanes {
+  border-block: 1px solid var(--rule);
+  margin-bottom: 12px;
+}
+.dispatch-lanes > header {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  padding: 8px;
+  background: #e6edf1;
+}
+.dispatch-lanes h2 {
+  font-size: 12px;
+}
+.dispatch-lanes header span {
+  font-size: 11px;
+  color: #526875;
+}
+.scheduler-workspace .dispatch-lanes button {
+  display: grid;
+  grid-template-columns: 130px 1.2fr 1fr 130px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #d0dce2;
+  border-left: 3px solid transparent;
+  background: #fff;
+  color: #203b4c;
+  padding: 8px;
+  text-align: left;
+  border-radius: 0;
+}
+.scheduler-workspace .dispatch-lanes button[aria-pressed='true'] {
+  border-left-color: #237569;
+  background: #e6efed;
+}
+.dispatch-lanes small {
+  display: block;
+  font-size: 10px;
+  color: #526875;
+  margin-top: 3px;
+}
+.dispatch-lanes strong small {
+  display: inline;
+  margin-left: 8px;
+}
+.scheduler-grid {
+  grid-template-columns: minmax(0, 1fr) 370px;
+  gap: 14px;
+}
+.candidate-panel {
+  position: sticky;
+  top: 12px;
+  padding-left: 12px;
+}
+.candidate-panel h2 {
+  font-size: 14px;
+}
+.candidate-panel h3 {
+  font-size: 12px;
+  margin: 10px 0 6px;
+}
+.job-lock-panel {
+  padding: 8px 0;
+}
+.job-lock-panel p {
+  margin: 6px 0;
+  font-size: 11px;
+}
+.job-lock-panel fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 6px;
+  padding: 8px;
+  margin: 0;
+  border: 1px solid var(--rule);
+  background: #e9eff2;
+}
+.job-lock-panel label {
+  display: grid;
+  gap: 4px;
+  font-size: 11px;
+  flex: 1;
+}
+.job-lock-panel label input {
+  width: 100%;
+  min-width: 70px;
+}
+.job-lock-panel button {
+  font-size: 11px;
+}
+.candidate-list {
+  max-height: 42vh;
+}
+.candidate .candidate-measurements {
+  display: grid;
+  grid-template-columns: 1fr 48px 48px 84px;
+  align-items: baseline;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.candidate-measurements > span {
+  text-align: right;
+  font-size: 10px;
+}
+.candidate-blocked {
+  color: #83521c;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+.candidate-ready {
+  color: #256e54;
+  margin-top: 4px;
+}
+.scheduler-workspace .candidate {
+  padding: 7px 5px;
+  border-radius: 0;
+}
+@media (max-width: 1150px) {
+  .scheduler-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .candidate-panel {
+    position: static;
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+@media (max-width: 650px) {
+  .scheduler-workspace .dispatch-lanes button {
+    grid-template-columns: 100px minmax(0, 1fr);
+  }
+  .dispatch-lanes > header {
+    align-items: start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}

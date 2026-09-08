@@ -75,18 +75,16 @@ export function CandidatePanel({ job }: { job: WarehouseJob }) {
               className={selected === c.robotId ? 'candidate selected-candidate' : 'candidate'}
               onClick={() => setSelected(c.robotId)}
             >
-              <strong>
-                {index + 1}. {c.robotId}
-              </strong>
-              <span>
-                {c.reasons.length
-                  ? c.reasons.join(' · ')
-                  : c.distance +
-                    ' m · ' +
-                    c.duration +
-                    ' s · ' +
-                    c.batteryRequired.toFixed(1) +
-                    '% battery'}
+              <span className="candidate-measurements">
+                <strong>
+                  {index + 1}. {c.robotId}
+                </strong>
+                <span>{c.path ? c.distance.toFixed(0) + ' m' : 'No route'}</span>
+                <span>{c.path ? c.duration + ' s' : '—'}</span>
+                <span>{c.path ? c.batteryRequired.toFixed(1) + '% energy' : '—'}</span>
+              </span>
+              <span className={c.reasons.length ? 'candidate-blocked' : 'candidate-ready'}>
+                {c.reasons.length ? c.reasons.join(' · ') : 'Eligible for assignment'}
               </span>
             </button>
           ))}
