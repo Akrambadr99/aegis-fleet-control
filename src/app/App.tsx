@@ -1,3 +1,4 @@
+import { TrafficWorkspace } from '../features/traffic/TrafficWorkspace';
 import { ReplayWorkspace } from '../features/replay/ReplayWorkspace';
 import { TeleoperationWorkspace } from '../features/teleoperation/TeleoperationWorkspace';
 import { ResourcesWorkspace } from '../features/resources/ResourcesWorkspace';
@@ -120,7 +121,9 @@ export function App() {
                     key={item.path}
                     path={item.path}
                     element={
-                      item.path === '/replay' ? (
+                      item.path === '/traffic' ? (
+                        <TrafficWorkspace />
+                      ) : item.path === '/replay' ? (
                         <ReplayWorkspace />
                       ) : item.path === '/teleoperation' ? (
                         <TeleoperationWorkspace />

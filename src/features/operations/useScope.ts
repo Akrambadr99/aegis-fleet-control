@@ -22,12 +22,20 @@ export function useScope() {
     setParams((previous) => {
       const next = new URLSearchParams(previous);
       next.set(key, value);
+      if (key === 'floor') {
+        next.delete('robot');
+        next.delete('resource');
+        next.delete('page');
+      }
       if (key === 'robot' && state.robots[value]) {
+        next.delete('resource');
         next.set('facility', state.robots[value].facilityId);
         next.set('floor', state.robots[value].floorId);
       }
       if (key === 'facility') {
         next.delete('floor');
+        next.delete('resource');
+        next.delete('job');
         next.delete('robot');
         next.delete('page');
       }

@@ -1640,3 +1640,160 @@ button.emergency-stop:hover {
     border-top: 1px solid #b3c6ce;
   }
 }
+
+.traffic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #577f76;
+}
+.traffic-header h1 {
+  font-size: 24px;
+}
+.traffic-header span {
+  font-size: 11px;
+}
+.traffic-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 0;
+}
+.traffic-toolbar label {
+  font-size: 11px;
+}
+.traffic-toolbar select {
+  display: block;
+  padding: 5px;
+  border: 1px solid #b6c9c3;
+  background: white;
+}
+.traffic-layers {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 11px;
+  border-top: 1px solid #b5c8c0;
+  border-bottom: 1px solid #b5c8c0;
+  padding: 7px 0;
+}
+.traffic-layers label {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  text-transform: capitalize;
+}
+.traffic-layers span {
+  margin-left: auto;
+}
+.traffic-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 285px;
+  gap: 14px;
+  padding-top: 10px;
+}
+.traffic-main {
+  min-width: 0;
+}
+.traffic-canvas {
+  border: 1px solid #a8bfb3;
+  background: #f9faf6;
+}
+.map-navigation {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  border-bottom: 1px solid #c0cec5;
+  background: #e5ede8;
+  font-size: 10px;
+}
+.map-navigation button {
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+.traffic-canvas svg {
+  display: block;
+  width: 100%;
+  min-height: 330px;
+  touch-action: none;
+  cursor: grab;
+}
+.traffic-canvas [data-interactive] {
+  cursor: pointer;
+}
+.traffic-canvas [data-interactive]:focus {
+  outline: 2px solid #ba7d25;
+}
+.traffic-context {
+  border-left: 1px solid #b0c3b9;
+  padding-left: 12px;
+}
+.traffic-context .robot-inspector {
+  width: auto;
+  padding: 10px;
+  background: #e8efeb;
+  border: 0;
+}
+.traffic-context .resource-queue {
+  border: 0;
+  padding: 0;
+}
+.corridor-controls {
+  margin-top: 12px;
+}
+.corridor-controls > div {
+  display: flex;
+  border: 1px solid #bfccc4;
+}
+.corridor-controls > div > section {
+  flex: 1;
+  padding: 8px;
+  border-right: 1px solid #bfccc4;
+}
+.corridor-controls strong,
+.corridor-controls span {
+  display: block;
+  font-size: 11px;
+}
+.corridor-controls button {
+  padding: 5px 8px;
+  margin-top: 5px;
+  border-radius: 2px;
+}
+.route-register {
+  margin-top: 12px;
+}
+.route-register li {
+  font-size: 11px;
+  padding: 5px;
+}
+@media (max-width: 1050px) {
+  .traffic-layout {
+    grid-template-columns: 1fr;
+  }
+  .traffic-context {
+    border: 0;
+    padding: 12px 0;
+  }
+}
+@media (max-width: 700px) {
+  .traffic-header {
+    display: block;
+  }
+  .traffic-header span {
+    display: block;
+    margin-bottom: 8px;
+  }
+  .traffic-layers {
+    flex-wrap: wrap;
+  }
+  .traffic-layers span {
+    margin-left: 0;
+  }
+  .corridor-controls > div {
+    display: block;
+  }
+}
