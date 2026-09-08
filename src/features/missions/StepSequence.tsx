@@ -5,12 +5,16 @@ export function StepSequence({
   select,
   move,
   remove,
+  insert,
+  duplicate,
 }: {
   plan: MissionPlan;
   selected: string;
   select: (id: string) => void;
   move: (id: string, index: number) => void;
   remove: (id: string) => void;
+  insert: (index: number) => void;
+  duplicate: (id: string, index: number) => void;
 }) {
   return (
     <section className="step-sequence" aria-label="Mission step sequence">
@@ -40,6 +44,15 @@ export function StepSequence({
               </small>
             </button>
             <div className="step-order">
+              <button aria-label={'Insert before ' + step.id} onClick={() => insert(index)}>
+                +
+              </button>
+              <button
+                aria-label={'Duplicate ' + step.id}
+                onClick={() => duplicate(step.id, index + 1)}
+              >
+                Copy
+              </button>
               <button
                 aria-label={'Move ' + step.id + ' up'}
                 disabled={!index}

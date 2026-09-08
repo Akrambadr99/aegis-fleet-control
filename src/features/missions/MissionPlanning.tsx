@@ -2,9 +2,9 @@ import { useMissionDraft } from './MissionDraftProvider';
 import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { useEffect, useState } from 'react';
 import { useDomain, useFleet } from '../../app/FleetProvider';
-import { newPlan, newStep, type MissionPlan, type PlanValidation } from '../../domain/planning';
+import { newPlan, type MissionPlan, type PlanValidation } from '../../domain/planning';
 import { commandPermission } from '../../domain/permissions';
-import { moveStep } from './draftHistory';
+import { insertStep, moveStep } from './draftHistory';
 import { StepInspector } from './StepInspector';
 import { StepSequence } from './StepSequence';
 import { DependencyGraph } from './DependencyGraph';
@@ -58,16 +58,14 @@ export function MissionPlanning() {
     if (dirty) setPending(next);
     else reset(next);
   }
-  function add() {
-    let n = 1;
-    while (plan.steps.some((s) => s.id === 'S-' + n)) n++;
-    const step = {
-      ...newStep('S-' + n),
-      zoneId: state.floors[state.robots[plan.robotId].floorId].zoneIds.at(-1)!,
-      dependsOn: plan.steps.length ? [plan.steps.at(-1)!.id] : [],
-    };
-    edit({ ...plan, steps: [...plan.steps, step] });
-    setSelected(step.id);
+  function add(index = plan.steps.length, sourceId?: string) {
+    const next = insertStep(plan, index, sourceId);
+    if (next === plan) return;
+    if (!sourceId) {
+      next.steps[index].zoneId = state.floors[state.robots[plan.robotId].floorId].zoneIds.at(-1)!;
+    }
+    edit(next);
+    setSelected(next.steps[index].id);
   }
   async function save() {
     setSaving(true);
@@ -219,7 +217,7 @@ export function MissionPlanning() {
             </label>
           </div>
           <div className="sequence-toolbar">
-            <button onClick={add}>Add step</button>
+            <button onClick={() => add()}>Add step</button>
             <span>Drag to reorder · Use arrows for keyboard ordering</span>
           </div>
           <div className="sequence-and-inspector">
@@ -228,6 +226,8 @@ export function MissionPlanning() {
               selected={selected}
               select={setSelected}
               move={(id, index) => edit(moveStep(plan, id, index))}
+              insert={(index) => add(index)}
+              duplicate={(id, index) => add(index, id)}
               remove={(id) => {
                 edit({
                   ...plan,

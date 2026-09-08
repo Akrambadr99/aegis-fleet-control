@@ -2,6 +2,24 @@ import { expect, it } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderApp } from '../../test/renderApp';
+it('inserts and duplicates selected steps and restores them through undo and redo', async () => {
+  const user = userEvent.setup();
+  renderApp('/missions');
+  await user.click(screen.getByRole('button', { name: 'Add step' }));
+  await user.type(screen.getByLabelText('Step label'), 'Approach dock');
+  await user.click(screen.getByRole('button', { name: 'Duplicate S-1' }));
+  expect(screen.getByLabelText('Step label')).toHaveValue('Approach dock copy');
+  await user.click(screen.getByRole('button', { name: 'Insert before S-1' }));
+  expect(screen.getByLabelText('Step label')).toHaveValue('');
+  expect(screen.getByRole('button', { name: 'Remove S-3' })).toBeVisible();
+  await user.click(screen.getByRole('button', { name: 'Undo' }));
+  expect(screen.queryByRole('button', { name: 'Remove S-3' })).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Redo' }));
+  expect(screen.getByRole('button', { name: 'Remove S-3' })).toBeVisible();
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Save mission' })).toBeEnabled());
+  await user.click(screen.getByRole('button', { name: 'Save mission' }));
+  expect(await screen.findByText('Mission plan saved')).toBeVisible();
+});
 it('edits, validates and saves a mission plan, then cancels a local change', async () => {
   const user = userEvent.setup();
   renderApp('/missions');

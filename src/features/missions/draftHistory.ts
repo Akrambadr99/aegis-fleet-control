@@ -1,4 +1,4 @@
-import type { MissionPlan } from '../../domain/planning';
+import { newStep, type MissionPlan } from '../../domain/planning';
 export interface DraftHistory {
   present: MissionPlan;
   baseline: MissionPlan;
@@ -42,4 +42,18 @@ export function moveStep(plan: MissionPlan, id: string, target: number): Mission
   if (from < 0 || target < 0 || target >= next.steps.length || from === target) return plan;
   next.steps.splice(target, 0, next.steps.splice(from, 1)[0]);
   return next;
+}
+
+/** Insert without silently changing the dependency graph of existing steps. */
+export function insertStep(plan: MissionPlan, index: number, sourceId?: string): MissionPlan {
+  if (!Number.isInteger(index) || index < 0 || index > plan.steps.length) return plan;
+  const source = sourceId ? plan.steps.find((step) => step.id === sourceId) : undefined;
+  if (sourceId && !source) return plan;
+  let number = 1;
+  while (plan.steps.some((step) => step.id === 'S-' + number)) number++;
+  const id = 'S-' + number;
+  const step = source
+    ? { ...structuredClone(source), id, label: (source.label || source.id) + ' copy' }
+    : { ...newStep(id), dependsOn: index ? [plan.steps[index - 1].id] : [] };
+  return { ...plan, steps: [...plan.steps.slice(0, index), step, ...plan.steps.slice(index)] };
 }
