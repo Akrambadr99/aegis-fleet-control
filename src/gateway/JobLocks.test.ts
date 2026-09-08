@@ -151,3 +151,56 @@ it('cancelling the job releases its dispatch ownership', () => {
   );
   expect(state.jobs['JOB-001'].dispatchLock?.state).toBe('released');
 });
+
+it.each([
+  [10, 300],
+  [300, 10],
+])(
+  'competing acquisitions preserve the first completed owner (%i / %i)',
+  async (firstDelay, secondDelay) => {
+    const clock = new ManualScheduler(),
+      gateway = new FleetGateway(clock, createSeed());
+    gateway.requests.plan({ delay: firstDelay }, { delay: secondDelay });
+    const acquire = (id: string) =>
+      gateway.command(
+        { ...owner, id },
+        {
+          type: 'dispatch-lock.acquire',
+          id: 'JOB-001',
+          expectedRevision: 1,
+          duration: 30,
+          reason: 'Dispatch planning',
+        },
+      );
+    const first = acquire('first'),
+      second = acquire('second');
+    const outcomes = Promise.allSettled([first.promise, second.promise]);
+    clock.advance(350);
+    const results = await outcomes;
+    const winner = firstDelay < secondDelay ? 0 : 1;
+    expect(results[winner].status).toBe('fulfilled');
+    expect(results[1 - winner]).toMatchObject({ status: 'rejected', reason: { code: 'stale' } });
+    expect(gateway.getSnapshot().jobs['JOB-001'].dispatchLock?.ownerId).toBe(
+      winner === 0 ? 'first' : 'second',
+    );
+  },
+);
+it('domain ownership commands reject forbidden roles and facility scopes without mutation', () => {
+  for (const actor of [
+    { id: 'viewer', role: 'viewer' as const },
+    { ...owner, facilityIds: ['F-002'] },
+  ]) {
+    const state = createSeed(),
+      before = structuredClone(state);
+    expect(() =>
+      applyJobLock(state, actor, {
+        type: 'dispatch-lock.acquire',
+        id: 'JOB-001',
+        expectedRevision: 1,
+        duration: 30,
+        reason: 'Planning',
+      }),
+    ).toThrow();
+    expect(state).toEqual(before);
+  }
+});

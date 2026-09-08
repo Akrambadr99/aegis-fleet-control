@@ -2,6 +2,7 @@ import type { Actor, DomainState } from './model';
 import type { WarehouseJob } from './jobs';
 import { ownsLease, renewLease, type OwnershipLease } from './ownership';
 import { DomainError } from './errors';
+import { facilityPermission } from './permissions';
 
 export interface JobDispatchLock extends OwnershipLease {
   reason: string;
@@ -40,6 +41,10 @@ export function assertDispatchOwnership(job: WarehouseJob, actorId: string, tick
 export function applyJobLock(state: DomainState, actor: Actor, command: JobLockCommand) {
   const job = state.jobs[command.id];
   if (!job) throw new DomainError('missing', 'Job no longer exists');
+  if (command.type === 'dispatch-lock.takeover' && actor.role !== 'administrator')
+    throw new DomainError('forbidden', 'Only administrators can take over dispatch ownership');
+  const denied = facilityPermission(actor, job.facilityId, command.type);
+  if (denied) throw new DomainError('forbidden', denied);
   if (job.revision !== command.expectedRevision)
     throw new DomainError('stale', 'Job changed; review its dispatch ownership');
   if (['completed', 'cancelled'].includes(job.status))
