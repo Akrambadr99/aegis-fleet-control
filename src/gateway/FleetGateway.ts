@@ -20,7 +20,11 @@ import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
 import { CommittedEventStream } from './CommittedEventStream';
 import { OperationalAlertProjection } from './OperationalAlertProjection';
-import { BackgroundWorkerHost } from './BackgroundWorkerHost';
+import {
+  BackgroundWorkerHost,
+  type BackgroundWorkerDefinition,
+  type BackgroundWorkerStatus,
+} from './BackgroundWorkerHost';
 export class FleetGateway implements FleetQueries, FleetCommands {
   private readonly storage: CanonicalStorage;
   private operationSequence = 0;
@@ -28,7 +32,11 @@ export class FleetGateway implements FleetQueries, FleetCommands {
   readonly requests: RequestEngine;
   readonly events = new CommittedEventStream();
   readonly alerts: OperationalAlertProjection;
-  readonly workers: BackgroundWorkerHost;
+  private readonly workerHost: BackgroundWorkerHost;
+  readonly workers: {
+    readonly getSnapshot: () => readonly Readonly<BackgroundWorkerStatus>[];
+    readonly subscribe: (listener: () => void) => () => void;
+  };
   constructor(
     scheduler: Scheduler = new RealScheduler(),
     source: DomainState | CanonicalStorage = createSeed(),
@@ -38,12 +46,16 @@ export class FleetGateway implements FleetQueries, FleetCommands {
     this.storage = 'readSnapshot' in source ? source : new InMemoryStorageAdapter(source);
     this.requests = new RequestEngine(scheduler);
     this.alerts = new OperationalAlertProjection(this.state);
-    this.workers = new BackgroundWorkerHost(scheduler);
-    this.workers.register({
+    this.workerHost = new BackgroundWorkerHost(scheduler);
+    this.workers = Object.freeze({
+      getSnapshot: this.workerHost.getSnapshot,
+      subscribe: this.workerHost.subscribe,
+    });
+    this.workerHost.register({
       id: 'operational-alerts',
       handle: (batch) => this.alerts.ingest(batch, this.state),
     });
-    this.events.subscribe(this.workers.enqueue);
+    this.events.subscribe(this.workerHost.enqueue);
   }
   private get state() {
     return this.storage.readSnapshot();
@@ -54,6 +66,21 @@ export class FleetGateway implements FleetQueries, FleetCommands {
   }
   getSnapshot = () => this.storage.readSnapshot();
   subscribe = (listener: () => void) => this.storage.subscribe(listener);
+  registerBackgroundWorker(definition: BackgroundWorkerDefinition) {
+    return this.workerHost.register(definition);
+  }
+  retryBackgroundWorker(actor: Actor, id: string) {
+    if (
+      !actor ||
+      typeof actor.id !== 'string' ||
+      !actor.id.trim() ||
+      actor.role !== 'administrator' ||
+      actor.facilityIds !== undefined
+    )
+      throw new GatewayError('forbidden', 'Global administrator access is required');
+    if (!this.workerHost.retry(id))
+      throw new GatewayError('invalid', 'Background worker is not waiting for retry');
+  }
   private publish(next: DomainState) {
     return this.storage.commit(this.state.revision, next);
   }

@@ -12,7 +12,7 @@ it('observes committed event batches and isolated worker failures', async () => 
   const clock = new ManualScheduler();
   const gateway = new FleetGateway(clock);
   let exportAvailable = false;
-  gateway.workers.register({
+  gateway.registerBackgroundWorker({
     id: 'offline-export',
     retryDelays: [],
     handle() {

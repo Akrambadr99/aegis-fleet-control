@@ -4,7 +4,7 @@ import { useDomain, useFleet } from '../../app/FleetProvider';
 import { inspectInvariants } from '../../domain/invariants';
 export function DiagnosticsWorkspace() {
   const state = useDomain();
-  const { gateway } = useFleet();
+  const { actor, gateway } = useFleet();
   const operations = useSyncExternalStore(
     gateway.requests.subscribe,
     gateway.requests.getOperations,
@@ -64,7 +64,16 @@ export function DiagnosticsWorkspace() {
             {worker.lastProcessedRevision ?? 'none'}
             {worker.lastError ? ` · ${worker.lastError}` : ''}
             {worker.state === 'failed' && (
-              <button type="button" onClick={() => gateway.workers.retry(worker.id)}>
+              <button
+                type="button"
+                disabled={actor.role !== 'administrator' || actor.facilityIds !== undefined}
+                title={
+                  actor.role !== 'administrator' || actor.facilityIds !== undefined
+                    ? 'Global administrator access is required'
+                    : undefined
+                }
+                onClick={() => gateway.retryBackgroundWorker(actor, worker.id)}
+              >
                 Retry {worker.id}
               </button>
             )}
