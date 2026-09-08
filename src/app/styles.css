@@ -1943,3 +1943,29 @@ button.emergency-stop:hover {
   display: block;
   padding: 0.35rem;
 }
+.job-batch-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+  padding: 12px 0;
+  margin-bottom: 12px;
+  border-block: 1px solid #bdcbd2;
+}
+.job-batch-controls > p,
+.job-batch-controls > [role='status'] {
+  flex-basis: 100%;
+  margin: 0;
+}
+.job-batch-controls label {
+  display: grid;
+  gap: 4px;
+}
+.job-batch-controls input {
+  width: 110px;
+}
+.job-batch-controls ul {
+  max-height: 150px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}

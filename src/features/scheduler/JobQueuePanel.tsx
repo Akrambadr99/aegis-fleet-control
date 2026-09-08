@@ -2,6 +2,7 @@ import { pageCollection } from '../../application/collections';
 import { useSearchParams } from 'react-router-dom';
 import type { WarehouseJob } from '../../domain/jobs';
 import { JobQueue } from './JobQueue';
+import type { ReactNode } from 'react';
 
 const statuses = [
   'queued',
@@ -16,6 +17,8 @@ export function JobQueuePanel(props: {
   selected: string;
   select: (id: string) => void;
   tick: number;
+  batch?: { selectedIds: string[]; toggle: (id: string) => void };
+  toolbar?: ReactNode;
 }) {
   const [params, setParams] = useSearchParams();
   const query = params.get('jobQuery') ?? '';
@@ -80,6 +83,7 @@ export function JobQueuePanel(props: {
           Selected job {props.selected} is outside the queue filters. Its inspector remains open.
         </p>
       )}
+      {props.toolbar}
       <JobQueue {...props} jobs={page.items} />
       {page.pages > 1 && (
         <nav aria-label="Job pages">

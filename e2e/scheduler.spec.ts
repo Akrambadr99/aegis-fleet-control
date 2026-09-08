@@ -1,4 +1,18 @@
 import { test, expect } from '@playwright/test';
+test('batch dispatch reports partial success and survives workspace navigation', async ({
+  page,
+}) => {
+  await page.goto('/scheduler');
+  await page.getByRole('button', { name: 'Advance 100 seconds' }).click();
+  await page.getByLabel('Select JOB-001 for dispatch').check();
+  await page.getByLabel('Select JOB-002 for dispatch').check();
+  await page.getByRole('button', { name: 'Dispatch selected jobs', exact: true }).click();
+  await expect(page.getByText('1 confirmed · 1 failed')).toBeVisible();
+  await page.getByRole('link', { name: 'Execution', exact: true }).click();
+  await page.getByRole('link', { name: 'Scheduler', exact: true }).click();
+  await expect(page.getByText('1 confirmed · 1 failed')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Retry failed jobs' })).toBeEnabled();
+});
 test('released dispatch keeps its mission history and can be retried from the queue', async ({
   page,
 }) => {

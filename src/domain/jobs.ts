@@ -54,6 +54,7 @@ export type JobCommand =
       robotId?: string;
       expectedRobotRevision?: number;
       units: number;
+      onlyUnassigned?: boolean;
       reason: string;
     }
   | { type: 'job.cancel'; id: string; expectedRevision: number; reason: string }
@@ -291,6 +292,11 @@ export function applyJob(state: DomainState, command: JobCommand, actorId = 'sch
     command.units > existing.units - existing.completedUnits
   )
     throw new GatewayError('invalid', 'Assignment quantity exceeds remaining work');
+  if (command.onlyUnassigned && existing.missionId)
+    throw new GatewayError(
+      'invalid',
+      'Job already has an assignment; release it before batch dispatch',
+    );
   const candidates = rankCandidates(state, existing),
     candidate = command.robotId
       ? candidates.find((c) => c.robotId === command.robotId)

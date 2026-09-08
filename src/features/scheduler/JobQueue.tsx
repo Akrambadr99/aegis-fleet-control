@@ -5,11 +5,13 @@ export function JobQueue({
   selected,
   select,
   tick,
+  batch,
 }: {
   jobs: WarehouseJob[];
   selected: string;
   select: (id: string) => void;
   tick: number;
+  batch?: { selectedIds: string[]; toggle: (id: string) => void };
 }) {
   return (
     <section className="job-queue">
@@ -18,6 +20,7 @@ export function JobQueue({
         <table>
           <thead>
             <tr>
+              {batch && <th>Dispatch</th>}
               <th>Job / station transfer</th>
               <th>Priority</th>
               <th>Deadline</th>
@@ -28,6 +31,17 @@ export function JobQueue({
           <tbody>
             {jobs.map((job) => (
               <tr key={job.id} className={selected === job.id ? 'selected-row' : ''}>
+                {batch && (
+                  <td>
+                    <input
+                      type="checkbox"
+                      aria-label={'Select ' + job.id + ' for dispatch'}
+                      checked={batch.selectedIds.includes(job.id)}
+                      onChange={() => batch.toggle(job.id)}
+                      disabled={!['queued', 'partially-completed'].includes(job.status)}
+                    />
+                  </td>
+                )}
                 <td>
                   <button
                     className="text-button"

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useFleet } from '../../app/FleetProvider';
 import { useScope } from '../../hooks/useWorkspaceScope';
-import { JobQueuePanel } from './JobQueuePanel';
+import { JobDispatchQueue } from './JobDispatchQueue';
 import { JobDependencies } from './JobDependencies';
 import { JobEditor } from './JobEditor';
 import { CandidatePanel } from './CandidatePanel';
@@ -81,7 +81,9 @@ export function SchedulerWorkspace() {
       </div>
       <div className="scheduler-grid">
         <div>
-          <JobQueuePanel
+          <JobDispatchQueue
+            key={facility.id}
+            facilityId={facility.id}
             jobs={jobs}
             selected={job?.id ?? ''}
             tick={state.tick}

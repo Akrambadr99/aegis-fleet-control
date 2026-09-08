@@ -67,3 +67,19 @@ connect each attempt to its mission, robot and current ownership.
 Validation: 209 tests across 46 Vitest/React files, typecheck, lint and production
 build passed. All five scheduler Chromium journeys passed, including release,
 retry and completion with both attempts visible in mission history.
+
+## Partial-success batch dispatch
+
+Dispatch selection spans queue filters. Each batch captures job revisions and
+quantities, settles each command independently, and reports confirmed/failed
+outcomes in input order. Cancellation affects unfinished tickets only. Retrying
+failed jobs explicitly captures current revisions; batch commands cannot replace
+an already assigned mission. Query mutation state retains pending ownership and
+the latest five visible reports across workspace remounts (30-minute cache).
+Unrelated controls and queue selection remain usable during dispatch.
+
+Validation: 216 tests across 48 Vitest/React files, typecheck, lint and build
+passed. Six scheduler Chromium journeys passed. Coverage includes reversed
+completion, partial cancellation, duplicate-batch rejection, selection/filter
+changes and navigation before/after settlement. Grouping and physical execution
+remain separate unfinished work.
