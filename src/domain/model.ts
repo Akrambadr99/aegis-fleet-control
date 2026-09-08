@@ -4,6 +4,7 @@ import type { ControlCommand } from './teleoperation';
 import type { FacilityResource, ResourceReservation, ResourceCommand } from './resources';
 import type { WarehouseJob, JobCommand } from './jobs';
 import type { MissionPlan, MissionPlanRevision } from './planning';
+import type { MissionTemplate, TemplateCommand } from './missionTemplates';
 export type Role = 'viewer' | 'operator' | 'fleet-manager' | 'facility-manager' | 'administrator';
 export interface Actor {
   id: string;
@@ -191,12 +192,14 @@ export interface DomainState {
   jobs: Record<string, WarehouseJob>;
   plans: Record<string, MissionPlan>;
   planRevisions: Record<string, MissionPlanRevision>;
+  missionTemplates: Record<string, MissionTemplate>;
   maintenance: Record<string, MaintenanceOrder>;
   activity: Activity[];
   replay: ReplayFrame[];
   telemetry: Telemetry[];
 }
 export type Command =
+  | TemplateCommand
   | AutomationCommand
   | ControlCommand
   | ResourceCommand

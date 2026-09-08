@@ -2,6 +2,8 @@ import type { Actor, Command, DomainState } from './model';
 import { canExecute } from './selectors';
 export function commandFacility(state: DomainState, command: Command): string | undefined {
   switch (command.type) {
+    case 'template.create':
+      return state.plans[command.sourcePlanId]?.facilityId;
     case 'automation.save':
       return state.automationRules[command.id]?.facilityId ?? command.input.facilityId;
     case 'automation.toggle':

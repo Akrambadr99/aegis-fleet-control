@@ -30,6 +30,7 @@ export function createSeed(): DomainState {
     maintenance: {},
     plans: {},
     planRevisions: {},
+    missionTemplates: {},
     jobs: {},
     resources: {},
     resourceReservations: {},

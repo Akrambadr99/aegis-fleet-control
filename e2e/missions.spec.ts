@@ -1,4 +1,29 @@
 import { test, expect } from '@playwright/test';
+test('saved templates create independent drafts and preserve unsaved changes on cancel', async ({
+  page,
+}) => {
+  await page.goto('/missions');
+  await page.getByRole('button', { name: 'Add step' }).click();
+  await page.getByRole('button', { name: 'Save mission', exact: true }).click();
+  await expect(page.getByText('Mission plan saved')).toBeVisible();
+  await page.getByRole('button', { name: 'Create template from saved revision' }).click();
+  await expect(page.getByText('Template created from the saved revision')).toBeVisible();
+  await page.getByLabel('Mission title').fill('Unsaved work');
+  await page.getByRole('button', { name: 'Use template Dock transfer' }).click();
+  await page.getByRole('button', { name: 'Keep editing' }).click();
+  await expect(page.getByLabel('Mission title')).toHaveValue('Unsaved work');
+  await page.getByRole('button', { name: 'Use template Dock transfer' }).click();
+  await page.getByRole('button', { name: 'Discard changes' }).click();
+  await expect(page.getByLabel('Mission title')).toHaveValue('Dock transfer');
+  await page.getByLabel('Mission title').fill('Second transfer');
+  await page.getByRole('button', { name: 'Save mission', exact: true }).click();
+  await expect(page.getByText('Mission plan saved')).toBeVisible();
+  await expect(
+    page
+      .getByRole('navigation', { name: 'Saved mission plans' })
+      .getByRole('button', { name: 'Dock transfer R-001 · rev 1', exact: true }),
+  ).toBeVisible();
+});
 test('revision restore creates a new saved revision and keeps earlier snapshots', async ({
   page,
 }) => {

@@ -9,6 +9,7 @@ export function canExecute(role: Role, type: Command['type']) {
   if (type === 'resource.set') return role === 'facility-manager';
   if (type.startsWith('job.')) return role === 'fleet-manager';
   if (type === 'plan.save') return role === 'fleet-manager';
+  if (type === 'template.create') return role === 'fleet-manager';
   if (type.startsWith('maintenance.')) return role === 'fleet-manager';
   if (type === 'corridor.set' || type === 'charger.set') return role === 'facility-manager';
   return role === 'operator' || role === 'fleet-manager';

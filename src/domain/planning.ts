@@ -25,6 +25,7 @@ export interface MissionStep {
 }
 export interface MissionPlan extends Versioned {
   ownerId?: string;
+  templateSource?: { id: string; revision: number };
   title: string;
   facilityId: string;
   robotId: string;

@@ -9,6 +9,7 @@ import { StepInspector } from './StepInspector';
 import { StepSequence } from './StepSequence';
 import { DependencyGraph } from './DependencyGraph';
 import { MissionRevisionHistory } from './MissionRevisionHistory';
+import { MissionTemplateLibrary } from './MissionTemplateLibrary';
 export function MissionPlanning() {
   const state = useDomain(),
     { gateway, actor } = useFleet();
@@ -291,6 +292,7 @@ export function MissionPlanning() {
           </>
         )}
       </section>
+      <MissionTemplateLibrary plan={plan} disabled={saving} open={open} />
       {pending && (
         <ConfirmDialog
           title="Discard unsaved mission changes?"
