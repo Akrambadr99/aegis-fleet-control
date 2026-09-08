@@ -2,6 +2,7 @@ import type { DomainState, Versioned } from './model';
 import { shortestPath } from './navigation';
 import { readiness } from './selectors';
 import { robotCommitments } from './availability';
+import { canReachFacilityTarget, resourceDispatchIssues } from './facilityFeasibility';
 export const stepKinds = [
   'navigate',
   'pickup',
@@ -173,6 +174,21 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
       const charger = state.chargers[step.chargerId];
       if (!charger || charger.facilityId !== plan.facilityId || !charger.available)
         issue('Choose an available charger in this facility', step.id);
+      else {
+        if (!canReachFacilityTarget(state, cursor, charger))
+          issue('Charger floor is unreachable through the current topology', step.id);
+        if (
+          Object.values(state.reservations).some(
+            (reservation) =>
+              reservation.chargerId === charger.id &&
+              reservation.state === 'charging' &&
+              reservation.robotId !== plan.robotId,
+          )
+        )
+          result.dispatchIssues.push('Charger ' + charger.id + ' is occupied');
+      }
+      if (!Number.isFinite(step.seconds) || step.seconds <= 0)
+        issue('Charging duration must be positive', step.id);
       duration = step.seconds;
     } else if (isResourceStep(step.kind)) {
       const resource = state.resources[step.resourceId];
@@ -180,6 +196,11 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
         issue('Choose an available resource in this facility', step.id);
       else if (resourceStepKinds[step.kind] && resource.kind !== resourceStepKinds[step.kind])
         issue('This action requires a ' + resourceStepKinds[step.kind] + ' resource', step.id);
+      else {
+        if (!canReachFacilityTarget(state, cursor, resource))
+          issue('Resource is unreachable through the current topology', step.id);
+        result.dispatchIssues.push(...resourceDispatchIssues(state, resource.id, plan.robotId));
+      }
       duration = step.seconds;
     } else duration = step.seconds;
     if (!Number.isFinite(duration) || duration < 0) {
@@ -193,5 +214,6 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
   result.batteryRequired = Number((result.distance * 0.12).toFixed(2));
   if (robot && robot.battery < result.batteryRequired + 10)
     issue('Insufficient battery reserve for planned travel');
+  result.dispatchIssues = [...new Set(result.dispatchIssues)];
   return result;
 }
