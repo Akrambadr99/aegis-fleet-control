@@ -116,7 +116,7 @@ export function advanceDomain(
         'Resource ownership transition',
         [change.robot],
       );
-    if (configuration.automatedRecovery) processAutomation(next, eventStart);
+    if (configuration.automatedRecovery) processAutomation(next, eventStart, configuration);
     appendHistory(next, Object.values(next.robots));
   }
   // Retain a bounded live window; activity and replay remain session history.

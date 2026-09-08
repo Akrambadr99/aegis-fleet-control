@@ -1,7 +1,16 @@
+import {
+  assertCapabilityEnabled,
+  defaultConfiguration,
+  type OperationalConfiguration,
+} from './configuration';
 import type { DomainState } from '../domain/model';
 import { automationAction, evaluateRule } from '../domain/automation';
 import { applyCommand, record } from '../domain/transactions';
-export function processAutomation(state: DomainState, eventStart: number) {
+export function processAutomation(
+  state: DomainState,
+  eventStart: number,
+  configuration: Readonly<OperationalConfiguration> = defaultConfiguration,
+) {
   const rules = Object.values(state.automationRules)
     .filter((r) => r.enabled)
     .sort((a, b) => b.priority - a.priority || a.id.localeCompare(b.id));
@@ -27,6 +36,7 @@ export function processAutomation(state: DomainState, eventStart: number) {
         try {
           const command = automationAction(state, rule, state.robots[target.robotId]);
           if (command) {
+            assertCapabilityEnabled(command, configuration);
             const candidate = structuredClone(state);
             const childStart = candidate.activity.length;
             applyCommand(candidate, rule.owner, command);

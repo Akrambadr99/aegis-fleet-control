@@ -25,7 +25,7 @@ export function executeTransaction(
   applyCommand(next, actor, command);
   for (const event of next.activity.slice(start))
     Object.assign(event, context, { causationId: context.operationId });
-  if (config.automatedRecovery) processAutomation(next, start);
+  if (config.automatedRecovery) processAutomation(next, start, config);
   assertInvariants(next);
   return next;
 }
