@@ -8,7 +8,7 @@
 }
 .twin-canvas {
   border: 1px solid var(--rule);
-  background: #edf2f2;
+  background: var(--surface-inset);
 }
 .twin-toolbar,
 .twin-coordinate-bar {
@@ -18,14 +18,14 @@
   flex-wrap: wrap;
   gap: 8px;
   padding: 6px 8px;
-  background: #e5ecef;
+  background: var(--surface-inset);
 }
 .twin-toolbar {
   border-bottom: 1px solid var(--rule);
 }
 .twin-coordinate-bar {
   border-top: 1px solid var(--rule);
-  font-size: 10px;
+  font-size: 11px;
 }
 .twin-zoom,
 .twin-layers,
