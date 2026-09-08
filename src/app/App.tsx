@@ -175,6 +175,7 @@ export function App() {
           </ErrorBoundary>
         </main>
         <footer className="page-footer">
+          {DiagnosticsWorkspace && <Link to="/diagnostics">Local diagnostics</Link>}
           Aegis Fleet Control <span>Shared simulation · No physical robots connected</span>
         </footer>
       </div>
