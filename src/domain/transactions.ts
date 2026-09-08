@@ -12,7 +12,7 @@ import { recordPlanRevision } from './planHistory';
 import type { Actor, AuditChange, Command, DomainState, Robot } from './model';
 import { missionFeasibility, routeCandidates } from './selectors';
 import { DomainError as GatewayError } from './errors';
-import { commandPermission } from './permissions';
+import { assertCommandAuthorized } from './permissions';
 import { captureEntities, changedEntities } from './audit';
 import { robotPath } from './navigation';
 import { applyMaintenance, maintenanceReasons } from './maintenance';
@@ -55,9 +55,7 @@ export function record(
   robots.forEach((robot) => frame(state, robot, event.id));
 }
 export function applyCommand(state: DomainState, actor: Actor, command: Command) {
-  const denied = commandPermission(state, actor, command);
-  if (denied)
-    throw new GatewayError(denied === 'Entity no longer exists' ? 'missing' : 'forbidden', denied);
+  assertCommandAuthorized(state, actor, command);
   if (
     command.type === 'dispatch-lock.acquire' ||
     command.type === 'dispatch-lock.renew' ||

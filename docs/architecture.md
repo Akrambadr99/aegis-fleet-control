@@ -78,6 +78,8 @@ Long-term targets are 20+ domains, 150+ meaningful components, 100+ focused modu
 
 An actor's optional facilityIds grant constrains every domain command, including administrator commands. Omitted means all facilities; an empty list grants no control. Read-only access remains available across facilities. UI control eligibility and the gateway share the same permission resolver, which resolves corridors through their floor and faults through their robot.
 
+The command-to-role policy is an exhaustive typed registry. Adding a command without an explicit role definition fails compilation rather than inheriting access from a name prefix. The authorization boundary validates actor identity and grants, checks role eligibility before resolving command entities, then checks facility scope. This ordering prevents unauthorized roles from using denial details to test whether an entity exists. Gateway failures retain typed `forbidden` or `missing` codes for deterministic recovery behavior.
+
 Each asynchronous command deep-copies its actor grant at invocation. Changing the local simulation role or scope governs subsequent commands; it does not revoke already-issued commands. Production authentication and live grant revocation are separate future work.
 
 Successful commands record immutable before/after snapshots for every entity whose revision changed, alongside actor, role, action, entity and a deterministic simulation timestamp. The simulation epoch is 2026-01-01 UTC. Activity exposes native expandable details. Failed commands do not produce successful-command audit entries. Seed history and simulation tick events do not claim complete historical before/after snapshots.

@@ -1,5 +1,82 @@
 import type { Actor, Command, DomainState } from './model';
-import { canExecute } from './selectors';
+import type { ErrorCode } from './errors';
+import { DomainError } from './errors';
+
+const administrator = ['administrator'] as const;
+const operator = ['operator', 'fleet-manager', 'administrator'] as const;
+const fleetManager = ['fleet-manager', 'administrator'] as const;
+const facilityManager = ['facility-manager', 'administrator'] as const;
+
+export const commandRoles = {
+  'automation.save': fleetManager,
+  'automation.toggle': fleetManager,
+  'charger.set': facilityManager,
+  'charging.request': operator,
+  'control.acquire': operator,
+  'control.move': operator,
+  'control.release': operator,
+  'control.renew': operator,
+  'control.takeover': administrator,
+  'corridor.set': facilityManager,
+  'dispatch-lock.acquire': fleetManager,
+  'dispatch-lock.release': fleetManager,
+  'dispatch-lock.renew': fleetManager,
+  'dispatch-lock.takeover': administrator,
+  'fault.acknowledge': operator,
+  'fault.escalate': operator,
+  'job.assign': fleetManager,
+  'job.cancel': fleetManager,
+  'job.release': fleetManager,
+  'job.save': fleetManager,
+  'job-group.create': fleetManager,
+  'job-group.set': fleetManager,
+  'maintenance.complete': fleetManager,
+  'maintenance.start': fleetManager,
+  'maintenance.verify': fleetManager,
+  'plan.save': fleetManager,
+  'resource.release': operator,
+  'resource.request': operator,
+  'resource.set': facilityManager,
+  'robot.connection': administrator,
+  'robot.pause': operator,
+  'robot.reroute': operator,
+  'robot.resume': operator,
+  'robot.stop': operator,
+  'template.create': fleetManager,
+} as const satisfies Record<Command['type'], readonly Actor['role'][]>;
+
+export function canExecute(role: Actor['role'], type: Command['type']) {
+  return (commandRoles[type] as readonly Actor['role'][]).includes(role);
+}
+
+export type AuthorizationDecision =
+  | { allowed: true; facilityId: string }
+  | {
+      allowed: false;
+      code: Extract<ErrorCode, 'forbidden' | 'missing'>;
+      reason: string;
+    };
+
+const roles: readonly Actor['role'][] = [
+  'viewer',
+  'operator',
+  'fleet-manager',
+  'facility-manager',
+  'administrator',
+];
+
+function actorDenial(actor: Actor): string | null {
+  if (!actor || typeof actor.id !== 'string' || !actor.id.trim() || !roles.includes(actor.role))
+    return 'A valid operator identity is required';
+  if (
+    actor.facilityIds !== undefined &&
+    (!Array.isArray(actor.facilityIds) ||
+      actor.facilityIds.some((id) => typeof id !== 'string' || !id.trim()) ||
+      new Set(actor.facilityIds).size !== actor.facilityIds.length)
+  )
+    return 'Operator facility grants are invalid';
+  return null;
+}
 export function commandFacility(state: DomainState, command: Command): string | undefined {
   switch (command.type) {
     case 'job-group.create':
@@ -56,6 +133,8 @@ export function facilityPermission(
   facilityId: string,
   type: Command['type'],
 ): string | null {
+  const invalidActor = actorDenial(actor);
+  if (invalidActor) return invalidActor;
   if (!canExecute(actor.role, type)) return 'Your role cannot execute this command';
   if (actor.facilityIds && !actor.facilityIds.includes(facilityId))
     return 'This facility is outside your control scope';
@@ -66,8 +145,37 @@ export function commandPermission(
   actor: Actor,
   command: Command,
 ): string | null {
+  const decision = authorizeCommand(state, actor, command);
+  return decision.allowed ? null : decision.reason;
+}
+
+export function authorizeCommand(
+  state: DomainState,
+  actor: Actor,
+  command: Command,
+): AuthorizationDecision {
+  const invalidActor = actorDenial(actor);
+  if (invalidActor) return { allowed: false, code: 'forbidden', reason: invalidActor };
+  // Resolve entities only after role eligibility so denial does not reveal their existence.
+  if (!canExecute(actor.role, command.type))
+    return { allowed: false, code: 'forbidden', reason: 'Your role cannot execute this command' };
   const facilityId = commandFacility(state, command);
-  if (!canExecute(actor.role, command.type)) return 'Your role cannot execute this command';
-  if (!facilityId) return 'Entity no longer exists';
-  return facilityPermission(actor, facilityId, command.type);
+  if (!facilityId) return { allowed: false, code: 'missing', reason: 'Entity no longer exists' };
+  if (actor.facilityIds && !actor.facilityIds.includes(facilityId))
+    return {
+      allowed: false,
+      code: 'forbidden',
+      reason: 'This facility is outside your control scope',
+    };
+  return { allowed: true, facilityId };
+}
+
+export function assertCommandAuthorized(state: DomainState, actor: Actor, command: Command) {
+  const decision = authorizeCommand(state, actor, command);
+  if (!decision.allowed)
+    throw new DomainError(
+      decision.code,
+      decision.reason,
+      decision.code === 'forbidden' ? 'permission' : undefined,
+    );
 }

@@ -1,24 +1,9 @@
 import { resourcesOwned } from './resources';
-import type { DomainState, Role, Command } from './model';
+import type { DomainState } from './model';
 import { robotPath } from './navigation';
 import { estimateJourney, missionTravel } from './motion';
 import { readiness, capabilityIssues } from './eligibility';
 export { readiness } from './eligibility';
-export function canExecute(role: Role, type: Command['type']) {
-  if (role === 'administrator') return true;
-  if (type === 'dispatch-lock.takeover') return false;
-  if (type.startsWith('dispatch-lock.')) return role === 'fleet-manager';
-  if (type.startsWith('automation.')) return role === 'fleet-manager';
-  if (type === 'robot.connection') return false;
-  if (type === 'resource.set') return role === 'facility-manager';
-  if (type.startsWith('job.')) return role === 'fleet-manager';
-  if (type.startsWith('job-group.')) return role === 'fleet-manager';
-  if (type === 'plan.save') return role === 'fleet-manager';
-  if (type === 'template.create') return role === 'fleet-manager';
-  if (type.startsWith('maintenance.')) return role === 'fleet-manager';
-  if (type === 'corridor.set' || type === 'charger.set') return role === 'facility-manager';
-  return role === 'operator' || role === 'fleet-manager';
-}
 export function missionFeasibility(state: DomainState, missionId: string) {
   const mission = state.missions[missionId],
     robot = state.robots[mission.robotId],
