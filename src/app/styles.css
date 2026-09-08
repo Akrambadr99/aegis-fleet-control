@@ -1561,7 +1561,7 @@ button.emergency-stop:hover {
 }
 .replay-telemetry svg {
   width: 100%;
-  max-height: 125px;
+  max-height: 220px;
   background: #f7f9fa;
 }
 .replay-transport {
@@ -2734,4 +2734,28 @@ summary:focus-visible {
   padding: 0 16px;
   color: #526875;
   font-size: 11px;
+}
+
+.telemetry-register {
+  border-top: 2px solid #467089;
+  background: var(--surface);
+  padding: 10px 12px;
+}
+.telemetry-register h2 {
+  font-size: 14px;
+}
+.telemetry-register td {
+  font-family: Consolas, monospace;
+  font-size: 11px;
+}
+.telemetry-register td:nth-child(2) {
+  font-family: inherit;
+}
+.telemetry-register > button {
+  margin-top: 10px;
+}
+.telemetry-reading,
+.replay-telemetry > p {
+  font-size: 11px;
+  color: #3f5d6c;
 }

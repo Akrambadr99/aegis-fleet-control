@@ -224,37 +224,64 @@ export function SimulationPanel() {
   );
 }
 export function TelemetryPanel() {
-  const { state, floor, params } = useScope();
-  const robot = params.get('robot');
+  const { state, floor, params, change } = useScope();
+  const selected = params.get('robot');
+  const latestSamples = new Map(state.telemetry.map((sample) => [sample.robotId, sample]));
   const robots = Object.values(state.robots).filter(
-    (r) => r.floorId === floor.id && (!robot || r.id === robot),
+    (robot) => robot.floorId === floor.id && (!selected || robot.id === selected),
   );
   return (
-    <section className="panel">
-      <h2>Deterministic telemetry</h2>
-      <p>Use Advance simulation to move the clock by one second.</p>
-      {robots.map((r) => (
-        <article key={r.id} className="resource">
-          <h3>
-            {r.id} · {r.status}
-          </h3>
-          <p>
-            Battery {r.battery.toFixed(1)}% · Position {r.position.x}, {r.position.y}
-          </p>
-          <svg viewBox="0 0 300 60" role="img" aria-label={`${r.id} battery history`}>
-            <polyline
-              fill="none"
-              stroke="#258375"
-              strokeWidth="2"
-              points={state.telemetry
-                .filter((t) => t.robotId === r.id)
-                .slice(-30)
-                .map((t, i) => `${i * 10},${60 - t.battery * 0.6}`)
-                .join(' ')}
-            />
-          </svg>
-        </article>
-      ))}
+    <section className="telemetry-register">
+      <h2>Live robot telemetry</h2>
+      <p className="workspace-note">
+        Floor {floor.id} · Position in meters · Velocity in m/s · Simulation tick {state.tick}
+      </p>
+      <div className="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Robot</th>
+              <th>State / connection</th>
+              <th>X · m</th>
+              <th>Y · m</th>
+              <th>Battery · %</th>
+              <th>Velocity · m/s</th>
+              <th>Sample tick</th>
+            </tr>
+          </thead>
+          <tbody>
+            {robots.map((robot) => {
+              const latest = latestSamples.get(robot.id);
+              return (
+                <tr key={robot.id}>
+                  <td>
+                    <button className="text-button" onClick={() => change('robot', robot.id)}>
+                      {robot.id}
+                    </button>
+                  </td>
+                  <td>
+                    {robot.status} · {robot.connected ? 'Connected' : 'Disconnected'}
+                  </td>
+                  <td>{robot.position.x.toFixed(2)}</td>
+                  <td>{robot.position.y.toFixed(2)}</td>
+                  <td>{robot.battery.toFixed(1)}</td>
+                  <td>{latest?.velocity.toFixed(2) ?? 'No sample'}</td>
+                  <td>{latest?.tick ?? 'No sample'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      {selected ? (
+        <button className="text-button" onClick={() => change('robot', '')}>
+          Show floor telemetry
+        </button>
+      ) : (
+        <p className="workspace-note">
+          Select a robot to inspect its live state and recorded history.
+        </p>
+      )}
     </section>
   );
 }
