@@ -21,9 +21,13 @@ export function CommandButton({
     setState('pending');
     setMessage('');
     try {
-      await gateway.command(actor, command).promise;
+      const result = await gateway.command(actor, command).promise;
       setState('confirmed');
-      setMessage('Applied');
+      setMessage(
+        result.outcome === 'partial'
+          ? 'Applied; some automated follow-up actions failed. Review Activity.'
+          : 'Applied',
+      );
     } catch (error) {
       setState('failed');
       setMessage(

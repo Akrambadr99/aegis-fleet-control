@@ -1,3 +1,4 @@
+import type { OperationResult } from '../application/operations';
 import type { FleetQueries, FleetCommands } from './ports';
 import { routePreviewKey } from '../application/queries';
 import { shareUnchanged } from './structuralSharing';
@@ -55,7 +56,7 @@ export class FleetGateway implements FleetQueries, FleetCommands {
     this.state = freeze(shareUnchanged(this.state, next));
     this.listeners.forEach((listener) => listener());
   }
-  command(actor: Actor, command: Command, signal?: AbortSignal): Ticket<{ revision: number }> {
+  command(actor: Actor, command: Command, signal?: AbortSignal): Ticket<OperationResult> {
     const input = structuredClone(command),
       identity = structuredClone(actor);
     const operationId = 'OP-' + this.state.revision + '-' + ++this.operationSequence;
@@ -72,7 +73,25 @@ export class FleetGateway implements FleetQueries, FleetCommands {
           this.configuration,
         );
         this.publish(next);
-        return { revision: next.revision };
+        const events = next.activity.filter((event) => event.operationId === operationId);
+        const failures = events
+          .filter((event) => event.type === 'automation.failed')
+          .map((event) => ({ entityId: event.entityId, message: event.details }));
+        return {
+          revision: next.revision,
+          operationId,
+          correlationId: operationId,
+          outcome: failures.length ? 'partial' : 'success',
+          affectedEntities: [
+            ...new Set(
+              events.flatMap((event) => [
+                event.entityId,
+                ...(event.changes ?? []).map((change) => change.entityId),
+              ]),
+            ),
+          ],
+          failures,
+        } as OperationResult;
       },
       signal,
       { operationId, entityId: input.id, action: input.type, actorId: identity.id },
@@ -86,8 +105,15 @@ export class FleetGateway implements FleetQueries, FleetCommands {
     return Promise.all(
       tickets.map(async ({ id, ticket }) => {
         try {
-          await ticket.promise;
-          return { id, status: 'confirmed' as const, message: 'Applied' };
+          const result = await ticket.promise;
+          return {
+            id,
+            status: result.outcome === 'partial' ? ('partial' as const) : ('confirmed' as const),
+            message:
+              result.outcome === 'partial'
+                ? 'Applied with automated follow-up failures'
+                : 'Applied',
+          };
         } catch (error) {
           return {
             id,
