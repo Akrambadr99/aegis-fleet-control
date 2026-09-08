@@ -13,13 +13,11 @@ import { MissionTemplateLibrary } from './MissionTemplateLibrary';
 export function MissionPlanning() {
   const state = useDomain(),
     { gateway, actor } = useFleet();
-  const { history, dispatch } = useMissionDraft();
+  const { history, dispatch, saving, message, save } = useMissionDraft();
   const plan = history.present,
     key = JSON.stringify(plan),
     dirty = key !== JSON.stringify(history.baseline);
-  const [selected, setSelected] = useState(''),
-    [saving, setSaving] = useState(false),
-    [message, setMessage] = useState('');
+  const [selected, setSelected] = useState('');
   const [pending, setPending] = useState<MissionPlan | null>(null),
     [retry, setRetry] = useState(0);
   const [validation, setValidation] = useState<{
@@ -49,12 +47,10 @@ export function MissionPlanning() {
   const denied = commandPermission(state, actor, command);
   const edit = (next: MissionPlan) => {
     dispatch({ type: 'edit', plan: next });
-    setMessage('');
   };
   function reset(next: MissionPlan) {
     dispatch({ type: 'reset', plan: next });
     setSelected(next.steps[0]?.id ?? '');
-    setMessage('');
   }
   function open(next: MissionPlan) {
     if (dirty) setPending(next);
@@ -68,19 +64,6 @@ export function MissionPlanning() {
     }
     edit(next);
     setSelected(next.steps[index].id);
-  }
-  async function save() {
-    setSaving(true);
-    setMessage('');
-    try {
-      await gateway.command(actor, command).promise;
-      reset(gateway.getSnapshot().plans[plan.id]);
-      setMessage('Mission plan saved');
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Save failed');
-    } finally {
-      setSaving(false);
-    }
   }
   return (
     <div className="mission-workspace">
