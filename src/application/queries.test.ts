@@ -12,7 +12,9 @@ it('invalidates readiness on maintenance deadline without invalidating unrelated
   const scheduled = routePreviewKey(state, robot.id);
   state.tick = 10;
   expect(routePreviewKey(state, robot.id)).not.toEqual(scheduled);
-  robot.maintenanceOrderId = null;
+  const restored = createSeed();
+  state.maintenance = restored.maintenance;
+  robot.maintenanceOrderId = restored.robots[robot.id].maintenanceOrderId;
   state.tick = 0;
   state.tick++;
   expect(routePreviewKey(state, robot.id)).toEqual(base);
