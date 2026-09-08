@@ -4,9 +4,9 @@ import { ManualScheduler } from './scheduler';
 import { newPlan, newStep, validatePlan } from '../domain/planning';
 import { createSeed } from '../domain/seed';
 import { rankCandidates } from '../domain/jobs';
-function fixture() {
+function fixture(state = createSeed()) {
   const clock = new ManualScheduler(),
-    gateway = new FleetGateway(clock);
+    gateway = new FleetGateway(clock, state);
   const plan = newPlan('PLAN-001', 'FAC-001', 'R-001');
   plan.steps = [{ ...newStep('travel'), zoneId: 'Z-010' }];
   return { clock, gateway, plan };
@@ -96,7 +96,9 @@ it.each([
   );
 });
 it('retains immutable attributed revisions and ignores client ownership spoofing', async () => {
-  const { clock, gateway, plan } = fixture();
+  const initial = createSeed();
+  initial.robots['R-001'].battery = 80;
+  const { clock, gateway, plan } = fixture(initial);
   async function save(actorId: string, expectedRevision: number) {
     const ticket = gateway.command(
       { id: actorId, role: 'fleet-manager' },

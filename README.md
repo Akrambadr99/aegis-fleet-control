@@ -44,11 +44,13 @@ The root test command is directly `vitest run`. Chromium journeys start their ow
 
 ## Try an interconnected workflow
 
-1. Open `/traffic?robot=R-001`.
+1. Open `/traffic?robot=R-004`.
 2. Close C-001 and observe the mission pause and held/invalid reservation.
 3. Recalculate the robot's route.
-4. Open Execution from the sidebar and explicitly resume M-001.
+4. Open Execution from the sidebar and explicitly resume M-004.
 5. Inspect Activity, Replay or the facility map. The same robot and facility remain selected.
+
+R-004 starts with 53% battery and can take the 130 m detour while retaining the 20% reserve. R-001 starts with 32% and correctly remains paused: that detour requires 15.6 percentage points of energy plus the reserve. These initial batteries are unchanged.
 
 Open `/charging?robot=R-001` and disable CHG-001 to see its reservations displaced and the robot's feasibility warning update.
 

@@ -74,18 +74,18 @@ test('simulation ticks update shared telemetry and preserve emergency stop', asy
 test('operator reroutes around a closure and explicitly resumes the impacted mission', async ({
   page,
 }) => {
-  await page.goto('/traffic?robot=R-001');
+  await page.goto('/traffic?robot=R-004');
   await page.getByRole('button', { name: 'Close C-001' }).click();
   await expect(page.getByRole('button', { name: 'Open C-001' })).toBeVisible();
-  await page.getByRole('button', { name: 'Recalculate route R-001' }).click();
+  await page.getByRole('button', { name: 'Recalculate route R-004' }).click();
   await expect(
     page
       .getByRole('complementary', { name: 'Robot inspector' })
       .getByText('Feasible', { exact: true }),
   ).toBeVisible();
   await page.getByRole('link', { name: 'Execution', exact: true }).click();
-  await page.getByRole('button', { name: 'Resume M-001' }).click();
-  await expect(page.getByRole('heading', { name: 'M-001 · running', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Resume M-004' }).click();
+  await expect(page.getByRole('heading', { name: 'M-004 · running', exact: true })).toBeVisible();
 });
 test('robot identity survives sidebar navigation to the digital twin', async ({ page }) => {
   await page.goto('/fleet?facility=FAC-002');

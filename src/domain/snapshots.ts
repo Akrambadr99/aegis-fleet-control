@@ -1,7 +1,8 @@
 import type { DomainState } from './model';
 import { DomainError } from './errors';
 import { assertInvariants } from './invariants';
-export const schemaVersion = 2;
+import { defaultMotion } from './motion';
+export const schemaVersion = 3;
 export const fixtureVersion = 1;
 export interface SnapshotEnvelope {
   schemaVersion: number;
@@ -15,10 +16,19 @@ export function migrateSnapshot(input: DomainState | SnapshotEnvelope): Snapshot
     'schemaVersion' in candidate
       ? candidate
       : { schemaVersion: 1, fixtureVersion, state: candidate };
-  if (!envelope.state || typeof envelope.state !== 'object')
+  if (
+    !envelope.state ||
+    typeof envelope.state !== 'object' ||
+    !envelope.state.robots ||
+    typeof envelope.state.robots !== 'object'
+  )
     throw new DomainError('invalid', 'Malformed domain snapshot');
   if (envelope.schemaVersion === 1) {
     envelope.state.jobGroups ??= {};
+    envelope.schemaVersion = 2;
+  }
+  if (envelope.schemaVersion === 2) {
+    for (const robot of Object.values(envelope.state.robots)) robot.motion ??= { ...defaultMotion };
     envelope.schemaVersion = schemaVersion;
   }
   if (envelope.schemaVersion !== schemaVersion || envelope.fixtureVersion !== fixtureVersion)

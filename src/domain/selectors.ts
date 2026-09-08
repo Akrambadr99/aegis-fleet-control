@@ -1,6 +1,7 @@
 import { resourcesOwned } from './resources';
 import type { DomainState, Role, Command } from './model';
-import { robotPath, routeDistance } from './navigation';
+import { robotPath } from './navigation';
+import { estimateJourney, missionTravel } from './motion';
 import { readiness, capabilityIssues } from './eligibility';
 export { readiness } from './eligibility';
 export function canExecute(role: Role, type: Command['type']) {
@@ -28,11 +29,12 @@ export function missionFeasibility(state: DomainState, missionId: string) {
   ];
   if (!resourcesOwned(state, robot.id, mission.id, route.resourceIds ?? []))
     reasons.push('Required resource ownership unavailable');
-  const distance = routeDistance(state, route);
+  const estimate = estimateJourney(robot, missionTravel(state, mission), mission.progress),
+    distance = estimate.distance;
   if (route.corridorIds.some((id) => !state.corridors[id].open)) reasons.push('Corridor closed');
   if (route.state === 'invalid') reasons.push('Route requires validation');
-  const required = distance * 0.12;
-  if (robot.battery < required + 10) {
+  const required = estimate.batteryRequired;
+  if (robot.battery < required + estimate.reservePercent) {
     reasons.push('Insufficient mission reserve');
     if (!Object.values(state.chargers).some((c) => c.floorId === robot.floorId && c.available))
       reasons.push('No available charger on floor');
@@ -42,7 +44,7 @@ export function missionFeasibility(state: DomainState, missionId: string) {
     reasons,
     distance,
     batteryRequired: required,
-    etaSeconds: Math.ceil(distance / 1.2),
+    etaSeconds: Math.ceil(estimate.seconds),
   };
 }
 export function simulationInputs(state: DomainState, facilityId: string) {

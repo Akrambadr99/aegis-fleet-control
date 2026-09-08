@@ -4,6 +4,7 @@ import { synchronizeControls } from '../domain/teleoperation';
 import { synchronizeResources } from '../domain/resources';
 import { synchronizeJobs } from '../domain/jobs';
 import { expireDispatchLocks } from '../domain/jobLocks';
+import { advanceJourney, missionTravel, motionProfile } from '../domain/motion';
 import { positionOnRoute } from '../domain/navigation';
 import { appendHistory } from '../domain/history';
 import { record } from '../domain/transactions';
@@ -52,15 +53,12 @@ export function advanceDomain(
       const mission = robot.activeMissionId ? next.missions[robot.activeMissionId] : null;
       let velocity = 0;
       if (robot.connected && robot.status === 'running' && mission?.status === 'running') {
-        robot.position = positionOnRoute(
-          next,
-          next.routes[mission.routeId],
-          Math.min(100, mission.progress + 1),
-        );
-        robot.battery = Math.max(0, Number((robot.battery - 0.1).toFixed(1)));
+        const movement = advanceJourney(robot, missionTravel(next, mission), mission.progress);
+        robot.position = positionOnRoute(next, next.routes[mission.routeId], movement.progress);
+        robot.battery = movement.battery;
         robot.revision++;
-        velocity = 1.2;
-        mission.progress = Math.min(100, mission.progress + 1);
+        velocity = movement.velocity;
+        mission.progress = movement.progress;
         mission.revision++;
         if (mission.progress === 100) {
           mission.status = 'completed';
@@ -78,7 +76,7 @@ export function advanceDomain(
             'Mission completed',
             [robot],
           );
-        } else if (robot.battery < 20) {
+        } else if (robot.battery <= motionProfile(robot).reservePercent + 1e-6) {
           robot.status = 'paused';
           mission.status = 'paused';
           mission.pauseReason = 'Battery reserve reached';

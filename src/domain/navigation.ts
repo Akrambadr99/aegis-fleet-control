@@ -5,6 +5,20 @@ export interface PathResult {
   corridorIds: string[];
   distance: number;
 }
+export function nearestNavigationNode(
+  state: DomainState,
+  floorId: string,
+  position: { x: number; y: number },
+) {
+  return Object.values(state.navigationNodes)
+    .filter((node) => node.floorId === floorId)
+    .sort(
+      (a, b) =>
+        Math.hypot(a.position.x - position.x, a.position.y - position.y) -
+          Math.hypot(b.position.x - position.x, b.position.y - position.y) ||
+        a.id.localeCompare(b.id),
+    )[0];
+}
 export function shortestPath(state: DomainState, from: string, to: string): PathResult | null {
   const origin = state.navigationNodes[from],
     target = state.navigationNodes[to];

@@ -5,6 +5,7 @@ import { seedJobs } from './jobs';
 import type { DomainState } from './model';
 import { seedNavigation } from './navigation';
 import { seedMaintenance } from './maintenance';
+import { defaultMotion } from './motion';
 const key = (prefix: string, n: number) => `${prefix}-${String(n).padStart(3, '0')}`;
 export function createSeed(): DomainState {
   const state: DomainState = {
@@ -107,6 +108,7 @@ export function createSeed(): DomainState {
           routeId = key('RT', n);
         const faultId = r === 8 ? key('FLT', n) : null;
         state.robots[id] = {
+          motion: { ...defaultMotion },
           capabilities: {
             payloadKg: 100 + (n % 4) * 100,
             actions: n % 2 === 0 ? ['navigate', 'lift', 'inspect'] : ['navigate', 'inspect'],

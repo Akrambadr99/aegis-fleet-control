@@ -15,6 +15,7 @@ import { readiness } from '../domain/selectors';
 import { commandPermission } from '../domain/permissions';
 import { assertInvariants } from '../domain/invariants';
 import { robotPath } from '../domain/navigation';
+import { estimateJourney } from '../domain/motion';
 import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
 function freeze<T>(value: T): T {
@@ -190,15 +191,20 @@ export class FleetGateway implements FleetQueries, FleetCommands {
         corridorIds = path?.corridorIds ?? [],
         distance = path?.distance ?? 0;
       const reasons = readiness(snapshot, robot);
+      const mission = snapshot.missions[robot.activeMissionId ?? ''];
+      const estimate = estimateJourney(robot, [
+        { distance, payloadKg: mission?.requirements?.payloadKg ?? 0 },
+      ]);
       if (!corridorIds.length) reasons.push('No open corridor');
-      if (robot.battery < distance * 0.12 + 10) reasons.push('Insufficient battery reserve');
+      if (robot.battery < estimate.batteryRequired + estimate.reservePercent)
+        reasons.push('Insufficient battery reserve');
       return {
         robotId,
         robotRevision: robot.revision,
         topologyRevision,
         corridorIds,
         distance,
-        batteryRequired: distance * 0.12,
+        batteryRequired: estimate.batteryRequired,
         feasible: reasons.length === 0,
         reasons,
       };

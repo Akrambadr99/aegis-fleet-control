@@ -1,4 +1,5 @@
 import type { DomainState } from './model';
+import { motionProfile } from './motion';
 import { DomainError as GatewayError } from './errors';
 
 export interface InvariantViolation {
@@ -11,6 +12,16 @@ export function inspectInvariants(state: DomainState): InvariantViolation[] {
     if (!condition) violations.push({ entityId, rule });
   };
   for (const robot of Object.values(state.robots)) {
+    check(
+      Number.isFinite(robot.battery) && robot.battery >= 0 && robot.battery <= 100,
+      robot.id,
+      'Robot battery must be a bounded percentage',
+    );
+    try {
+      motionProfile(robot);
+    } catch {
+      check(false, robot.id, 'Robot motion characteristics must be valid');
+    }
     check(
       state.floors[robot.floorId]?.facilityId === robot.facilityId,
       robot.id,

@@ -1,9 +1,10 @@
 import { supportsMissionAction, chargerCapabilities, resourceCapabilities } from './capabilities';
 import type { DomainState, Versioned } from './model';
-import { shortestPath } from './navigation';
+import { shortestPath, nearestNavigationNode } from './navigation';
 import { readiness } from './selectors';
 import { robotCommitments } from './availability';
 import { canReachFacilityTarget, resourceDispatchIssues } from './facilityFeasibility';
+import { estimateJourney, motionProfile } from './motion';
 export const stepKinds = [
   'navigate',
   'pickup',
@@ -109,10 +110,8 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
     issue('Step identifiers must be unique and nonempty');
   const pending = [...plan.steps];
   const durations = new Map<string, number>();
-  let cursor = robot
-    ? state.routes[state.missions[robot.activeMissionId ?? '']?.routeId]?.nodeIds[0]
-    : undefined;
-  cursor ??= Object.values(state.navigationNodes).find((n) => n.floorId === robot?.floorId)?.id;
+  const payloads = new Map<string, number>();
+  let cursor = robot ? nearestNavigationNode(state, robot.floorId, robot.position)?.id : undefined;
   for (const step of plan.steps) {
     if (!stepKinds.includes(step.kind)) issue('Unsupported step kind', step.id);
     if (!['always', 'battery-low', 'fault-present'].includes(step.condition))
@@ -137,6 +136,7 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
     }
     const step = pending.splice(index, 1)[0];
     result.order.push(step.id);
+    let payloadKg = Math.max(0, ...step.dependsOn.map((id) => payloads.get(id) ?? 0));
     let duration = 0;
     if (step.kind === 'conditional-branch' || step.kind === 'parallel-branch') {
       // Control nodes add no work; downstream dependencies determine the critical path.
@@ -153,7 +153,11 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
         if (!path) issue('Destination is unreachable through the current topology', step.id);
         else {
           result.distance += path.distance;
-          duration = path.distance / (robot?.capabilities.maxSpeed || 1.2);
+          if (robot) {
+            const estimate = estimateJourney(robot, [{ distance: path.distance, payloadKg }]);
+            duration = estimate.seconds;
+            result.batteryRequired += estimate.batteryRequired;
+          }
           cursor = target!.id;
         }
       }
@@ -163,6 +167,10 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
       if (robot && !supportsMissionAction(robot, step.kind, step.payloadKg))
         issue('Robot cannot handle this payload', step.id);
       duration = 15;
+      payloadKg =
+        step.kind === 'pickup' && Number.isFinite(step.payloadKg) && step.payloadKg > 0
+          ? step.payloadKg
+          : 0;
     } else if (step.kind === 'inspect') {
       if (robot && !supportsMissionAction(robot, 'inspect')) issue('Robot cannot inspect', step.id);
       duration = step.seconds;
@@ -213,10 +221,11 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
     }
     const start = Math.max(0, ...step.dependsOn.map((id) => durations.get(id) ?? 0));
     durations.set(step.id, start + duration);
+    payloads.set(step.id, payloadKg);
   }
   result.durationSeconds = Math.ceil(Math.max(0, ...durations.values()));
-  result.batteryRequired = Number((result.distance * 0.12).toFixed(2));
-  if (robot && robot.battery < result.batteryRequired + 10)
+  result.batteryRequired = Number(result.batteryRequired.toFixed(2));
+  if (robot && robot.battery < result.batteryRequired + motionProfile(robot).reservePercent)
     issue('Insufficient battery reserve for planned travel');
   result.dispatchIssues = [...new Set(result.dispatchIssues)];
   return result;

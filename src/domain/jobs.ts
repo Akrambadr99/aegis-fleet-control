@@ -2,13 +2,14 @@ import { supportsMissionAction, supportsRobotAction, type RobotAction } from './
 import { jobKinds, jobProfiles, jobActions, jobSteps, type JobKind } from './jobKinds';
 import { reserveMissionResources, releaseRobotResources } from './resources';
 import type { DomainState, Robot, Versioned, Command } from './model';
-import { shortestPath, type PathResult } from './navigation';
+import { shortestPath, nearestNavigationNode, type PathResult } from './navigation';
 import { readiness } from './selectors';
 import { robotCommitments } from './availability';
 import { newPlan } from './planning';
 import { recordPlanRevision } from './planHistory';
 import { DomainError as GatewayError } from './errors';
 import { assertDispatchOwnership, type JobDispatchLock } from './jobLocks';
+import { estimateJourney } from './motion';
 export interface JobInput {
   kind?: JobKind;
   requiredActions?: RobotAction[];
@@ -78,14 +79,7 @@ export interface RobotCandidate {
 }
 export function jobPath(state: DomainState, robot: Robot, job: JobInput) {
   const nodes = Object.values(state.navigationNodes);
-  const origin = nodes
-    .filter((n) => n.floorId === robot.floorId)
-    .sort(
-      (a, b) =>
-        Math.hypot(a.position.x - robot.position.x, a.position.y - robot.position.y) -
-          Math.hypot(b.position.x - robot.position.x, b.position.y - robot.position.y) ||
-        a.id.localeCompare(b.id),
-    )[0];
+  const origin = nearestNavigationNode(state, robot.floorId, robot.position);
   const source = nodes.find((n) => n.zoneId === job.sourceZoneId),
     target = nodes.find((n) => n.zoneId === job.destinationZoneId);
   const pickup = origin && source ? shortestPath(state, origin.id, source.id) : null;
@@ -134,10 +128,14 @@ export function rankCandidates(state: DomainState, job: WarehouseJob): RobotCand
         if (!supportsRobotAction(robot, action)) reasons.push('Required capability: ' + action);
       const route = jobPath(state, robot, job),
         distance = route?.path.distance ?? 0,
-        duration = Math.ceil(distance / robot.capabilities.maxSpeed),
-        batteryRequired = distance * 0.12;
+        estimate = estimateJourney(robot, [
+          { distance: route?.pickupDistance ?? 0, payloadKg: 0 },
+          { distance: distance - (route?.pickupDistance ?? 0), payloadKg: job.payloadKg },
+        ]),
+        duration = Math.ceil(estimate.seconds),
+        batteryRequired = estimate.batteryRequired;
       if (!route) reasons.push('Source or destination is unreachable');
-      if (robot.battery < batteryRequired + 10)
+      if (robot.battery < batteryRequired + estimate.reservePercent)
         reasons.push('Insufficient delivery battery reserve');
       if (state.tick + duration > job.deadlineTick) reasons.push('Deadline cannot be met');
       const score = distance + (100 - robot.battery) * 2;

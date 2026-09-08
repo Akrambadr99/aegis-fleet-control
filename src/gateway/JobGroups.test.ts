@@ -3,7 +3,7 @@ import { createSeed } from '../domain/seed';
 import { applyJobGroup } from '../domain/jobGroups';
 import { applyJob } from '../domain/jobs';
 import { assertInvariants } from '../domain/invariants';
-import { migrateSnapshot } from '../domain/snapshots';
+import { migrateSnapshot, schemaVersion } from '../domain/snapshots';
 import { buildSearchIndex } from '../application/search';
 import { FleetGateway } from './FleetGateway';
 import { ManualScheduler } from './scheduler';
@@ -156,7 +156,7 @@ it('version-one snapshots gain an empty group table without altering their sourc
     fixtureVersion: 1,
     state: legacy as typeof original,
   });
-  expect(migrated.schemaVersion).toBe(2);
+  expect(migrated.schemaVersion).toBe(schemaVersion);
   expect(migrated.state.jobGroups).toEqual({});
   expect('jobGroups' in legacy).toBe(false);
 });

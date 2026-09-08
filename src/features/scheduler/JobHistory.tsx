@@ -12,7 +12,7 @@ export function JobHistory({ job, state }: { job: WarehouseJob; state: DomainSta
           <li key={mission.id}>
             <strong>{mission.id}</strong> · {mission.robotId} · {mission.status}
             <p>
-              Plan {mission.planId} · {mission.progress}% route completion
+              Plan {mission.planId} · {mission.progress.toFixed(1)}% route completion
             </p>
             {job.attempts
               ?.filter((attempt) => attempt.missionId === mission.id)

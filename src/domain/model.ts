@@ -6,6 +6,7 @@ import type { FacilityResource, ResourceReservation, ResourceCommand } from './r
 import type { WarehouseJob, JobCommand } from './jobs';
 import type { JobGroup, JobGroupCommand } from './jobGroups';
 import type { JobLockCommand } from './jobLocks';
+import type { MotionCharacteristics } from './motion';
 import type { MissionPlan, MissionPlanRevision } from './planning';
 import type { MissionTemplate, TemplateCommand } from './missionTemplates';
 export type Role = 'viewer' | 'operator' | 'fleet-manager' | 'facility-manager' | 'administrator';
@@ -70,6 +71,7 @@ export interface MaintenanceOrder extends Versioned {
   technician: string;
 }
 export interface Robot extends Versioned {
+  motion?: MotionCharacteristics;
   capabilities: { payloadKg: number; actions: string[]; maxSpeed: number };
   maintenanceOrderId: string | null;
   facilityId: string;

@@ -266,7 +266,7 @@ it('explicit rerouting updates reservation, mission cost and preview before safe
   });
   clock.advance(250);
   await close.promise;
-  const robot = gateway.getSnapshot().robots['R-001'];
+  const robot = gateway.getSnapshot().robots['R-004'];
   const reroute = gateway.command(admin, {
     type: 'robot.reroute',
     id: robot.id,
@@ -275,10 +275,10 @@ it('explicit rerouting updates reservation, mission cost and preview before safe
   clock.advance(250);
   await reroute.promise;
   const s = gateway.getSnapshot();
-  expect(s.routes['RT-001'].corridorIds).toEqual(['C-002']);
-  expect(s.routes['RT-001'].state).toBe('valid');
-  expect(s.missions['M-001'].status).toBe('paused');
-  expect(missionFeasibility(s, 'M-001').distance).toBe(130);
+  expect(s.routes['RT-004'].corridorIds).toEqual(['C-002']);
+  expect(s.routes['RT-004'].state).toBe('valid');
+  expect(s.missions['M-004'].status).toBe('paused');
+  expect(missionFeasibility(s, 'M-004').distance).toBe(130);
   const preview = gateway.previewRoute(robot.id);
   clock.advance(250);
   expect((await preview.promise).corridorIds).toEqual(['C-002']);
@@ -289,8 +289,8 @@ it('explicit rerouting updates reservation, mission cost and preview before safe
   });
   clock.advance(250);
   await resume.promise;
-  expect(gateway.getSnapshot().missions['M-001'].status).toBe('running');
-  expect(gateway.getSnapshot().routes['RT-001'].reservationState).toBe('active');
+  expect(gateway.getSnapshot().missions['M-004'].status).toBe('running');
+  expect(gateway.getSnapshot().routes['RT-004'].reservationState).toBe('active');
 });
 it('reroute failure leaves existing route and audit intact when all lanes are closed', async () => {
   const { clock, gateway } = fixture();

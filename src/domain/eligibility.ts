@@ -1,4 +1,5 @@
 import type { DomainState, Robot } from './model';
+import { motionProfile } from './motion';
 
 export function capabilityIssues(
   robot: Robot,
@@ -22,7 +23,7 @@ export function readiness(state: DomainState, robot: Robot): string[] {
   const reasons = maintenanceReasons(state, robot);
   if (!robot.connected) reasons.push('Connection lost');
   if (robot.status === 'emergency-stopped') reasons.push('Emergency stop latched');
-  if (robot.battery < 20) reasons.push('Low battery');
+  if (robot.battery < motionProfile(robot).reservePercent) reasons.push('Low battery');
   if (robot.controlSessionId) reasons.push('Manual control owned');
   if (robot.faultIds.some((id) => state.faults[id]?.status !== 'resolved'))
     reasons.push('Active fault');
