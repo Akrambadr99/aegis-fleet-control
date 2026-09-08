@@ -1,8 +1,8 @@
 .replay-workspace {
-  border-top: 3px solid #506b80;
+  border-top: 0;
 }
 .replay-workspace .editor-header {
-  border-bottom: 1px solid #b9c7d0;
+  border-bottom: 1px solid var(--rule);
   padding-top: 12px;
 }
 .replay-workspace label {
@@ -11,8 +11,8 @@
 .replay-workspace select {
   display: block;
   padding: 6px;
-  border: 1px solid #adc0ca;
-  background: white;
+  border: 1px solid var(--rule);
+  background: var(--surface);
 }
 .replay-grid {
   display: grid;
@@ -21,13 +21,13 @@
 }
 .replay-scene svg {
   width: 100%;
-  background: #eef3f3;
-  border: 1px solid #bed0d3;
+  background: var(--surface-inset);
+  border: 1px solid var(--rule);
 }
 .replay-inspector {
-  border-left: 1px solid #b3c6ce;
+  border-left: 1px solid var(--rule);
   padding: 0 12px;
-  background: #e7eef1;
+  background: var(--surface-inset);
 }
 .replay-inspector dl {
   font-size: 12px;
@@ -37,7 +37,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 6px 0;
-  border-bottom: 1px solid #ccd8dd;
+  border-bottom: 1px solid var(--rule);
 }
 .replay-inspector dd {
   margin: 0;
@@ -51,11 +51,11 @@
 .replay-telemetry svg {
   width: 100%;
   max-height: 220px;
-  background: #f7f9fa;
+  background: var(--surface-inset);
 }
 .replay-transport {
-  border-top: 2px solid #647f90;
-  border-bottom: 1px solid #aabdc9;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
   padding: 12px 0;
   margin-top: 14px;
 }
@@ -68,7 +68,9 @@
 .transport-buttons button {
   padding: 7px 10px;
   border-radius: 3px;
-  background: #345b72;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--control-border);
 }
 .replay-seek {
   display: block;
@@ -111,13 +113,13 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  border-bottom: 1px solid #c3d1da;
+  border-bottom: 1px solid var(--rule);
   padding: 5px 0;
   font-size: 11px;
 }
 .replay-event-log button {
   background: transparent;
-  color: #285d7c;
+  color: var(--text-muted);
   padding: 4px 7px;
 }
 @media (max-width: 1050px) {
@@ -126,14 +128,14 @@
   }
   .replay-inspector {
     border-left: 0;
-    border-top: 1px solid #b3c6ce;
+    border-top: 1px solid var(--rule);
   }
 }
 .replay-workspace .replay-transport {
   margin: 0 0 var(--space-3);
   padding: var(--space-3);
-  border-top: 2px solid var(--accent-replay, #53718a);
-  background: var(--surface-inset);
+  border-top: 1px solid var(--rule);
+  background: var(--surface);
 }
 .replay-workspace .transport-buttons {
   justify-content: flex-start;
