@@ -236,7 +236,7 @@ export function JobEditor({
               </label>
             ))}
         </fieldset>
-        <button type="submit" disabled={conflict}>
+        <button className="button-primary" type="submit" disabled={conflict}>
           {job ? 'Save job requirements' : 'Create job'}
         </button>
       </fieldset>
