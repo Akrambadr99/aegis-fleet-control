@@ -9,15 +9,20 @@ import { missionFeasibility, simulationInputs } from '../../domain/selectors';
 export function ChargingPanel() {
   const { state, floor, change } = useScope();
   return (
-    <section className="panel">
+    <section className="charging-deck">
       <h2>Charger availability and queues</h2>
-      <div className="resource-grid">
-        {Object.values(state.chargers)
-          .filter((c) => c.floorId === floor.id)
-          .map((charger) => (
-            <article className="resource" key={charger.id}>
+      <p className="workspace-note">
+        Charger terminals · Reservation order and connected robot battery
+      </p>
+      {Object.values(state.chargers)
+        .filter((charger) => charger.floorId === floor.id)
+        .map((charger) => (
+          <article className="charger-lane" key={charger.id}>
+            <div className="charger-terminal">
               <h3>{charger.id}</h3>
-              <p>{charger.available ? 'Available' : 'Out of service'}</p>
+              <p className={charger.available ? 'available' : 'overdue'}>
+                {charger.available ? 'Available' : 'Out of service'}
+              </p>
               <CommandButton
                 command={{
                   type: 'charger.set',
@@ -28,25 +33,32 @@ export function ChargingPanel() {
               >
                 {charger.available ? 'Disable' : 'Enable'} {charger.id}
               </CommandButton>
-              <ol>
-                {Object.values(state.reservations)
-                  .filter((r) => r.chargerId === charger.id)
-                  .sort((a, b) => a.queuePosition - b.queuePosition)
-                  .map((reservation) => (
-                    <li key={reservation.id}>
-                      <button
-                        className="text-button"
-                        onClick={() => change('robot', reservation.robotId)}
-                      >
-                        {reservation.robotId}
-                      </button>{' '}
-                      · {reservation.state}
-                    </li>
-                  ))}
-              </ol>
-            </article>
-          ))}
-      </div>
+            </div>
+            <ol className="charger-queue">
+              {Object.values(state.reservations)
+                .filter((reservation) => reservation.chargerId === charger.id)
+                .sort((a, b) => a.queuePosition - b.queuePosition)
+                .map((reservation) => (
+                  <li key={reservation.id}>
+                    <button
+                      className="text-button"
+                      onClick={() => change('robot', reservation.robotId)}
+                    >
+                      {reservation.robotId}
+                    </button>
+                    <span>{reservation.state}</span>
+                    <small>
+                      Battery {state.robots[reservation.robotId].battery.toFixed(1)}% ·{' '}
+                      {reservation.id}
+                    </small>
+                  </li>
+                ))}
+            </ol>
+            {!Object.values(state.reservations).some(
+              (reservation) => reservation.chargerId === charger.id,
+            ) && <p className="charger-queue-empty">No charger reservations.</p>}
+          </article>
+        ))}
     </section>
   );
 }
@@ -57,20 +69,25 @@ export function FaultPanel() {
   );
   const page = useCollectionPage(faults, 'faultPage');
   return (
-    <section className="panel">
-      <h2>Active fault triage</h2>
-      <CollectionPager page={page} label="Faults" />
+    <section className="fault-triage">
+      <header>
+        <h2>Active fault triage</h2>
+        <CollectionPager page={page} label="Faults" />
+      </header>
       {page.items.map((fault) => (
-        <article className="resource" key={fault.id}>
-          <h3>
-            {fault.id} · {fault.severity}
-          </h3>
-          <p>
-            {fault.message} · {fault.status}
-          </p>
-          <button className="text-button" onClick={() => change('robot', fault.robotId)}>
-            {fault.robotId}
-          </button>
+        <article className="fault-strip" data-severity={fault.severity} key={fault.id}>
+          <div className="fault-identity">
+            <h3>
+              {fault.id} · {fault.severity}
+            </h3>
+            <button className="text-button" onClick={() => change('robot', fault.robotId)}>
+              {fault.robotId}
+            </button>
+          </div>
+          <div>
+            <strong>{fault.message}</strong>
+            <p>{fault.status} · Acknowledgement does not clear the recovery interlock.</p>
+          </div>
           {fault.status === 'active' ? (
             <CommandButton
               command={{
@@ -86,6 +103,7 @@ export function FaultPanel() {
           )}
         </article>
       ))}
+      {!faults.length && <p>No recorded faults in this facility.</p>}
     </section>
   );
 }
@@ -93,25 +111,42 @@ export function ExecutionPanel() {
   const { state, floor, change } = useScope();
   const missions = getMissionExecutionProjection(state, floor.id);
   return (
-    <section className="panel">
+    <section className="execution-register">
       <h2>Mission execution state</h2>
+      <p className="workspace-note">
+        Live mission register · Route progress, remaining estimate and execution interlocks
+      </p>
       {missions.map((mission) => {
         const robot = state.robots[mission.robotId],
           feasibility = missionFeasibility(state, mission.id);
         return (
-          <article className="resource" key={mission.id}>
-            <h3>
-              {mission.id} · {mission.status}
-            </h3>
-            <button className="text-button" onClick={() => change('robot', robot.id)}>
-              {robot.id}
-            </button>
-            <progress max="100" value={mission.progress} aria-label={`${mission.id} progress`} />
-            <p>
-              {mission.pauseReason ?? 'No execution block'} · {feasibility.etaSeconds} s ·{' '}
-              {feasibility.batteryRequired.toFixed(1)}% estimated battery
-            </p>
-            <p>{feasibility.reasons.join('; ') || 'Mission feasible'}</p>
+          <article className="execution-row" key={mission.id}>
+            <div>
+              <h3>
+                {mission.id} · {mission.status}
+              </h3>
+              <button className="text-button" onClick={() => change('robot', robot.id)}>
+                {robot.id}
+              </button>
+            </div>
+            <div className="execution-progress">
+              <span>{mission.progress.toFixed(1)}% route</span>
+              <progress max="100" value={mission.progress} aria-label={`${mission.id} progress`} />
+              <small>
+                {feasibility.etaSeconds} s · {feasibility.batteryRequired.toFixed(1)}% estimated
+                battery
+              </small>
+            </div>
+            <div
+              className={
+                mission.pauseReason || feasibility.reasons.length
+                  ? 'execution-interlock'
+                  : 'execution-readiness'
+              }
+            >
+              <p>{mission.pauseReason ?? 'No execution block'}</p>
+              <p>{feasibility.reasons.join('; ') || 'Mission feasible'}</p>
+            </div>
             {(robot.status === 'running' || robot.status === 'paused') && (
               <CommandButton
                 command={{
