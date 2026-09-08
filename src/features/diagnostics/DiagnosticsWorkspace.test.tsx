@@ -1,6 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
 import { createQueryClient } from '../../app/AppProviders';
 import { FleetProvider } from '../../app/FleetProvider';
 import { FleetGateway } from '../../gateway/FleetGateway';
@@ -10,11 +11,12 @@ import { DiagnosticsWorkspace } from './DiagnosticsWorkspace';
 it('observes committed event batches and isolated worker failures', async () => {
   const clock = new ManualScheduler();
   const gateway = new FleetGateway(clock);
+  let exportAvailable = false;
   gateway.workers.register({
     id: 'offline-export',
     retryDelays: [],
     handle() {
-      throw new Error('export worker unavailable');
+      if (!exportAvailable) throw new Error('export worker unavailable');
     },
   });
   render(
@@ -44,4 +46,14 @@ it('observes committed event batches and isolated worker failures', async () => 
   expect(screen.getByRole('list', { name: 'Background workers' })).toHaveTextContent(
     'offline-export · failed · pending 1 · last revision none · export worker unavailable',
   );
+
+  exportAvailable = true;
+  await userEvent.click(screen.getByRole('button', { name: 'Retry offline-export' }));
+  act(() => clock.advance(0));
+  await Promise.resolve();
+
+  expect(screen.getByRole('list', { name: 'Background workers' })).toHaveTextContent(
+    'offline-export · idle · pending 0 · last revision 2',
+  );
+  expect(screen.queryByRole('button', { name: 'Retry offline-export' })).not.toBeInTheDocument();
 });

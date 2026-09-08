@@ -63,6 +63,11 @@ export function DiagnosticsWorkspace() {
             {worker.id} · {worker.state} · pending {worker.pendingBatches} · last revision{' '}
             {worker.lastProcessedRevision ?? 'none'}
             {worker.lastError ? ` · ${worker.lastError}` : ''}
+            {worker.state === 'failed' && (
+              <button type="button" onClick={() => gateway.workers.retry(worker.id)}>
+                Retry {worker.id}
+              </button>
+            )}
           </li>
         ))}
       </ol>
