@@ -1085,3 +1085,173 @@ summary {
   white-space: nowrap;
   border: 0;
 }
+
+.scheduler-workspace button {
+  padding: 6px 9px;
+  border-radius: 3px;
+}
+.scheduler-workspace input,
+.scheduler-workspace select {
+  padding: 6px;
+  border: 1px solid #b2bfc5;
+  background: white;
+  max-width: 100%;
+}
+.dispatch-timeline {
+  display: flex;
+  gap: 4px;
+  overflow: auto;
+  border-bottom: 1px solid #adbdc7;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+.dispatch-timeline button {
+  min-width: 165px;
+  background: #e0e8ed;
+  color: #233e50;
+  text-align: left;
+  border-left: 3px solid #668ba3;
+}
+.dispatch-timeline span,
+.dispatch-timeline strong {
+  display: block;
+  font-size: 12px;
+}
+.dispatch-timeline progress {
+  width: 100%;
+  height: 5px;
+}
+.scheduler-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 18px;
+  align-items: start;
+}
+.job-queue td strong,
+.job-queue td small {
+  display: block;
+}
+.job-queue td {
+  padding: 8px;
+  font-size: 12px;
+  vertical-align: top;
+}
+.selected-row {
+  background: #dfeaf1;
+}
+.overdue {
+  color: #a03625;
+  font-weight: 700;
+}
+.job-editor {
+  margin-top: 18px;
+  border-top: 2px solid #7994a5;
+  padding-top: 12px;
+}
+.job-editor fieldset {
+  border: 0;
+  padding: 0;
+  margin: 8px 0;
+}
+.job-editor label,
+.assignment-controls label,
+.manual-assignment label,
+.job-cancellation label {
+  display: block;
+  font-size: 12px;
+}
+.job-editor label input,
+.job-editor label select,
+.manual-assignment input,
+.job-cancellation input {
+  display: block;
+  width: 100%;
+  margin: 3px 0 9px;
+}
+.form-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.job-editor .check-label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.job-editor .check-label input {
+  width: auto;
+  margin: 4px 0;
+}
+.candidate-panel {
+  border-left: 1px solid #afc0cc;
+  padding: 0 0 0 16px;
+}
+.assignment-controls {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.assignment-controls input {
+  display: block;
+  width: 75px;
+}
+.candidate-list {
+  max-height: 390px;
+  overflow: auto;
+  border-top: 1px solid #bdcad2;
+}
+.scheduler-workspace .candidate {
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: #213d50;
+  border-bottom: 1px solid #bfccd4;
+  text-align: left;
+  padding: 9px 5px;
+}
+.candidate span {
+  display: block;
+  font-size: 11px;
+}
+.scheduler-workspace .selected-candidate {
+  background: #dce9f2;
+  box-shadow: inset 3px 0 #4f7c9c;
+}
+.manual-assignment {
+  border-top: 2px solid #6b8ba1;
+  margin-top: 12px;
+}
+.assignment-reason {
+  font-size: 12px;
+  color: #456476;
+}
+.job-cancellation {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid #bbc8d0;
+  padding: 12px 0;
+  margin-top: 15px;
+}
+.job-cancellation span {
+  font-size: 12px;
+}
+@media (max-width: 1050px) {
+  .scheduler-grid {
+    grid-template-columns: 1fr;
+  }
+  .candidate-panel {
+    border-left: 0;
+    padding: 15px 0;
+    border-top: 1px solid #afc0cc;
+  }
+}
+@media (max-width: 650px) {
+  .job-cancellation {
+    display: block;
+  }
+  .form-pair {
+    grid-template-columns: 1fr;
+  }
+}

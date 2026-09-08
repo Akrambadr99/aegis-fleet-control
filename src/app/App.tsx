@@ -1,3 +1,4 @@
+import { SchedulerWorkspace } from '../features/scheduler/SchedulerWorkspace';
 import { MissionPlanning } from '../features/missions/MissionPlanning';
 import { useLayoutEffect } from 'react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
@@ -116,7 +117,9 @@ export function App() {
                     key={item.path}
                     path={item.path}
                     element={
-                      item.path === '/missions' ? (
+                      item.path === '/scheduler' ? (
+                        <SchedulerWorkspace />
+                      ) : item.path === '/missions' ? (
                         <MissionPlanning />
                       ) : connectedPaths.includes(item.path) ? (
                         <OperationsWorkspace workspace={item} />

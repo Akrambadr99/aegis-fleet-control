@@ -1,5 +1,14 @@
 export const workspaces = [
   {
+    path: '/scheduler',
+    title: 'Jobs & scheduler',
+    short: 'Scheduler',
+    group: 'Coordinate',
+    milestone: 24,
+    description: 'Warehouse commitments and fleet assignments.',
+    code: '17',
+  },
+  {
     path: '/',
     title: 'Operations overview',
     short: 'Overview',
