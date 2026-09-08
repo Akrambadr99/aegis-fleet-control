@@ -1,3 +1,4 @@
+import type { FleetQueries, FleetCommands } from './ports';
 import { routePreviewKey } from '../application/queries';
 import { shareUnchanged } from './structuralSharing';
 import { advanceDomain } from '../application/processing';
@@ -22,7 +23,7 @@ function freeze<T>(value: T): T {
   }
   return value;
 }
-export class FleetGateway {
+export class FleetGateway implements FleetQueries, FleetCommands {
   private state: DomainState;
   private operationSequence = 0;
   readonly configuration: Readonly<OperationalConfiguration>;
