@@ -1,3 +1,4 @@
+import { routePreviewKey } from '../application/queries';
 import { shareUnchanged } from './structuralSharing';
 import { advanceDomain } from '../application/processing';
 import { defaultConfiguration, type OperationalConfiguration } from '../application/configuration';
@@ -154,8 +155,8 @@ export class FleetGateway {
       topologyRevision = facility.topologyRevision;
     return this.requests.run(() => {
       if (
-        this.state.facilities[robot.facilityId].topologyRevision !== topologyRevision ||
-        this.state.robots[robotId].revision !== robot.revision
+        JSON.stringify(routePreviewKey(this.state, robotId)) !==
+        JSON.stringify(routePreviewKey(snapshot, robotId))
       )
         throw new GatewayError('stale', 'Route inputs changed; calculate again');
       const path = robotPath(snapshot, robotId),

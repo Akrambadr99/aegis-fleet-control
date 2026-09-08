@@ -1,3 +1,4 @@
+import { routePreviewKey } from '../../application/queries';
 import { useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -21,12 +22,7 @@ export function RobotInspector() {
     };
   }, [open]);
   const preview = useQuery({
-    queryKey: [
-      'route-preview',
-      id,
-      robot?.revision,
-      robot ? state.facilities[robot.facilityId].topologyRevision : 0,
-    ],
+    queryKey: routePreviewKey(state, id),
     queryFn: ({ signal }) => gateway.previewRoute(id!, signal).promise,
     enabled: !!robot,
   });

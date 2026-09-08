@@ -1,0 +1,21 @@
+import { expect, it } from 'vitest';
+import { createSeed } from '../domain/seed';
+import { routePreviewKey } from './queries';
+it('invalidates readiness on maintenance deadline without invalidating unrelated robot keys', () => {
+  const state = createSeed();
+  const robot = state.robots['R-001'];
+  const base = routePreviewKey(state, robot.id);
+  const order = Object.values(state.maintenance)[0];
+  robot.maintenanceOrderId = order.id;
+  order.status = 'scheduled';
+  order.dueTick = 10;
+  const scheduled = routePreviewKey(state, robot.id);
+  state.tick = 10;
+  expect(routePreviewKey(state, robot.id)).not.toEqual(scheduled);
+  robot.maintenanceOrderId = null;
+  state.tick = 0;
+  state.tick++;
+  expect(routePreviewKey(state, robot.id)).toEqual(base);
+  state.facilities[robot.facilityId].topologyRevision++;
+  expect(routePreviewKey(state, robot.id)).not.toEqual(base);
+});
