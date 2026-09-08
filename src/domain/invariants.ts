@@ -1,0 +1,118 @@
+import type { DomainState } from './model';
+import { GatewayError } from '../gateway/requests';
+
+export interface InvariantViolation {
+  entityId: string;
+  rule: string;
+}
+export function inspectInvariants(state: DomainState): InvariantViolation[] {
+  const violations: InvariantViolation[] = [];
+  const check = (condition: unknown, entityId: string, rule: string) => {
+    if (!condition) violations.push({ entityId, rule });
+  };
+  for (const robot of Object.values(state.robots)) {
+    check(
+      state.floors[robot.floorId]?.facilityId === robot.facilityId,
+      robot.id,
+      'Robot floor must belong to its facility',
+    );
+    if (robot.activeMissionId) {
+      const mission = state.missions[robot.activeMissionId];
+      check(
+        mission?.robotId === robot.id && mission?.facilityId === robot.facilityId,
+        robot.id,
+        'Active mission ownership must agree',
+      );
+      check(
+        mission && !['completed', 'cancelled'].includes(mission.status),
+        robot.id,
+        'Closed mission cannot remain active',
+      );
+    }
+    if (robot.chargerReservationId) {
+      const reservation = state.reservations[robot.chargerReservationId];
+      check(
+        reservation?.robotId === robot.id && reservation.state !== 'released',
+        robot.id,
+        'Attached charging reservation must be owned and unreleased',
+      );
+    }
+    if (robot.controlSessionId) {
+      const lease = state.leases[robot.controlSessionId];
+      check(
+        lease?.robotId === robot.id && lease.state === 'active',
+        robot.id,
+        'Attached control lease must be active and owned',
+      );
+    }
+    const activeLeases = Object.values(state.leases).filter(
+      (lease) => lease.robotId === robot.id && lease.state === 'active',
+    );
+    check(activeLeases.length <= 1, robot.id, 'Robot cannot have competing active control leases');
+    const maintenance = robot.maintenanceOrderId
+      ? state.maintenance[robot.maintenanceOrderId]
+      : undefined;
+    if (
+      robot.status === 'maintenance' ||
+      (maintenance && ['in-progress', 'verification'].includes(maintenance.status))
+    ) {
+      check(
+        !Object.values(state.routes).some(
+          (route) => route.robotId === robot.id && route.reservationState === 'active',
+        ),
+        robot.id,
+        'Maintenance cannot own active traffic',
+      );
+    }
+    for (const id of robot.faultIds)
+      check(state.faults[id]?.robotId === robot.id, robot.id, 'Fault ownership must agree');
+  }
+  for (const mission of Object.values(state.missions)) {
+    const route = state.routes[mission.routeId];
+    check(
+      state.robots[mission.robotId] &&
+        route?.robotId === mission.robotId &&
+        route.facilityId === mission.facilityId,
+      mission.id,
+      'Mission robot and route must agree',
+    );
+  }
+  for (const route of Object.values(state.routes)) {
+    check(
+      state.facilities[route.facilityId] && state.robots[route.robotId],
+      route.id,
+      'Route references must exist',
+    );
+    for (const id of route.nodeIds)
+      check(
+        state.navigationNodes[id]?.facilityId === route.facilityId,
+        route.id,
+        'Route nodes must belong to its facility',
+      );
+    for (const id of route.edgeIds)
+      check(state.navigationEdges[id], route.id, 'Route edges must exist');
+  }
+  for (const reservation of Object.values(state.reservations))
+    check(
+      state.robots[reservation.robotId] && state.chargers[reservation.chargerId],
+      reservation.id,
+      'Charging references must exist',
+    );
+  for (const reservation of Object.values(state.resourceReservations))
+    check(
+      state.robots[reservation.robotId] &&
+        state.resources[reservation.resourceId] &&
+        (!reservation.missionId || state.missions[reservation.missionId]),
+      reservation.id,
+      'Resource reservation references must exist',
+    );
+  return violations;
+}
+export function assertInvariants(state: DomainState) {
+  const violations = inspectInvariants(state);
+  if (violations.length)
+    throw new GatewayError(
+      'invariant',
+      violations.map((violation) => violation.entityId + ': ' + violation.rule).join('; '),
+    );
+}

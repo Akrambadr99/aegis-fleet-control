@@ -86,8 +86,8 @@ export function FaultPanel() {
 export function ExecutionPanel() {
   const { state, floor, change } = useScope();
   const missions = Object.values(state.robots)
-    .filter((r) => r.floorId === floor.id && r.activeMissionId)
-    .map((r) => state.missions[r.activeMissionId!]);
+    .filter((r) => r.floorId === floor.id && (r.activeMissionId || r.lastMissionId))
+    .map((r) => state.missions[(r.activeMissionId ?? r.lastMissionId)!]);
   return (
     <section className="panel">
       <h2>Mission execution state</h2>

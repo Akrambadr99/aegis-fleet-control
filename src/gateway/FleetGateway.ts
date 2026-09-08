@@ -10,6 +10,7 @@ import { createSeed } from '../domain/seed';
 import { applyCommand, record } from '../domain/transactions';
 import { readiness } from '../domain/selectors';
 import { commandPermission } from '../domain/permissions';
+import { assertInvariants } from '../domain/invariants';
 import { robotPath, positionOnRoute } from '../domain/navigation';
 import { GatewayError, RequestEngine, type Ticket } from './requests';
 import { RealScheduler, type Scheduler } from './scheduler';
@@ -36,6 +37,7 @@ export class FleetGateway {
     };
   };
   private publish(next: DomainState) {
+    assertInvariants(next);
     next.revision = this.state.revision + 1;
     this.state = freeze(next);
     this.listeners.forEach((listener) => listener());
@@ -194,6 +196,8 @@ export class FleetGateway {
           if (mission.progress === 100) {
             mission.status = 'completed';
             robot.status = 'idle';
+            robot.lastMissionId = mission.id;
+            robot.activeMissionId = null;
             const route = next.routes[mission.routeId];
             route.reservationState = 'released';
             route.revision++;

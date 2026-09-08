@@ -26,7 +26,7 @@ export function appendHistory(state: DomainState, robots: Robot[], eventId: stri
     if (lease.state === 'owned')
       owned.set(lease.robotId, [...(owned.get(lease.robotId) ?? []), lease.resourceId]);
   for (const robot of new Map(robots.map((r) => [r.id, r])).values()) {
-    const mission = robot.activeMissionId ? state.missions[robot.activeMissionId] : null,
+    const mission = state.missions[robot.activeMissionId ?? robot.lastMissionId ?? ''] ?? null,
       route = mission ? state.routes[mission.routeId] : null,
       control = robot.controlSessionId ? state.leases[robot.controlSessionId] : null;
     state.history.push({

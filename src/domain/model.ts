@@ -76,6 +76,7 @@ export interface Robot extends Versioned {
   battery: number;
   connected: boolean;
   activeMissionId: string | null;
+  lastMissionId?: string;
   chargerReservationId: string | null;
   controlSessionId: string | null;
   faultIds: string[];

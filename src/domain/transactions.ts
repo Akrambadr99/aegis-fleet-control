@@ -14,7 +14,7 @@ import { captureEntities, changedEntities } from './audit';
 import { robotPath } from './navigation';
 import { applyMaintenance, maintenanceReasons } from './maintenance';
 function frame(state: DomainState, robot: Robot, eventId: string) {
-  const mission = robot.activeMissionId ? state.missions[robot.activeMissionId] : null;
+  const mission = state.missions[robot.activeMissionId ?? robot.lastMissionId ?? ''] ?? null;
   state.replay.push({
     tick: state.tick,
     robotId: robot.id,
