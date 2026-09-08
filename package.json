@@ -8,6 +8,7 @@
     "npm": ">=10 <11"
   },
   "scripts": {
+    "audit:architecture": "node scripts/architecture-audit.mjs",
     "dev": "vite --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

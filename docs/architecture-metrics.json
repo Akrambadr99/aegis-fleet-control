@@ -1,0 +1,3574 @@
+{
+  "head": "8a1895431bfd9c882b1e335f5c06e1cdfe3c843a",
+  "commitCount": 65,
+  "productionFiles": 115,
+  "productionTypeScriptFiles": 114,
+  "productionTypeScriptLOC": 9352,
+  "reactComponents": [
+    "src/app/App.tsx:App",
+    "src/app/App.tsx:NotFound",
+    "src/app/App.tsx:PlannedWorkspace",
+    "src/app/AppProviders.tsx:AppProviders",
+    "src/app/FleetProvider.tsx:FleetProvider",
+    "src/components/CollectionPager.tsx:CollectionPager",
+    "src/components/CommandButton.tsx:CommandButton",
+    "src/components/ConfirmDialog.tsx:ConfirmDialog",
+    "src/components/ErrorBoundary.tsx:ErrorBoundary",
+    "src/components/GlobalSearch.tsx:GlobalSearch",
+    "src/components/GlobalSearch.tsx:SearchPanel",
+    "src/components/OperationalAlerts.tsx:OperationalAlerts",
+    "src/features/automation/AutomationWorkspace.tsx:AutomationWorkspace",
+    "src/features/automation/RuleEditor.tsx:RuleEditor",
+    "src/features/automation/RuleTester.tsx:RuleTester",
+    "src/features/diagnostics/DiagnosticsWorkspace.tsx:DiagnosticsWorkspace",
+    "src/features/facilities/NavigationMap.tsx:NavigationMap",
+    "src/features/maintenance/MaintenancePanel.tsx:MaintenancePanel",
+    "src/features/missions/DependencyGraph.tsx:DependencyGraph",
+    "src/features/missions/MissionDraftProvider.tsx:MissionDraftProvider",
+    "src/features/missions/MissionPlanning.tsx:MissionPlanning",
+    "src/features/missions/MissionRevisionHistory.tsx:MissionRevisionHistory",
+    "src/features/missions/MissionTemplateLibrary.tsx:MissionTemplateLibrary",
+    "src/features/missions/StepInspector.tsx:StepInspector",
+    "src/features/missions/StepSequence.tsx:StepSequence",
+    "src/features/operations/AuditDetails.tsx:AuditDetails",
+    "src/features/operations/FleetTable.tsx:FleetTable",
+    "src/features/operations/OperationsWorkspace.tsx:OperationsWorkspace",
+    "src/features/operations/ResourcePanels.tsx:ActivityPanel",
+    "src/features/operations/ResourcePanels.tsx:ChargingPanel",
+    "src/features/operations/ResourcePanels.tsx:ExecutionPanel",
+    "src/features/operations/ResourcePanels.tsx:FaultPanel",
+    "src/features/operations/ResourcePanels.tsx:SimulationPanel",
+    "src/features/operations/ResourcePanels.tsx:TelemetryPanel",
+    "src/features/operations/RobotInspector.tsx:RobotInspector",
+    "src/features/operations/TopologyPanel.tsx:TopologyPanel",
+    "src/features/overview/FacilityPreview.tsx:FacilityPreview",
+    "src/features/overview/Overview.tsx:Overview",
+    "src/features/replay/ReplayInspector.tsx:ReplayInspector",
+    "src/features/replay/ReplayScene.tsx:ReplayScene",
+    "src/features/replay/ReplayTelemetry.tsx:ReplayTelemetry",
+    "src/features/replay/ReplayTransport.tsx:ReplayTransport",
+    "src/features/replay/ReplayWorkspace.tsx:ReplayWorkspace",
+    "src/features/resources/ResourceQueue.tsx:ResourceQueue",
+    "src/features/resources/ResourcesWorkspace.tsx:ResourcesWorkspace",
+    "src/features/scheduler/CandidatePanel.tsx:CandidatePanel",
+    "src/features/scheduler/JobDependencies.tsx:JobDependencies",
+    "src/features/scheduler/JobEditor.tsx:JobEditor",
+    "src/features/scheduler/JobHistory.tsx:JobHistory",
+    "src/features/scheduler/JobQueue.tsx:JobQueue",
+    "src/features/scheduler/JobQueuePanel.tsx:JobQueuePanel",
+    "src/features/scheduler/SchedulerWorkspace.tsx:SchedulerWorkspace",
+    "src/features/teleoperation/ControlPad.tsx:ControlPad",
+    "src/features/teleoperation/TeleoperationWorkspace.tsx:TeleoperationWorkspace",
+    "src/features/traffic/CorridorControls.tsx:CorridorControls",
+    "src/features/traffic/TrafficMap.tsx:TrafficMap",
+    "src/features/traffic/TrafficWorkspace.tsx:TrafficWorkspace"
+  ],
+  "featureDirectories": [
+    "automation",
+    "diagnostics",
+    "facilities",
+    "maintenance",
+    "missions",
+    "operations",
+    "overview",
+    "replay",
+    "resources",
+    "scheduler",
+    "teleoperation",
+    "traffic"
+  ],
+  "productionPhysicalLOC": 11297,
+  "productionNonblankLOC": 11263,
+  "typescriptNonblankLOC": 9329,
+  "commands": [
+    "automation.save",
+    "automation.toggle",
+    "charger.set",
+    "charging.request",
+    "control.acquire",
+    "control.move",
+    "control.release",
+    "control.renew",
+    "control.takeover",
+    "corridor.set",
+    "fault.acknowledge",
+    "fault.escalate",
+    "job.assign",
+    "job.cancel",
+    "job.save",
+    "maintenance.complete",
+    "maintenance.start",
+    "maintenance.verify",
+    "plan.save",
+    "resource.release",
+    "resource.request",
+    "resource.set",
+    "robot.connection",
+    "robot.pause",
+    "robot.reroute",
+    "robot.resume",
+    "robot.stop",
+    "template.create"
+  ],
+  "domainEventTypes": [
+    "automation.confirmed",
+    "automation.failed",
+    "automation.save",
+    "automation.skipped",
+    "automation.toggle",
+    "charger.set",
+    "charging.request",
+    "control.acquire",
+    "control.lost",
+    "control.move",
+    "control.release",
+    "control.renew",
+    "control.takeover",
+    "corridor.set",
+    "fault.acknowledge",
+    "fault.escalate",
+    "job.assign",
+    "job.cancel",
+    "job.delivered",
+    "job.picked-up",
+    "job.save",
+    "maintenance.complete",
+    "maintenance.start",
+    "maintenance.verify",
+    "mission.assigned",
+    "mission.completed",
+    "plan.save",
+    "resource.acquired",
+    "resource.expired",
+    "resource.release",
+    "resource.released",
+    "resource.request",
+    "resource.set",
+    "robot.connected",
+    "robot.connection",
+    "robot.low-battery",
+    "robot.pause",
+    "robot.reroute",
+    "robot.resume",
+    "robot.stop",
+    "template.create"
+  ],
+  "literalRecordedEventTypes": [
+    "control.lost",
+    "mission.completed",
+    "robot.low-battery"
+  ],
+  "invariantRules": [
+    "Robot floor must belong to its facility",
+    "Active mission ownership must agree",
+    "Closed mission cannot remain active",
+    "Attached charging reservation must be owned and unreleased",
+    "Attached control lease must be active and owned",
+    "Robot cannot have competing active control leases",
+    "Maintenance cannot own active traffic",
+    "Fault ownership must agree",
+    "Mission robot and route must agree",
+    "Route references must exist",
+    "Route nodes must belong to its facility",
+    "Route edges must exist",
+    "Charging references must exist",
+    "Resource reservation references must exist",
+    "Control lease robot must exist",
+    "Active control lease must be attached to its robot",
+    "Maintenance robot must exist",
+    "Job facility must exist",
+    "Job dependency must exist in the same facility",
+    "Assigned job robot must belong to its facility",
+    "Job mission must reference its job",
+    "Mission plan robot must agree",
+    "Mission job must exist"
+  ],
+  "publicFeatureAPIs": [
+    {
+      "file": "src/features/automation/index.ts",
+      "layer": "features/automation",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "AutomationWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/diagnostics/index.ts",
+      "layer": "features/diagnostics",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "DiagnosticsWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/facilities/index.ts",
+      "layer": "features/facilities",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "NavigationMap"
+      ]
+    },
+    {
+      "file": "src/features/maintenance/index.ts",
+      "layer": "features/maintenance",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "MaintenancePanel"
+      ]
+    },
+    {
+      "file": "src/features/missions/index.ts",
+      "layer": "features/missions",
+      "physicalLines": 2,
+      "nonblankLines": 2,
+      "exports": [
+        "MissionPlanning",
+        "MissionDraftProvider"
+      ]
+    },
+    {
+      "file": "src/features/operations/index.ts",
+      "layer": "features/operations",
+      "physicalLines": 2,
+      "nonblankLines": 2,
+      "exports": [
+        "OperationsWorkspace",
+        "connectedPaths",
+        "RobotInspector"
+      ]
+    },
+    {
+      "file": "src/features/overview/index.ts",
+      "layer": "features/overview",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "Overview"
+      ]
+    },
+    {
+      "file": "src/features/replay/index.ts",
+      "layer": "features/replay",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "ReplayWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/resources/index.ts",
+      "layer": "features/resources",
+      "physicalLines": 2,
+      "nonblankLines": 2,
+      "exports": [
+        "ResourcesWorkspace",
+        "ResourceQueue"
+      ]
+    },
+    {
+      "file": "src/features/scheduler/index.ts",
+      "layer": "features/scheduler",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "SchedulerWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/teleoperation/index.ts",
+      "layer": "features/teleoperation",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "TeleoperationWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/traffic/index.ts",
+      "layer": "features/traffic",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "TrafficWorkspace"
+      ]
+    }
+  ],
+  "largestModules": [
+    {
+      "file": "src/app/styles.css",
+      "layer": "app",
+      "physicalLines": 1945,
+      "nonblankLines": 1934,
+      "exports": []
+    },
+    {
+      "file": "src/domain/jobs.ts",
+      "layer": "domain",
+      "physicalLines": 371,
+      "nonblankLines": 371,
+      "exports": [
+        "JobInput",
+        "WarehouseJob",
+        "JobCommand",
+        "isJobCommand",
+        "RobotCandidate",
+        "jobPath",
+        "rankCandidates",
+        "applyJob",
+        "synchronizeJobs",
+        "seedJobs"
+      ]
+    },
+    {
+      "file": "src/domain/transactions.ts",
+      "layer": "domain",
+      "physicalLines": 333,
+      "nonblankLines": 333,
+      "exports": [
+        "record",
+        "applyCommand"
+      ]
+    },
+    {
+      "file": "src/domain/resources.ts",
+      "layer": "domain",
+      "physicalLines": 316,
+      "nonblankLines": 316,
+      "exports": [
+        "ResourceKind",
+        "FacilityResource",
+        "ResourceReservation",
+        "ResourceCommand",
+        "isResourceCommand",
+        "resourceOwners",
+        "resourcesOwned",
+        "releaseRobotResources",
+        "reserveMissionResources",
+        "synchronizeResources",
+        "applyResource",
+        "seedResources"
+      ]
+    },
+    {
+      "file": "src/features/missions/MissionPlanning.tsx",
+      "layer": "features/missions",
+      "physicalLines": 298,
+      "nonblankLines": 298,
+      "exports": [
+        "MissionPlanning"
+      ]
+    },
+    {
+      "file": "src/domain/automation.ts",
+      "layer": "domain",
+      "physicalLines": 276,
+      "nonblankLines": 276,
+      "exports": [
+        "automationTriggers",
+        "automationActions",
+        "RuleInput",
+        "AutomationRule",
+        "AutomationRun",
+        "AutomationCommand",
+        "isAutomationCommand",
+        "validateRule",
+        "eventRobots",
+        "evaluateRule",
+        "automationAction",
+        "applyAutomationCommand",
+        "seedAutomation"
+      ]
+    },
+    {
+      "file": "src/features/traffic/TrafficMap.tsx",
+      "layer": "features/traffic",
+      "physicalLines": 265,
+      "nonblankLines": 265,
+      "exports": [
+        "TrafficLayers",
+        "TrafficMap"
+      ]
+    },
+    {
+      "file": "src/domain/model.ts",
+      "layer": "domain",
+      "physicalLines": 236,
+      "nonblankLines": 236,
+      "exports": [
+        "Role",
+        "Actor",
+        "Versioned",
+        "Facility",
+        "Floor",
+        "Zone",
+        "NavigationNode",
+        "NavigationEdge",
+        "Corridor",
+        "RobotStatus",
+        "MaintenanceOrder",
+        "Robot",
+        "Mission",
+        "Route",
+        "Charger",
+        "Reservation",
+        "Fault",
+        "ControlLease",
+        "AuditChange",
+        "Activity",
+        "ReplayFrame",
+        "Telemetry",
+        "DomainState",
+        "Command",
+        "RoutePreview"
+      ]
+    },
+    {
+      "file": "src/features/operations/ResourcePanels.tsx",
+      "layer": "features/operations",
+      "physicalLines": 225,
+      "nonblankLines": 225,
+      "exports": [
+        "ChargingPanel",
+        "FaultPanel",
+        "ExecutionPanel",
+        "ActivityPanel",
+        "SimulationPanel",
+        "TelemetryPanel"
+      ]
+    },
+    {
+      "file": "src/domain/planning.ts",
+      "layer": "domain",
+      "physicalLines": 223,
+      "nonblankLines": 223,
+      "exports": [
+        "stepKinds",
+        "StepKind",
+        "resourceStepKinds",
+        "isResourceStep",
+        "MissionStep",
+        "MissionPlan",
+        "MissionPlanRevision",
+        "PlanIssue",
+        "PlanValidation",
+        "newStep",
+        "newPlan",
+        "validatePlan"
+      ]
+    },
+    {
+      "file": "src/gateway/FleetGateway.ts",
+      "layer": "gateway",
+      "physicalLines": 210,
+      "nonblankLines": 210,
+      "exports": [
+        "FleetGateway"
+      ]
+    },
+    {
+      "file": "src/domain/seed.ts",
+      "layer": "domain",
+      "physicalLines": 209,
+      "nonblankLines": 209,
+      "exports": [
+        "createSeed"
+      ]
+    }
+  ],
+  "testLayers": {
+    "React integration and workspace reducers": [
+      "src/app/App.test.tsx",
+      "src/app/AppLoading.test.tsx",
+      "src/app/AppProviders.test.tsx",
+      "src/components/CommandButton.test.tsx",
+      "src/components/ErrorBoundary.test.tsx",
+      "src/features/missions/draftHistory.test.ts",
+      "src/features/missions/MissionPlanning.test.tsx",
+      "src/features/missions/SaveNavigation.test.tsx",
+      "src/features/missions/StepInspector.test.tsx",
+      "src/features/missions/useMissionValidation.test.tsx",
+      "src/features/missions/ValidationRace.test.tsx",
+      "src/features/operations/ActivityPagination.test.tsx",
+      "src/features/operations/OperationsWorkspace.test.tsx",
+      "src/features/scheduler/JobHistory.test.tsx",
+      "src/features/scheduler/JobQueuePanel.test.tsx",
+      "src/hooks/usePreference.test.tsx"
+    ],
+    "Application transactions and read models": [
+      "src/application/collections.test.ts",
+      "src/application/configuration.test.ts",
+      "src/application/projections.test.ts",
+      "src/application/queries.test.ts",
+      "src/application/search.test.ts",
+      "src/application/transactions.test.ts"
+    ],
+    "Domain policies and invariants": [
+      "src/domain/architecture.test.ts",
+      "src/domain/capabilities.test.ts",
+      "src/domain/errors.test.ts",
+      "src/domain/invariants.test.ts",
+      "src/domain/navigation.test.ts",
+      "src/domain/ownership.test.ts",
+      "src/domain/snapshots.test.ts"
+    ],
+    "Gateway and cross-domain state machines": [
+      "src/gateway/Automation.test.ts",
+      "src/gateway/FacilityFeasibility.test.ts",
+      "src/gateway/FleetGateway.test.ts",
+      "src/gateway/History.test.ts",
+      "src/gateway/Jobs.test.ts",
+      "src/gateway/LargeFleet.test.ts",
+      "src/gateway/Maintenance.test.ts",
+      "src/gateway/MissionTemplates.test.ts",
+      "src/gateway/PermissionsAudit.test.ts",
+      "src/gateway/Planning.test.ts",
+      "src/gateway/Resources.test.ts",
+      "src/gateway/scheduler.test.ts",
+      "src/gateway/structuralSharing.test.ts",
+      "src/gateway/Teleoperation.test.ts"
+    ],
+    "Gateway contracts": [
+      "src/gateway/Contract.test.ts"
+    ],
+    "Playwright": [
+      "e2e/architecture.spec.ts",
+      "e2e/automation.spec.ts",
+      "e2e/connected.spec.ts",
+      "e2e/foundation.spec.ts",
+      "e2e/maintenance.spec.ts",
+      "e2e/missions.spec.ts",
+      "e2e/permissions-audit.spec.ts",
+      "e2e/replay.spec.ts",
+      "e2e/resources.spec.ts",
+      "e2e/scheduler.spec.ts",
+      "e2e/teleoperation.spec.ts",
+      "e2e/traffic.spec.ts"
+    ]
+  },
+  "layerEdges": {
+    "app -> components": 2,
+    "app -> features/automation": 1,
+    "app -> features/diagnostics": 1,
+    "app -> features/missions": 2,
+    "app -> features/operations": 1,
+    "app -> features/overview": 1,
+    "app -> features/replay": 1,
+    "app -> features/resources": 1,
+    "app -> features/scheduler": 1,
+    "app -> features/teleoperation": 1,
+    "app -> features/traffic": 1,
+    "app -> gateway": 1,
+    "app -> routing": 1,
+    "application -> domain": 15,
+    "components -> app": 3,
+    "components -> application": 2,
+    "components -> domain": 2,
+    "components -> hooks": 1,
+    "features/automation -> app": 2,
+    "features/automation -> components": 1,
+    "features/automation -> domain": 1,
+    "features/automation -> hooks": 2,
+    "features/diagnostics -> app": 1,
+    "features/diagnostics -> domain": 1,
+    "features/facilities -> app": 1,
+    "features/maintenance -> components": 2,
+    "features/maintenance -> hooks": 2,
+    "features/missions -> app": 3,
+    "features/missions -> application": 1,
+    "features/missions -> components": 2,
+    "features/missions -> domain": 7,
+    "features/operations -> app": 3,
+    "features/operations -> application": 3,
+    "features/operations -> components": 5,
+    "features/operations -> domain": 5,
+    "features/operations -> features/facilities": 1,
+    "features/operations -> features/maintenance": 1,
+    "features/operations -> hooks": 7,
+    "features/overview -> app": 1,
+    "features/overview -> application": 1,
+    "features/overview -> features/facilities": 1,
+    "features/replay -> domain": 1,
+    "features/replay -> hooks": 1,
+    "features/resources -> app": 1,
+    "features/resources -> components": 1,
+    "features/resources -> domain": 2,
+    "features/resources -> hooks": 2,
+    "features/scheduler -> app": 2,
+    "features/scheduler -> application": 1,
+    "features/scheduler -> domain": 2,
+    "features/scheduler -> hooks": 3,
+    "features/teleoperation -> app": 1,
+    "features/teleoperation -> components": 1,
+    "features/teleoperation -> domain": 2,
+    "features/teleoperation -> features/facilities": 1,
+    "features/teleoperation -> hooks": 2,
+    "features/traffic -> app": 1,
+    "features/traffic -> components": 1,
+    "features/traffic -> domain": 2,
+    "features/traffic -> features/operations": 1,
+    "features/traffic -> features/resources": 1,
+    "features/traffic -> hooks": 2,
+    "gateway -> application": 5,
+    "gateway -> domain": 12,
+    "hooks -> app": 3,
+    "hooks -> application": 1,
+    "main.tsx -> app": 3,
+    "main.tsx -> components": 1
+  },
+  "runtimeImportCycles": [],
+  "files": [
+    {
+      "file": "src/app/App.tsx",
+      "layer": "app",
+      "physicalLines": 185,
+      "nonblankLines": 185,
+      "exports": [
+        "App"
+      ]
+    },
+    {
+      "file": "src/app/AppProviders.tsx",
+      "layer": "app",
+      "physicalLines": 22,
+      "nonblankLines": 22,
+      "exports": [
+        "createQueryClient",
+        "AppProviders"
+      ]
+    },
+    {
+      "file": "src/app/FleetProvider.tsx",
+      "layer": "app",
+      "physicalLines": 68,
+      "nonblankLines": 67,
+      "exports": [
+        "FleetProvider",
+        "useFleet",
+        "useDomain",
+        "useDomainSelector"
+      ]
+    },
+    {
+      "file": "src/app/styles.css",
+      "layer": "app",
+      "physicalLines": 1945,
+      "nonblankLines": 1934,
+      "exports": []
+    },
+    {
+      "file": "src/application/automationEngine.ts",
+      "layer": "application",
+      "physicalLines": 78,
+      "nonblankLines": 78,
+      "exports": [
+        "processAutomation"
+      ]
+    },
+    {
+      "file": "src/application/collections.ts",
+      "layer": "application",
+      "physicalLines": 47,
+      "nonblankLines": 47,
+      "exports": [
+        "pageCollection",
+        "cursorCollection",
+        "hiddenSelection"
+      ]
+    },
+    {
+      "file": "src/application/configuration.ts",
+      "layer": "application",
+      "physicalLines": 25,
+      "nonblankLines": 25,
+      "exports": [
+        "OperationalConfiguration",
+        "defaultConfiguration",
+        "assertCapabilityEnabled"
+      ]
+    },
+    {
+      "file": "src/application/index.ts",
+      "layer": "application",
+      "physicalLines": 3,
+      "nonblankLines": 3,
+      "exports": [
+        "executeTransaction",
+        "OperationContext",
+        "recoveryFor",
+        "DomainError",
+        "ConflictKind",
+        "Command",
+        "DomainState",
+        "Actor"
+      ]
+    },
+    {
+      "file": "src/application/operations.ts",
+      "layer": "application",
+      "physicalLines": 8,
+      "nonblankLines": 8,
+      "exports": [
+        "OperationResult"
+      ]
+    },
+    {
+      "file": "src/application/processing.ts",
+      "layer": "application",
+      "physicalLines": 125,
+      "nonblankLines": 125,
+      "exports": [
+        "advanceDomain"
+      ]
+    },
+    {
+      "file": "src/application/projections.ts",
+      "layer": "application",
+      "physicalLines": 48,
+      "nonblankLines": 48,
+      "exports": [
+        "getFleetOperationalProjection",
+        "getMissionExecutionProjection",
+        "notificationSeverity",
+        "getOperationalNotifications"
+      ]
+    },
+    {
+      "file": "src/application/queries.ts",
+      "layer": "application",
+      "physicalLines": 23,
+      "nonblankLines": 23,
+      "exports": [
+        "routePreviewKey",
+        "dependencyGraph"
+      ]
+    },
+    {
+      "file": "src/application/search.ts",
+      "layer": "application",
+      "physicalLines": 81,
+      "nonblankLines": 81,
+      "exports": [
+        "SearchKind",
+        "SearchEntry",
+        "buildSearchIndex",
+        "searchIndex"
+      ]
+    },
+    {
+      "file": "src/application/transactions.ts",
+      "layer": "application",
+      "physicalLines": 31,
+      "nonblankLines": 31,
+      "exports": [
+        "OperationContext",
+        "executeTransaction"
+      ]
+    },
+    {
+      "file": "src/components/CollectionPager.tsx",
+      "layer": "components",
+      "physicalLines": 22,
+      "nonblankLines": 22,
+      "exports": [
+        "CollectionPager"
+      ]
+    },
+    {
+      "file": "src/components/CommandButton.tsx",
+      "layer": "components",
+      "physicalLines": 62,
+      "nonblankLines": 61,
+      "exports": [
+        "CommandButton"
+      ]
+    },
+    {
+      "file": "src/components/ConfirmDialog.tsx",
+      "layer": "components",
+      "physicalLines": 56,
+      "nonblankLines": 56,
+      "exports": [
+        "ConfirmDialog"
+      ]
+    },
+    {
+      "file": "src/components/ErrorBoundary.tsx",
+      "layer": "components",
+      "physicalLines": 28,
+      "nonblankLines": 28,
+      "exports": [
+        "ErrorBoundary"
+      ]
+    },
+    {
+      "file": "src/components/GlobalSearch.tsx",
+      "layer": "components",
+      "physicalLines": 70,
+      "nonblankLines": 69,
+      "exports": [
+        "GlobalSearch"
+      ]
+    },
+    {
+      "file": "src/components/OperationalAlerts.tsx",
+      "layer": "components",
+      "physicalLines": 23,
+      "nonblankLines": 23,
+      "exports": [
+        "OperationalAlerts"
+      ]
+    },
+    {
+      "file": "src/domain/audit.ts",
+      "layer": "domain",
+      "physicalLines": 42,
+      "nonblankLines": 42,
+      "exports": [
+        "EntityCapture",
+        "captureEntities",
+        "changedEntities"
+      ]
+    },
+    {
+      "file": "src/domain/automation.ts",
+      "layer": "domain",
+      "physicalLines": 276,
+      "nonblankLines": 276,
+      "exports": [
+        "automationTriggers",
+        "automationActions",
+        "RuleInput",
+        "AutomationRule",
+        "AutomationRun",
+        "AutomationCommand",
+        "isAutomationCommand",
+        "validateRule",
+        "eventRobots",
+        "evaluateRule",
+        "automationAction",
+        "applyAutomationCommand",
+        "seedAutomation"
+      ]
+    },
+    {
+      "file": "src/domain/availability.ts",
+      "layer": "domain",
+      "physicalLines": 15,
+      "nonblankLines": 14,
+      "exports": [
+        "robotCommitments"
+      ]
+    },
+    {
+      "file": "src/domain/capabilities.ts",
+      "layer": "domain",
+      "physicalLines": 27,
+      "nonblankLines": 26,
+      "exports": [
+        "capabilityRegistry",
+        "RobotAction",
+        "supportsRobotAction",
+        "chargerCapabilities",
+        "resourceCapabilities",
+        "supportsMissionAction"
+      ]
+    },
+    {
+      "file": "src/domain/eligibility.ts",
+      "layer": "domain",
+      "physicalLines": 34,
+      "nonblankLines": 33,
+      "exports": [
+        "capabilityIssues",
+        "maintenanceReasons",
+        "readiness"
+      ]
+    },
+    {
+      "file": "src/domain/errors.ts",
+      "layer": "domain",
+      "physicalLines": 52,
+      "nonblankLines": 52,
+      "exports": [
+        "ErrorCode",
+        "ConflictKind",
+        "DomainError",
+        "recoveryFor"
+      ]
+    },
+    {
+      "file": "src/domain/events.ts",
+      "layer": "domain",
+      "physicalLines": 16,
+      "nonblankLines": 16,
+      "exports": [
+        "DomainEventType"
+      ]
+    },
+    {
+      "file": "src/domain/facilityFeasibility.ts",
+      "layer": "domain",
+      "physicalLines": 29,
+      "nonblankLines": 27,
+      "exports": [
+        "canReachFacilityTarget",
+        "resourceDispatchIssues"
+      ]
+    },
+    {
+      "file": "src/domain/history.ts",
+      "layer": "domain",
+      "physicalLines": 76,
+      "nonblankLines": 76,
+      "exports": [
+        "RobotHistory",
+        "appendHistory",
+        "robotHistory",
+        "historyAtTick"
+      ]
+    },
+    {
+      "file": "src/domain/invariants.ts",
+      "layer": "domain",
+      "physicalLines": 160,
+      "nonblankLines": 158,
+      "exports": [
+        "InvariantViolation",
+        "inspectInvariants",
+        "assertInvariants"
+      ]
+    },
+    {
+      "file": "src/domain/jobs.ts",
+      "layer": "domain",
+      "physicalLines": 371,
+      "nonblankLines": 371,
+      "exports": [
+        "JobInput",
+        "WarehouseJob",
+        "JobCommand",
+        "isJobCommand",
+        "RobotCandidate",
+        "jobPath",
+        "rankCandidates",
+        "applyJob",
+        "synchronizeJobs",
+        "seedJobs"
+      ]
+    },
+    {
+      "file": "src/domain/maintenance.ts",
+      "layer": "domain",
+      "physicalLines": 70,
+      "nonblankLines": 70,
+      "exports": [
+        "capabilityIssues",
+        "maintenanceReasons",
+        "applyMaintenance",
+        "seedMaintenance"
+      ]
+    },
+    {
+      "file": "src/domain/missionTemplates.ts",
+      "layer": "domain",
+      "physicalLines": 57,
+      "nonblankLines": 55,
+      "exports": [
+        "MissionTemplate",
+        "TemplateCommand",
+        "createMissionTemplate",
+        "instantiateTemplate"
+      ]
+    },
+    {
+      "file": "src/domain/model.ts",
+      "layer": "domain",
+      "physicalLines": 236,
+      "nonblankLines": 236,
+      "exports": [
+        "Role",
+        "Actor",
+        "Versioned",
+        "Facility",
+        "Floor",
+        "Zone",
+        "NavigationNode",
+        "NavigationEdge",
+        "Corridor",
+        "RobotStatus",
+        "MaintenanceOrder",
+        "Robot",
+        "Mission",
+        "Route",
+        "Charger",
+        "Reservation",
+        "Fault",
+        "ControlLease",
+        "AuditChange",
+        "Activity",
+        "ReplayFrame",
+        "Telemetry",
+        "DomainState",
+        "Command",
+        "RoutePreview"
+      ]
+    },
+    {
+      "file": "src/domain/navigation.ts",
+      "layer": "domain",
+      "physicalLines": 176,
+      "nonblankLines": 176,
+      "exports": [
+        "PathResult",
+        "shortestPath",
+        "robotPath",
+        "routeDistance",
+        "positionOnRoute",
+        "seedNavigation"
+      ]
+    },
+    {
+      "file": "src/domain/ownership.ts",
+      "layer": "domain",
+      "physicalLines": 21,
+      "nonblankLines": 21,
+      "exports": [
+        "OwnershipLease",
+        "ownsLease",
+        "renewLease"
+      ]
+    },
+    {
+      "file": "src/domain/permissions.ts",
+      "layer": "domain",
+      "physicalLines": 64,
+      "nonblankLines": 64,
+      "exports": [
+        "commandFacility",
+        "facilityPermission",
+        "commandPermission"
+      ]
+    },
+    {
+      "file": "src/domain/planHistory.ts",
+      "layer": "domain",
+      "physicalLines": 22,
+      "nonblankLines": 21,
+      "exports": [
+        "recordPlanRevision"
+      ]
+    },
+    {
+      "file": "src/domain/planning.ts",
+      "layer": "domain",
+      "physicalLines": 223,
+      "nonblankLines": 223,
+      "exports": [
+        "stepKinds",
+        "StepKind",
+        "resourceStepKinds",
+        "isResourceStep",
+        "MissionStep",
+        "MissionPlan",
+        "MissionPlanRevision",
+        "PlanIssue",
+        "PlanValidation",
+        "newStep",
+        "newPlan",
+        "validatePlan"
+      ]
+    },
+    {
+      "file": "src/domain/resources.ts",
+      "layer": "domain",
+      "physicalLines": 316,
+      "nonblankLines": 316,
+      "exports": [
+        "ResourceKind",
+        "FacilityResource",
+        "ResourceReservation",
+        "ResourceCommand",
+        "isResourceCommand",
+        "resourceOwners",
+        "resourcesOwned",
+        "releaseRobotResources",
+        "reserveMissionResources",
+        "synchronizeResources",
+        "applyResource",
+        "seedResources"
+      ]
+    },
+    {
+      "file": "src/domain/seed.ts",
+      "layer": "domain",
+      "physicalLines": 209,
+      "nonblankLines": 209,
+      "exports": [
+        "createSeed"
+      ]
+    },
+    {
+      "file": "src/domain/selectors.ts",
+      "layer": "domain",
+      "physicalLines": 70,
+      "nonblankLines": 69,
+      "exports": [
+        "readiness",
+        "canExecute",
+        "missionFeasibility",
+        "simulationInputs",
+        "trafficConflicts",
+        "routeCandidates"
+      ]
+    },
+    {
+      "file": "src/domain/snapshots.ts",
+      "layer": "domain",
+      "physicalLines": 28,
+      "nonblankLines": 28,
+      "exports": [
+        "schemaVersion",
+        "fixtureVersion",
+        "SnapshotEnvelope",
+        "migrateSnapshot",
+        "exportSnapshot"
+      ]
+    },
+    {
+      "file": "src/domain/teleoperation.ts",
+      "layer": "domain",
+      "physicalLines": 193,
+      "nonblankLines": 193,
+      "exports": [
+        "ControlCommand",
+        "isControlCommand",
+        "releaseControl",
+        "synchronizeControls",
+        "applyControl"
+      ]
+    },
+    {
+      "file": "src/domain/transactions.ts",
+      "layer": "domain",
+      "physicalLines": 333,
+      "nonblankLines": 333,
+      "exports": [
+        "record",
+        "applyCommand"
+      ]
+    },
+    {
+      "file": "src/features/automation/AutomationWorkspace.tsx",
+      "layer": "features/automation",
+      "physicalLines": 136,
+      "nonblankLines": 136,
+      "exports": [
+        "AutomationWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/automation/index.ts",
+      "layer": "features/automation",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "AutomationWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/automation/RuleEditor.tsx",
+      "layer": "features/automation",
+      "physicalLines": 171,
+      "nonblankLines": 171,
+      "exports": [
+        "RuleEditor"
+      ]
+    },
+    {
+      "file": "src/features/automation/RuleTester.tsx",
+      "layer": "features/automation",
+      "physicalLines": 70,
+      "nonblankLines": 70,
+      "exports": [
+        "RuleTester"
+      ]
+    },
+    {
+      "file": "src/features/diagnostics/DiagnosticsWorkspace.tsx",
+      "layer": "features/diagnostics",
+      "physicalLines": 60,
+      "nonblankLines": 60,
+      "exports": [
+        "DiagnosticsWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/diagnostics/index.ts",
+      "layer": "features/diagnostics",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "DiagnosticsWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/facilities/index.ts",
+      "layer": "features/facilities",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "NavigationMap"
+      ]
+    },
+    {
+      "file": "src/features/facilities/NavigationMap.tsx",
+      "layer": "features/facilities",
+      "physicalLines": 86,
+      "nonblankLines": 86,
+      "exports": [
+        "NavigationMap"
+      ]
+    },
+    {
+      "file": "src/features/maintenance/index.ts",
+      "layer": "features/maintenance",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "MaintenancePanel"
+      ]
+    },
+    {
+      "file": "src/features/maintenance/MaintenancePanel.tsx",
+      "layer": "features/maintenance",
+      "physicalLines": 58,
+      "nonblankLines": 58,
+      "exports": [
+        "MaintenancePanel"
+      ]
+    },
+    {
+      "file": "src/features/missions/DependencyGraph.tsx",
+      "layer": "features/missions",
+      "physicalLines": 61,
+      "nonblankLines": 61,
+      "exports": [
+        "DependencyGraph"
+      ]
+    },
+    {
+      "file": "src/features/missions/draftHistory.ts",
+      "layer": "features/missions",
+      "physicalLines": 104,
+      "nonblankLines": 103,
+      "exports": [
+        "PlanFieldChange",
+        "UndoablePlanCommand",
+        "DraftHistory",
+        "DraftAction",
+        "initialHistory",
+        "draftReducer",
+        "moveStep",
+        "insertStep"
+      ]
+    },
+    {
+      "file": "src/features/missions/index.ts",
+      "layer": "features/missions",
+      "physicalLines": 2,
+      "nonblankLines": 2,
+      "exports": [
+        "MissionPlanning",
+        "MissionDraftProvider"
+      ]
+    },
+    {
+      "file": "src/features/missions/MissionDraftProvider.tsx",
+      "layer": "features/missions",
+      "physicalLines": 75,
+      "nonblankLines": 75,
+      "exports": [
+        "MissionDraftProvider",
+        "useMissionDraft"
+      ]
+    },
+    {
+      "file": "src/features/missions/MissionPlanning.tsx",
+      "layer": "features/missions",
+      "physicalLines": 298,
+      "nonblankLines": 298,
+      "exports": [
+        "MissionPlanning"
+      ]
+    },
+    {
+      "file": "src/features/missions/MissionRevisionHistory.tsx",
+      "layer": "features/missions",
+      "physicalLines": 38,
+      "nonblankLines": 37,
+      "exports": [
+        "MissionRevisionHistory"
+      ]
+    },
+    {
+      "file": "src/features/missions/MissionTemplateLibrary.tsx",
+      "layer": "features/missions",
+      "physicalLines": 80,
+      "nonblankLines": 79,
+      "exports": [
+        "MissionTemplateLibrary"
+      ]
+    },
+    {
+      "file": "src/features/missions/StepInspector.tsx",
+      "layer": "features/missions",
+      "physicalLines": 162,
+      "nonblankLines": 162,
+      "exports": [
+        "StepInspector"
+      ]
+    },
+    {
+      "file": "src/features/missions/StepSequence.tsx",
+      "layer": "features/missions",
+      "physicalLines": 83,
+      "nonblankLines": 83,
+      "exports": [
+        "StepSequence"
+      ]
+    },
+    {
+      "file": "src/features/missions/useMissionValidation.ts",
+      "layer": "features/missions",
+      "physicalLines": 47,
+      "nonblankLines": 46,
+      "exports": [
+        "useMissionValidation"
+      ]
+    },
+    {
+      "file": "src/features/operations/AuditDetails.tsx",
+      "layer": "features/operations",
+      "physicalLines": 29,
+      "nonblankLines": 29,
+      "exports": [
+        "AuditDetails"
+      ]
+    },
+    {
+      "file": "src/features/operations/FleetTable.tsx",
+      "layer": "features/operations",
+      "physicalLines": 148,
+      "nonblankLines": 148,
+      "exports": [
+        "FleetTable"
+      ]
+    },
+    {
+      "file": "src/features/operations/index.ts",
+      "layer": "features/operations",
+      "physicalLines": 2,
+      "nonblankLines": 2,
+      "exports": [
+        "OperationsWorkspace",
+        "connectedPaths",
+        "RobotInspector"
+      ]
+    },
+    {
+      "file": "src/features/operations/OperationsWorkspace.tsx",
+      "layer": "features/operations",
+      "physicalLines": 102,
+      "nonblankLines": 102,
+      "exports": [
+        "connectedPaths",
+        "OperationsWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/operations/ResourcePanels.tsx",
+      "layer": "features/operations",
+      "physicalLines": 225,
+      "nonblankLines": 225,
+      "exports": [
+        "ChargingPanel",
+        "FaultPanel",
+        "ExecutionPanel",
+        "ActivityPanel",
+        "SimulationPanel",
+        "TelemetryPanel"
+      ]
+    },
+    {
+      "file": "src/features/operations/RobotInspector.tsx",
+      "layer": "features/operations",
+      "physicalLines": 123,
+      "nonblankLines": 123,
+      "exports": [
+        "RobotInspector"
+      ]
+    },
+    {
+      "file": "src/features/operations/TopologyPanel.tsx",
+      "layer": "features/operations",
+      "physicalLines": 76,
+      "nonblankLines": 76,
+      "exports": [
+        "TopologyPanel"
+      ]
+    },
+    {
+      "file": "src/features/operations/useScope.ts",
+      "layer": "features/operations",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "useScope"
+      ]
+    },
+    {
+      "file": "src/features/overview/FacilityPreview.tsx",
+      "layer": "features/overview",
+      "physicalLines": 10,
+      "nonblankLines": 10,
+      "exports": [
+        "FacilityPreview"
+      ]
+    },
+    {
+      "file": "src/features/overview/index.ts",
+      "layer": "features/overview",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "Overview"
+      ]
+    },
+    {
+      "file": "src/features/overview/Overview.tsx",
+      "layer": "features/overview",
+      "physicalLines": 170,
+      "nonblankLines": 170,
+      "exports": [
+        "Overview"
+      ]
+    },
+    {
+      "file": "src/features/overview/snapshot.ts",
+      "layer": "features/overview",
+      "physicalLines": 64,
+      "nonblankLines": 63,
+      "exports": [
+        "facilities",
+        "resolveFacility",
+        "FacilitySnapshot"
+      ]
+    },
+    {
+      "file": "src/features/replay/index.ts",
+      "layer": "features/replay",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "ReplayWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/replay/ReplayInspector.tsx",
+      "layer": "features/replay",
+      "physicalLines": 61,
+      "nonblankLines": 61,
+      "exports": [
+        "ReplayInspector"
+      ]
+    },
+    {
+      "file": "src/features/replay/ReplayScene.tsx",
+      "layer": "features/replay",
+      "physicalLines": 56,
+      "nonblankLines": 56,
+      "exports": [
+        "ReplayScene"
+      ]
+    },
+    {
+      "file": "src/features/replay/ReplayTelemetry.tsx",
+      "layer": "features/replay",
+      "physicalLines": 28,
+      "nonblankLines": 28,
+      "exports": [
+        "ReplayTelemetry"
+      ]
+    },
+    {
+      "file": "src/features/replay/ReplayTransport.tsx",
+      "layer": "features/replay",
+      "physicalLines": 82,
+      "nonblankLines": 82,
+      "exports": [
+        "ReplayTransport"
+      ]
+    },
+    {
+      "file": "src/features/replay/ReplayWorkspace.tsx",
+      "layer": "features/replay",
+      "physicalLines": 133,
+      "nonblankLines": 133,
+      "exports": [
+        "ReplayWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/resources/index.ts",
+      "layer": "features/resources",
+      "physicalLines": 2,
+      "nonblankLines": 2,
+      "exports": [
+        "ResourcesWorkspace",
+        "ResourceQueue"
+      ]
+    },
+    {
+      "file": "src/features/resources/ResourceQueue.tsx",
+      "layer": "features/resources",
+      "physicalLines": 57,
+      "nonblankLines": 57,
+      "exports": [
+        "ResourceQueue"
+      ]
+    },
+    {
+      "file": "src/features/resources/ResourcesWorkspace.tsx",
+      "layer": "features/resources",
+      "physicalLines": 148,
+      "nonblankLines": 148,
+      "exports": [
+        "ResourcesWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/scheduler/CandidatePanel.tsx",
+      "layer": "features/scheduler",
+      "physicalLines": 120,
+      "nonblankLines": 120,
+      "exports": [
+        "CandidatePanel"
+      ]
+    },
+    {
+      "file": "src/features/scheduler/index.ts",
+      "layer": "features/scheduler",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "SchedulerWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/scheduler/JobDependencies.tsx",
+      "layer": "features/scheduler",
+      "physicalLines": 46,
+      "nonblankLines": 45,
+      "exports": [
+        "JobDependencies"
+      ]
+    },
+    {
+      "file": "src/features/scheduler/JobEditor.tsx",
+      "layer": "features/scheduler",
+      "physicalLines": 145,
+      "nonblankLines": 145,
+      "exports": [
+        "JobEditor"
+      ]
+    },
+    {
+      "file": "src/features/scheduler/JobHistory.tsx",
+      "layer": "features/scheduler",
+      "physicalLines": 22,
+      "nonblankLines": 21,
+      "exports": [
+        "JobHistory"
+      ]
+    },
+    {
+      "file": "src/features/scheduler/JobQueue.tsx",
+      "layer": "features/scheduler",
+      "physicalLines": 62,
+      "nonblankLines": 62,
+      "exports": [
+        "JobQueue"
+      ]
+    },
+    {
+      "file": "src/features/scheduler/JobQueuePanel.tsx",
+      "layer": "features/scheduler",
+      "physicalLines": 102,
+      "nonblankLines": 101,
+      "exports": [
+        "JobQueuePanel"
+      ]
+    },
+    {
+      "file": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "layer": "features/scheduler",
+      "physicalLines": 152,
+      "nonblankLines": 152,
+      "exports": [
+        "SchedulerWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/teleoperation/ControlPad.tsx",
+      "layer": "features/teleoperation",
+      "physicalLines": 58,
+      "nonblankLines": 58,
+      "exports": [
+        "ControlPad"
+      ]
+    },
+    {
+      "file": "src/features/teleoperation/index.ts",
+      "layer": "features/teleoperation",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "TeleoperationWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "layer": "features/teleoperation",
+      "physicalLines": 208,
+      "nonblankLines": 208,
+      "exports": [
+        "TeleoperationWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/teleoperation/useMotionKeyboard.ts",
+      "layer": "features/teleoperation",
+      "physicalLines": 63,
+      "nonblankLines": 63,
+      "exports": [
+        "useMotionKeyboard"
+      ]
+    },
+    {
+      "file": "src/features/traffic/CorridorControls.tsx",
+      "layer": "features/traffic",
+      "physicalLines": 37,
+      "nonblankLines": 37,
+      "exports": [
+        "CorridorControls"
+      ]
+    },
+    {
+      "file": "src/features/traffic/index.ts",
+      "layer": "features/traffic",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "TrafficWorkspace"
+      ]
+    },
+    {
+      "file": "src/features/traffic/TrafficMap.tsx",
+      "layer": "features/traffic",
+      "physicalLines": 265,
+      "nonblankLines": 265,
+      "exports": [
+        "TrafficLayers",
+        "TrafficMap"
+      ]
+    },
+    {
+      "file": "src/features/traffic/TrafficWorkspace.tsx",
+      "layer": "features/traffic",
+      "physicalLines": 151,
+      "nonblankLines": 150,
+      "exports": [
+        "TrafficWorkspace"
+      ]
+    },
+    {
+      "file": "src/gateway/automationEngine.ts",
+      "layer": "gateway",
+      "physicalLines": 1,
+      "nonblankLines": 1,
+      "exports": [
+        "processAutomation"
+      ]
+    },
+    {
+      "file": "src/gateway/FleetGateway.ts",
+      "layer": "gateway",
+      "physicalLines": 210,
+      "nonblankLines": 210,
+      "exports": [
+        "FleetGateway"
+      ]
+    },
+    {
+      "file": "src/gateway/ports.ts",
+      "layer": "gateway",
+      "physicalLines": 13,
+      "nonblankLines": 13,
+      "exports": [
+        "FleetQueries",
+        "FleetCommands"
+      ]
+    },
+    {
+      "file": "src/gateway/requests.ts",
+      "layer": "gateway",
+      "physicalLines": 122,
+      "nonblankLines": 122,
+      "exports": [
+        "RequestStatus",
+        "GatewayError",
+        "RequestPlan",
+        "Ticket",
+        "OperationRecord",
+        "RequestEngine"
+      ]
+    },
+    {
+      "file": "src/gateway/scheduler.ts",
+      "layer": "gateway",
+      "physicalLines": 54,
+      "nonblankLines": 54,
+      "exports": [
+        "Scheduler",
+        "RealScheduler",
+        "ManualScheduler"
+      ]
+    },
+    {
+      "file": "src/gateway/structuralSharing.ts",
+      "layer": "gateway",
+      "physicalLines": 21,
+      "nonblankLines": 21,
+      "exports": [
+        "shareUnchanged"
+      ]
+    },
+    {
+      "file": "src/hooks/useCollectionPage.ts",
+      "layer": "hooks",
+      "physicalLines": 19,
+      "nonblankLines": 19,
+      "exports": [
+        "useCollectionPage"
+      ]
+    },
+    {
+      "file": "src/hooks/useCommand.ts",
+      "layer": "hooks",
+      "physicalLines": 23,
+      "nonblankLines": 23,
+      "exports": [
+        "useCommand"
+      ]
+    },
+    {
+      "file": "src/hooks/useOperation.ts",
+      "layer": "hooks",
+      "physicalLines": 17,
+      "nonblankLines": 17,
+      "exports": [
+        "useOperation"
+      ]
+    },
+    {
+      "file": "src/hooks/usePreference.ts",
+      "layer": "hooks",
+      "physicalLines": 34,
+      "nonblankLines": 34,
+      "exports": [
+        "usePreference"
+      ]
+    },
+    {
+      "file": "src/hooks/useWorkspaceScope.ts",
+      "layer": "hooks",
+      "physicalLines": 46,
+      "nonblankLines": 46,
+      "exports": [
+        "useScope"
+      ]
+    },
+    {
+      "file": "src/main.tsx",
+      "layer": "main.tsx",
+      "physicalLines": 18,
+      "nonblankLines": 18,
+      "exports": []
+    },
+    {
+      "file": "src/routing/workspaces.ts",
+      "layer": "routing",
+      "physicalLines": 165,
+      "nonblankLines": 165,
+      "exports": [
+        "workspaces",
+        "Workspace"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/components/GlobalSearch.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/traffic/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/teleoperation/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/resources/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/missions/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/components/ErrorBoundary.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/overview/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/operations/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/routing/workspaces.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/automation/index.ts",
+      "typeOnly": false,
+      "dynamic": true
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/replay/index.ts",
+      "typeOnly": false,
+      "dynamic": true
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/scheduler/index.ts",
+      "typeOnly": false,
+      "dynamic": true
+    },
+    {
+      "from": "src/app/App.tsx",
+      "to": "src/features/diagnostics/index.ts",
+      "typeOnly": false,
+      "dynamic": true
+    },
+    {
+      "from": "src/app/AppProviders.tsx",
+      "to": "src/features/missions/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/AppProviders.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/FleetProvider.tsx",
+      "to": "src/gateway/FleetGateway.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/app/FleetProvider.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/application/automationEngine.ts",
+      "to": "src/application/configuration.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/automationEngine.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/application/automationEngine.ts",
+      "to": "src/domain/automation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/automationEngine.ts",
+      "to": "src/domain/transactions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/collections.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/configuration.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/application/configuration.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/index.ts",
+      "to": "src/application/transactions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/index.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/index.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/domain/teleoperation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/domain/resources.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/domain/navigation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/domain/history.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/domain/transactions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/application/automationEngine.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/processing.ts",
+      "to": "src/application/configuration.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/projections.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/application/projections.ts",
+      "to": "src/domain/eligibility.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/projections.ts",
+      "to": "src/application/search.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/queries.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/application/search.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/application/transactions.ts",
+      "to": "src/application/configuration.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/transactions.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/application/transactions.ts",
+      "to": "src/domain/transactions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/transactions.ts",
+      "to": "src/domain/invariants.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/application/transactions.ts",
+      "to": "src/application/automationEngine.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/components/CommandButton.tsx",
+      "to": "src/hooks/useOperation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/components/CommandButton.tsx",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/components/CommandButton.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/components/CommandButton.tsx",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/components/CommandButton.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/components/GlobalSearch.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/components/GlobalSearch.tsx",
+      "to": "src/application/search.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/components/OperationalAlerts.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/components/OperationalAlerts.tsx",
+      "to": "src/application/projections.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/audit.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/automation.ts",
+      "to": "src/domain/capabilities.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/automation.ts",
+      "to": "src/domain/teleoperation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/automation.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/automation.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/availability.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/capabilities.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/capabilities.ts",
+      "to": "src/domain/resources.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/eligibility.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/events.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/facilityFeasibility.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/facilityFeasibility.ts",
+      "to": "src/domain/navigation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/history.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/invariants.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/invariants.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/jobs.ts",
+      "to": "src/domain/capabilities.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/jobs.ts",
+      "to": "src/domain/resources.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/jobs.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/jobs.ts",
+      "to": "src/domain/navigation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/jobs.ts",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/jobs.ts",
+      "to": "src/domain/availability.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/jobs.ts",
+      "to": "src/domain/planning.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/jobs.ts",
+      "to": "src/domain/planHistory.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/jobs.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/maintenance.ts",
+      "to": "src/domain/resources.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/maintenance.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/maintenance.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/maintenance.ts",
+      "to": "src/domain/eligibility.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/missionTemplates.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/missionTemplates.ts",
+      "to": "src/domain/planning.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/missionTemplates.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/model.ts",
+      "to": "src/domain/events.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/model.ts",
+      "to": "src/domain/automation.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/model.ts",
+      "to": "src/domain/history.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/model.ts",
+      "to": "src/domain/teleoperation.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/model.ts",
+      "to": "src/domain/resources.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/model.ts",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/model.ts",
+      "to": "src/domain/planning.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/model.ts",
+      "to": "src/domain/missionTemplates.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/navigation.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/ownership.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/permissions.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/permissions.ts",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/planHistory.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/planHistory.ts",
+      "to": "src/domain/planning.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/planHistory.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/planning.ts",
+      "to": "src/domain/capabilities.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/planning.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/planning.ts",
+      "to": "src/domain/navigation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/planning.ts",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/planning.ts",
+      "to": "src/domain/availability.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/planning.ts",
+      "to": "src/domain/facilityFeasibility.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/resources.ts",
+      "to": "src/domain/capabilities.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/resources.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/resources.ts",
+      "to": "src/domain/eligibility.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/resources.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/seed.ts",
+      "to": "src/domain/automation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/seed.ts",
+      "to": "src/domain/history.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/seed.ts",
+      "to": "src/domain/resources.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/seed.ts",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/seed.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/seed.ts",
+      "to": "src/domain/navigation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/seed.ts",
+      "to": "src/domain/maintenance.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/selectors.ts",
+      "to": "src/domain/resources.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/selectors.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/selectors.ts",
+      "to": "src/domain/navigation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/selectors.ts",
+      "to": "src/domain/eligibility.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/selectors.ts",
+      "to": "src/domain/eligibility.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/snapshots.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/snapshots.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/snapshots.ts",
+      "to": "src/domain/invariants.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/teleoperation.ts",
+      "to": "src/domain/ownership.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/teleoperation.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/teleoperation.ts",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/teleoperation.ts",
+      "to": "src/domain/resources.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/teleoperation.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/events.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/automation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/history.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/teleoperation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/resources.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/planning.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/missionTemplates.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/planHistory.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/audit.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/navigation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/domain/transactions.ts",
+      "to": "src/domain/maintenance.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/automation/AutomationWorkspace.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/automation/AutomationWorkspace.tsx",
+      "to": "src/hooks/useCommand.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/automation/AutomationWorkspace.tsx",
+      "to": "src/components/CommandButton.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/automation/AutomationWorkspace.tsx",
+      "to": "src/features/automation/RuleEditor.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/automation/index.ts",
+      "to": "src/features/automation/AutomationWorkspace.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/automation/RuleEditor.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/automation/RuleEditor.tsx",
+      "to": "src/domain/automation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/automation/RuleEditor.tsx",
+      "to": "src/features/automation/RuleTester.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/automation/RuleTester.tsx",
+      "to": "src/domain/automation.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/automation/RuleTester.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/diagnostics/DiagnosticsWorkspace.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/diagnostics/DiagnosticsWorkspace.tsx",
+      "to": "src/domain/invariants.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/diagnostics/index.ts",
+      "to": "src/features/diagnostics/DiagnosticsWorkspace.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/facilities/index.ts",
+      "to": "src/features/facilities/NavigationMap.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/facilities/NavigationMap.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/maintenance/index.ts",
+      "to": "src/features/maintenance/MaintenancePanel.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/maintenance/MaintenancePanel.tsx",
+      "to": "src/hooks/useCollectionPage.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/maintenance/MaintenancePanel.tsx",
+      "to": "src/components/CollectionPager.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/maintenance/MaintenancePanel.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/maintenance/MaintenancePanel.tsx",
+      "to": "src/components/CommandButton.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/DependencyGraph.tsx",
+      "to": "src/domain/planning.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/missions/draftHistory.ts",
+      "to": "src/domain/planning.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/index.ts",
+      "to": "src/features/missions/MissionPlanning.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/index.ts",
+      "to": "src/features/missions/MissionDraftProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionDraftProvider.tsx",
+      "to": "src/domain/planning.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionDraftProvider.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionDraftProvider.tsx",
+      "to": "src/features/missions/draftHistory.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/application/collections.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/components/CollectionPager.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/features/missions/MissionDraftProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/components/ConfirmDialog.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/domain/planning.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/features/missions/draftHistory.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/features/missions/StepInspector.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/features/missions/StepSequence.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/features/missions/DependencyGraph.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/features/missions/MissionRevisionHistory.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/features/missions/MissionTemplateLibrary.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionPlanning.tsx",
+      "to": "src/features/missions/useMissionValidation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionRevisionHistory.tsx",
+      "to": "src/domain/planning.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/missions/MissionTemplateLibrary.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionTemplateLibrary.tsx",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionTemplateLibrary.tsx",
+      "to": "src/domain/missionTemplates.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/MissionTemplateLibrary.tsx",
+      "to": "src/domain/planning.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/missions/StepInspector.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/missions/StepInspector.tsx",
+      "to": "src/domain/planning.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/missions/StepSequence.tsx",
+      "to": "src/domain/planning.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/missions/useMissionValidation.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/missions/useMissionValidation.ts",
+      "to": "src/domain/planning.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/missions/useMissionValidation.ts",
+      "to": "src/gateway/FleetGateway.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/operations/AuditDetails.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/operations/FleetTable.tsx",
+      "to": "src/application/collections.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/FleetTable.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/FleetTable.tsx",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/FleetTable.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/FleetTable.tsx",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/index.ts",
+      "to": "src/features/operations/OperationsWorkspace.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/index.ts",
+      "to": "src/features/operations/RobotInspector.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/OperationsWorkspace.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/OperationsWorkspace.tsx",
+      "to": "src/features/maintenance/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/OperationsWorkspace.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/operations/OperationsWorkspace.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/OperationsWorkspace.tsx",
+      "to": "src/features/operations/FleetTable.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/OperationsWorkspace.tsx",
+      "to": "src/features/operations/TopologyPanel.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/OperationsWorkspace.tsx",
+      "to": "src/features/operations/ResourcePanels.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/OperationsWorkspace.tsx",
+      "to": "src/features/operations/RobotInspector.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/OperationsWorkspace.tsx",
+      "to": "src/routing/workspaces.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/operations/ResourcePanels.tsx",
+      "to": "src/hooks/useCollectionPage.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/ResourcePanels.tsx",
+      "to": "src/components/CollectionPager.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/ResourcePanels.tsx",
+      "to": "src/application/projections.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/ResourcePanels.tsx",
+      "to": "src/components/OperationalAlerts.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/ResourcePanels.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/ResourcePanels.tsx",
+      "to": "src/features/operations/AuditDetails.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/ResourcePanels.tsx",
+      "to": "src/components/CommandButton.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/ResourcePanels.tsx",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/RobotInspector.tsx",
+      "to": "src/application/queries.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/RobotInspector.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/RobotInspector.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/RobotInspector.tsx",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/RobotInspector.tsx",
+      "to": "src/components/CommandButton.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/TopologyPanel.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/TopologyPanel.tsx",
+      "to": "src/features/facilities/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/TopologyPanel.tsx",
+      "to": "src/components/CommandButton.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/TopologyPanel.tsx",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/operations/useScope.ts",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/overview/FacilityPreview.tsx",
+      "to": "src/features/overview/snapshot.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/overview/FacilityPreview.tsx",
+      "to": "src/features/facilities/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/overview/index.ts",
+      "to": "src/features/overview/Overview.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/overview/Overview.tsx",
+      "to": "src/features/overview/snapshot.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/overview/Overview.tsx",
+      "to": "src/features/overview/FacilityPreview.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/overview/Overview.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/overview/snapshot.ts",
+      "to": "src/application/projections.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/overview/snapshot.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/replay/index.ts",
+      "to": "src/features/replay/ReplayWorkspace.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/replay/ReplayInspector.tsx",
+      "to": "src/domain/history.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/replay/ReplayScene.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/replay/ReplayScene.tsx",
+      "to": "src/domain/history.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/replay/ReplayTelemetry.tsx",
+      "to": "src/domain/history.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/replay/ReplayTransport.tsx",
+      "to": "src/domain/history.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/replay/ReplayWorkspace.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/replay/ReplayWorkspace.tsx",
+      "to": "src/domain/history.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/replay/ReplayWorkspace.tsx",
+      "to": "src/features/replay/ReplayTransport.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/replay/ReplayWorkspace.tsx",
+      "to": "src/features/replay/ReplayScene.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/replay/ReplayWorkspace.tsx",
+      "to": "src/features/replay/ReplayInspector.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/replay/ReplayWorkspace.tsx",
+      "to": "src/features/replay/ReplayTelemetry.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/resources/index.ts",
+      "to": "src/features/resources/ResourcesWorkspace.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/resources/index.ts",
+      "to": "src/features/resources/ResourceQueue.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/resources/ResourceQueue.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/resources/ResourceQueue.tsx",
+      "to": "src/domain/resources.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/resources/ResourceQueue.tsx",
+      "to": "src/components/CommandButton.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/resources/ResourcesWorkspace.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/resources/ResourcesWorkspace.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/resources/ResourcesWorkspace.tsx",
+      "to": "src/domain/resources.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/resources/ResourcesWorkspace.tsx",
+      "to": "src/features/resources/ResourceQueue.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/resources/ResourcesWorkspace.tsx",
+      "to": "src/hooks/useCommand.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/resources/ResourcesWorkspace.tsx",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/CandidatePanel.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/CandidatePanel.tsx",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/scheduler/CandidatePanel.tsx",
+      "to": "src/hooks/useCommand.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/CandidatePanel.tsx",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/index.ts",
+      "to": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/JobDependencies.tsx",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/scheduler/JobEditor.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/scheduler/JobEditor.tsx",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/scheduler/JobHistory.tsx",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/scheduler/JobHistory.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/scheduler/JobQueue.tsx",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/scheduler/JobQueuePanel.tsx",
+      "to": "src/application/collections.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/JobQueuePanel.tsx",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/scheduler/JobQueuePanel.tsx",
+      "to": "src/features/scheduler/JobQueue.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "to": "src/features/scheduler/JobQueuePanel.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "to": "src/features/scheduler/JobDependencies.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "to": "src/features/scheduler/JobEditor.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "to": "src/features/scheduler/CandidatePanel.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "to": "src/features/scheduler/JobHistory.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "to": "src/hooks/useCommand.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/scheduler/SchedulerWorkspace.tsx",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/index.ts",
+      "to": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "to": "src/domain/ownership.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "to": "src/components/CommandButton.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "to": "src/features/facilities/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "to": "src/features/teleoperation/ControlPad.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "to": "src/features/teleoperation/useMotionKeyboard.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/teleoperation/TeleoperationWorkspace.tsx",
+      "to": "src/hooks/useCommand.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/CorridorControls.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/traffic/CorridorControls.tsx",
+      "to": "src/components/CommandButton.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/index.ts",
+      "to": "src/features/traffic/TrafficWorkspace.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/TrafficMap.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/traffic/TrafficMap.tsx",
+      "to": "src/domain/resources.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/TrafficWorkspace.tsx",
+      "to": "src/hooks/usePreference.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/TrafficWorkspace.tsx",
+      "to": "src/hooks/useWorkspaceScope.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/TrafficWorkspace.tsx",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/TrafficWorkspace.tsx",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/features/traffic/TrafficWorkspace.tsx",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/TrafficWorkspace.tsx",
+      "to": "src/features/traffic/TrafficMap.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/TrafficWorkspace.tsx",
+      "to": "src/features/traffic/CorridorControls.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/TrafficWorkspace.tsx",
+      "to": "src/features/operations/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/features/traffic/TrafficWorkspace.tsx",
+      "to": "src/features/resources/index.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/automationEngine.ts",
+      "to": "src/application/automationEngine.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/application/operations.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/gateway/ports.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/application/queries.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/gateway/structuralSharing.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/application/processing.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/application/configuration.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/snapshots.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/application/transactions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/automation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/jobs.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/planning.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/seed.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/selectors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/permissions.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/invariants.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/domain/navigation.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/gateway/requests.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/FleetGateway.ts",
+      "to": "src/gateway/scheduler.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/ports.ts",
+      "to": "src/application/operations.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/gateway/ports.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/gateway/ports.ts",
+      "to": "src/gateway/requests.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/gateway/requests.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/requests.ts",
+      "to": "src/gateway/scheduler.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/gateway/requests.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/gateway/scheduler.ts",
+      "to": "src/domain/errors.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/hooks/useCollectionPage.ts",
+      "to": "src/application/collections.ts",
+      "typeOnly": false
+    },
+    {
+      "from": "src/hooks/useCommand.ts",
+      "to": "src/domain/model.ts",
+      "typeOnly": true
+    },
+    {
+      "from": "src/hooks/useCommand.ts",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/hooks/useOperation.ts",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/hooks/useWorkspaceScope.ts",
+      "to": "src/app/FleetProvider.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/main.tsx",
+      "to": "src/app/App.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/main.tsx",
+      "to": "src/app/AppProviders.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/main.tsx",
+      "to": "src/components/ErrorBoundary.tsx",
+      "typeOnly": false
+    },
+    {
+      "from": "src/main.tsx",
+      "to": "src/app/styles.css",
+      "typeOnly": false
+    }
+  ]
+}
