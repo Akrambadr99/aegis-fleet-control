@@ -1,5 +1,5 @@
 import type { Command, DomainState, Robot, Versioned } from './model';
-import { readiness } from './selectors';
+import { readiness } from './eligibility';
 import { GatewayError } from '../gateway/requests';
 export type ResourceKind =
   | 'elevator'

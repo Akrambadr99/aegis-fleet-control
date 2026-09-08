@@ -1,24 +1,7 @@
 import { releaseRobotResources } from './resources';
-import type { Command, DomainState, Robot } from './model';
+import type { Command, DomainState } from './model';
 import { GatewayError } from '../gateway/requests';
-export function capabilityIssues(
-  robot: Robot,
-  requirements: { payloadKg: number; actions: string[] },
-) {
-  const reasons: string[] = [];
-  if (requirements.payloadKg > robot.capabilities.payloadKg)
-    reasons.push('Payload exceeds robot capacity');
-  for (const action of requirements.actions)
-    if (!robot.capabilities.actions.includes(action)) reasons.push('Unsupported action: ' + action);
-  return reasons;
-}
-export function maintenanceReasons(state: DomainState, robot: Robot) {
-  const order = robot.maintenanceOrderId ? state.maintenance[robot.maintenanceOrderId] : null;
-  if (order?.status === 'in-progress' || order?.status === 'verification')
-    return ['Robot under maintenance'];
-  if (order?.status === 'scheduled' && order.dueTick <= state.tick) return ['Maintenance overdue'];
-  return [];
-}
+export { capabilityIssues, maintenanceReasons } from './eligibility';
 export function applyMaintenance(
   state: DomainState,
   command: Extract<

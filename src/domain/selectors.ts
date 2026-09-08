@@ -1,7 +1,8 @@
 import { resourcesOwned } from './resources';
-import type { DomainState, Robot, Role, Command } from './model';
+import type { DomainState, Role, Command } from './model';
 import { robotPath, routeDistance } from './navigation';
-import { maintenanceReasons, capabilityIssues } from './maintenance';
+import { readiness, capabilityIssues } from './eligibility';
+export { readiness } from './eligibility';
 export function canExecute(role: Role, type: Command['type']) {
   if (role === 'administrator') return true;
   if (type.startsWith('automation.')) return role === 'fleet-manager';
@@ -13,20 +14,6 @@ export function canExecute(role: Role, type: Command['type']) {
   if (type.startsWith('maintenance.')) return role === 'fleet-manager';
   if (type === 'corridor.set' || type === 'charger.set') return role === 'facility-manager';
   return role === 'operator' || role === 'fleet-manager';
-}
-export function readiness(state: DomainState, robot: Robot): string[] {
-  const reasons: string[] = maintenanceReasons(state, robot);
-  if (!robot.connected) reasons.push('Connection lost');
-  if (robot.status === 'emergency-stopped') reasons.push('Emergency stop latched');
-  if (robot.battery < 20) reasons.push('Low battery');
-  if (robot.controlSessionId) reasons.push('Manual control owned');
-  if (robot.faultIds.some((id) => state.faults[id]?.status !== 'resolved'))
-    reasons.push('Active fault');
-  const reservation = robot.chargerReservationId
-    ? state.reservations[robot.chargerReservationId]
-    : null;
-  if (reservation?.state === 'displaced') reasons.push('Charging reservation displaced');
-  return reasons;
 }
 export function missionFeasibility(state: DomainState, missionId: string) {
   const mission = state.missions[missionId],
