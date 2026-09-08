@@ -244,7 +244,7 @@ export function MissionPlanning() {
             <p>
               {validation.result?.issues.length
                 ? 'Resolve constraints before saving'
-                : 'Mission feasible'}{' '}
+                : 'Plan valid'}{' '}
               · {validation.result?.distance} m · {validation.result?.durationSeconds} s critical
               path · {validation.result?.batteryRequired}% travel battery
             </p>
@@ -256,6 +256,19 @@ export function MissionPlanning() {
                 </li>
               ))}
             </ul>
+            {!!validation.result?.dispatchIssues.length && (
+              <div aria-label="Dispatch blockers">
+                <h3>Robot unavailable for immediate dispatch</h3>
+                <p>
+                  This plan can be saved for later. Scheduling must recheck current availability.
+                </p>
+                <ul>
+                  {validation.result.dispatchIssues.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </>
         )}
       </section>

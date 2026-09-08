@@ -3,6 +3,7 @@ import { FleetGateway } from './FleetGateway';
 import { ManualScheduler } from './scheduler';
 import { newPlan, newStep, validatePlan } from '../domain/planning';
 import { createSeed } from '../domain/seed';
+import { rankCandidates } from '../domain/jobs';
 function fixture() {
   const clock = new ManualScheduler(),
     gateway = new FleetGateway(clock);
@@ -10,6 +11,26 @@ function fixture() {
   plan.steps = [{ ...newStep('travel'), zoneId: 'Z-010' }];
   return { clock, gateway, plan };
 }
+it('planning and scheduling share robot workload and charging commitments', () => {
+  const { plan } = fixture(),
+    state = createSeed(),
+    robot = state.robots[plan.robotId];
+  const busy = validatePlan(state, plan);
+  expect(busy.issues).toEqual([]);
+  expect(busy.dispatchIssues).toEqual(['Robot has active mission workload', 'Charging commitment']);
+  const job = Object.values(state.jobs).find((entry) => entry.facilityId === plan.facilityId)!;
+  expect(
+    rankCandidates(state, job).find((candidate) => candidate.robotId === robot.id)?.reasons,
+  ).toEqual(expect.arrayContaining(busy.dispatchIssues));
+  robot.status = 'idle';
+  robot.activeMissionId = null;
+  state.reservations[robot.chargerReservationId!].state = 'released';
+  expect(validatePlan(state, plan).dispatchIssues).toEqual([]);
+  robot.capabilities.actions = [];
+  expect(validatePlan(state, plan).issues.map((issue) => issue.message)).toContain(
+    'Robot cannot navigate',
+  );
+});
 it('asynchronous feasibility includes captured operator permissions', async () => {
   const { clock, gateway, plan } = fixture();
   const actor = { id: 'limited', role: 'fleet-manager' as const, facilityIds: ['FAC-002'] };

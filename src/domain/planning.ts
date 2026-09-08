@@ -1,6 +1,7 @@
 import type { DomainState, Versioned } from './model';
 import { shortestPath } from './navigation';
 import { readiness } from './selectors';
+import { robotCommitments } from './availability';
 export const stepKinds = [
   'navigate',
   'pickup',
@@ -57,6 +58,7 @@ export interface PlanIssue {
 }
 export interface PlanValidation {
   issues: PlanIssue[];
+  dispatchIssues: string[];
   distance: number;
   batteryRequired: number;
   durationSeconds: number;
@@ -83,6 +85,7 @@ export function newPlan(id: string, facilityId: string, robotId: string): Missio
 export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidation {
   const result: PlanValidation = {
     issues: [],
+    dispatchIssues: [],
     distance: 0,
     batteryRequired: 0,
     durationSeconds: 0,
@@ -98,6 +101,7 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
   if (!plan.steps.length) issue('Add at least one mission step');
   if (plan.steps.length > 100) issue('A mission supports at most 100 steps');
   if (robot) readiness(state, robot).forEach((reason) => issue(reason));
+  if (robot) result.dispatchIssues = robotCommitments(state, robot);
   const ids = new Set(plan.steps.map((s) => s.id));
   if (ids.size !== plan.steps.length || ids.has(''))
     issue('Step identifiers must be unique and nonempty');
@@ -136,6 +140,8 @@ export function validatePlan(state: DomainState, plan: MissionPlan): PlanValidat
       // Control nodes add no work; downstream dependencies determine the critical path.
       duration = 0;
     } else if (step.kind === 'navigate') {
+      if (robot && !robot.capabilities.actions.includes('navigate'))
+        issue('Robot cannot navigate', step.id);
       const zone = state.zones[step.zoneId];
       const target = Object.values(state.navigationNodes).find((n) => n.zoneId === step.zoneId);
       if (!zone || state.floors[zone.floorId]?.facilityId !== plan.facilityId)

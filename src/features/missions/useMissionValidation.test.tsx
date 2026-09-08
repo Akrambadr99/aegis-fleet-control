@@ -34,6 +34,7 @@ function setup() {
   );
   const result: PlanValidation = {
     issues: [],
+    dispatchIssues: [],
     distance: 0,
     batteryRequired: 0,
     durationSeconds: 10,

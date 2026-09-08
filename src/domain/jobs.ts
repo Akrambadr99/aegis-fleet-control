@@ -2,6 +2,7 @@ import { reserveMissionResources, releaseRobotResources } from './resources';
 import type { DomainState, Robot, Versioned, Command } from './model';
 import { shortestPath, type PathResult } from './navigation';
 import { readiness } from './selectors';
+import { robotCommitments } from './availability';
 import { newPlan, newStep } from './planning';
 import { GatewayError } from '../gateway/requests';
 export interface JobInput {
@@ -80,23 +81,12 @@ export function rankCandidates(state: DomainState, job: WarehouseJob): RobotCand
   return Object.values(state.robots)
     .filter((r) => r.facilityId === job.facilityId)
     .map((robot) => {
-      const reasons = readiness(state, robot);
-      const active = robot.activeMissionId ? state.missions[robot.activeMissionId] : null;
-      if (
-        robot.status !== 'idle' ||
-        (active && !['completed', 'cancelled'].includes(active.status))
-      )
-        reasons.push('Robot has active mission workload');
+      const reasons = [...readiness(state, robot), ...robotCommitments(state, robot)];
       if (
         !robot.capabilities.actions.includes('lift') ||
         robot.capabilities.payloadKg < job.payloadKg
       )
         reasons.push('Payload capability mismatch');
-      if (
-        robot.chargerReservationId &&
-        ['queued', 'charging'].includes(state.reservations[robot.chargerReservationId]?.state)
-      )
-        reasons.push('Charging commitment');
       if (job.dependsOn.some((id) => state.jobs[id]?.status !== 'completed'))
         reasons.push('Predecessor job incomplete');
       if (
