@@ -209,77 +209,83 @@ export function MissionPlanning() {
             <span>Drag to reorder · Use arrows for keyboard ordering</span>
           </div>
           <div className="sequence-and-inspector">
-            <StepSequence
-              plan={plan}
-              selected={selected}
-              select={setSelected}
-              move={(id, index) => dispatch({ type: 'move-step', id, target: index })}
-              insert={(index) => add(index)}
-              duplicate={(id, index) => add(index, id)}
-              remove={(id) => {
-                edit({
-                  ...plan,
-                  steps: plan.steps
-                    .filter((s) => s.id !== id)
-                    .map((s) => ({ ...s, dependsOn: s.dependsOn.filter((d) => d !== id) })),
-                });
-                if (selected === id) setSelected('');
-              }}
-            />
-            <StepInspector
-              plan={plan}
-              step={plan.steps.find((s) => s.id === selected)}
-              state={state}
-              update={(step) =>
-                edit({ ...plan, steps: plan.steps.map((s) => (s.id === step.id ? step : s)) })
-              }
-            />
+            <div className="mission-sequence-column">
+              <StepSequence
+                plan={plan}
+                selected={selected}
+                select={setSelected}
+                move={(id, index) => dispatch({ type: 'move-step', id, target: index })}
+                insert={(index) => add(index)}
+                duplicate={(id, index) => add(index, id)}
+                remove={(id) => {
+                  edit({
+                    ...plan,
+                    steps: plan.steps
+                      .filter((s) => s.id !== id)
+                      .map((s) => ({ ...s, dependsOn: s.dependsOn.filter((d) => d !== id) })),
+                  });
+                  if (selected === id) setSelected('');
+                }}
+              />
+              {plan.steps.length > 0 && <DependencyGraph plan={plan} />}
+            </div>
+            <div className="mission-properties">
+              <StepInspector
+                plan={plan}
+                step={plan.steps.find((s) => s.id === selected)}
+                state={state}
+                update={(step) =>
+                  edit({ ...plan, steps: plan.steps.map((s) => (s.id === step.id ? step : s)) })
+                }
+              />
+              <section className="validation-tray" aria-label="Mission feasibility">
+                <h2>Feasibility</h2>
+                {!current ? (
+                  <p role="status">Validating current draft…</p>
+                ) : validation.error ? (
+                  <>
+                    <p role="alert">{validation.error}</p>
+                    <button onClick={validation.retry}>Retry validation</button>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      {validation.result?.issues.length
+                        ? 'Resolve constraints before saving'
+                        : 'Plan valid'}{' '}
+                      · {validation.result?.distance} m · {validation.result?.durationSeconds} s
+                      critical path · {validation.result?.batteryRequired}% travel battery
+                    </p>
+                    <ul>
+                      {validation.result?.issues.map((i, n) => (
+                        <li key={n}>
+                          {i.stepId ? i.stepId + ': ' : ''}
+                          {i.message}
+                        </li>
+                      ))}
+                    </ul>
+                    {!!validation.result?.dispatchIssues.length && (
+                      <div aria-label="Dispatch blockers">
+                        <h3>Robot unavailable for immediate dispatch</h3>
+                        <p>
+                          This plan can be saved for later. Scheduling must recheck current
+                          availability.
+                        </p>
+                        <ul>
+                          {validation.result.dispatchIssues.map((reason) => (
+                            <li key={reason}>{reason}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
+                )}
+              </section>
+            </div>
           </div>
-          <DependencyGraph plan={plan} />
         </fieldset>
       </div>
-      <section className="validation-tray" aria-label="Mission feasibility">
-        <h2>Feasibility</h2>
-        {!current ? (
-          <p role="status">Validating current draft…</p>
-        ) : validation.error ? (
-          <>
-            <p role="alert">{validation.error}</p>
-            <button onClick={validation.retry}>Retry validation</button>
-          </>
-        ) : (
-          <>
-            <p>
-              {validation.result?.issues.length
-                ? 'Resolve constraints before saving'
-                : 'Plan valid'}{' '}
-              · {validation.result?.distance} m · {validation.result?.durationSeconds} s critical
-              path · {validation.result?.batteryRequired}% travel battery
-            </p>
-            <ul>
-              {validation.result?.issues.map((i, n) => (
-                <li key={n}>
-                  {i.stepId ? i.stepId + ': ' : ''}
-                  {i.message}
-                </li>
-              ))}
-            </ul>
-            {!!validation.result?.dispatchIssues.length && (
-              <div aria-label="Dispatch blockers">
-                <h3>Robot unavailable for immediate dispatch</h3>
-                <p>
-                  This plan can be saved for later. Scheduling must recheck current availability.
-                </p>
-                <ul>
-                  {validation.result.dispatchIssues.map((reason) => (
-                    <li key={reason}>{reason}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </>
-        )}
-      </section>
+
       <MissionTemplateLibrary plan={plan} disabled={saving} open={open} />
       {pending && (
         <ConfirmDialog
