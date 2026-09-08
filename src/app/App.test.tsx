@@ -31,9 +31,9 @@ describe('application foundation', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Every robot');
   });
   it('does not imply planned operational controls work', () => {
-    renderApp('/teleoperation');
+    renderApp('/automation');
     expect(screen.getByRole('heading', { name: 'Workspace planned' })).toBeVisible();
-    expect(screen.getByText('Planned · M14')).toBeVisible();
+    expect(screen.getByText('Planned · M17')).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Acquire control' })).not.toBeInTheDocument();
   });
   it('reads a facility from a shared URL', () => {

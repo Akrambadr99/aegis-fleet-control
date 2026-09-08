@@ -1,3 +1,4 @@
+import { TeleoperationWorkspace } from '../features/teleoperation/TeleoperationWorkspace';
 import { ResourcesWorkspace } from '../features/resources/ResourcesWorkspace';
 import { SchedulerWorkspace } from '../features/scheduler/SchedulerWorkspace';
 import { MissionPlanning } from '../features/missions/MissionPlanning';
@@ -118,7 +119,9 @@ export function App() {
                     key={item.path}
                     path={item.path}
                     element={
-                      item.path === '/resources' ? (
+                      item.path === '/teleoperation' ? (
+                        <TeleoperationWorkspace />
+                      ) : item.path === '/resources' ? (
                         <ResourcesWorkspace />
                       ) : item.path === '/scheduler' ? (
                         <SchedulerWorkspace />

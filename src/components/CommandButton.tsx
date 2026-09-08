@@ -29,7 +29,11 @@ export function CommandButton({
   }
   return (
     <div className="command-action">
-      <button disabled={!allowed || state === 'pending'} onClick={run}>
+      <button
+        className={command.type === 'robot.stop' ? 'emergency-stop' : undefined}
+        disabled={!allowed || state === 'pending'}
+        onClick={run}
+      >
         {state === 'pending' ? 'Applying…' : children}
       </button>
       {!allowed && <small>{denied}</small>}
