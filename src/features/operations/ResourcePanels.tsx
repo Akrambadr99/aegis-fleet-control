@@ -125,32 +125,9 @@ export function ExecutionPanel() {
     </section>
   );
 }
-export function ActivityPanel({ replay = false }: { replay?: boolean }) {
+export function ActivityPanel() {
   const { state, params } = useScope();
   const robot = params.get('robot');
-  if (replay)
-    return (
-      <section className="panel">
-        <h2>Cross-domain replay events</h2>
-        <p>Confirmed command frames, newest first. Timeline playback is a later milestone.</p>
-        <ol className="record-list">
-          {state.replay
-            .filter((e) => !robot || e.robotId === robot)
-            .slice(-50)
-            .reverse()
-            .map((event, i) => (
-              <li key={event.eventId + '-' + i}>
-                Tick {event.tick} · {event.robotId} · {event.status} · Mission {event.missionStatus}{' '}
-                · Reservation {event.routeReservation} · Position {event.position.x},{' '}
-                {event.position.y}
-              </li>
-            ))}
-        </ol>
-        {!state.replay.length && (
-          <p>No command frames yet. Change a corridor or stop a robot to record one.</p>
-        )}
-      </section>
-    );
   return (
     <section className="panel">
       <h2>Operator and system activity</h2>

@@ -1,3 +1,4 @@
+import { ReplayWorkspace } from '../features/replay/ReplayWorkspace';
 import { TeleoperationWorkspace } from '../features/teleoperation/TeleoperationWorkspace';
 import { ResourcesWorkspace } from '../features/resources/ResourcesWorkspace';
 import { SchedulerWorkspace } from '../features/scheduler/SchedulerWorkspace';
@@ -119,7 +120,9 @@ export function App() {
                     key={item.path}
                     path={item.path}
                     element={
-                      item.path === '/teleoperation' ? (
+                      item.path === '/replay' ? (
+                        <ReplayWorkspace />
+                      ) : item.path === '/teleoperation' ? (
                         <TeleoperationWorkspace />
                       ) : item.path === '/resources' ? (
                         <ResourcesWorkspace />

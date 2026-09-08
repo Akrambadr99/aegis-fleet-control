@@ -25,7 +25,6 @@ export const connectedPaths = [
   '/activity',
   '/simulation',
   '/telemetry',
-  '/replay',
 ];
 export function OperationsWorkspace({ workspace }: { workspace: Workspace }) {
   const { state, facility, floor, change } = useScope(),
@@ -41,7 +40,6 @@ export function OperationsWorkspace({ workspace }: { workspace: Workspace }) {
     '/activity': <ActivityPanel />,
     '/simulation': <SimulationPanel />,
     '/telemetry': <TelemetryPanel />,
-    '/replay': <ActivityPanel replay />,
   };
   return (
     <>
