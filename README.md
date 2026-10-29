@@ -1,3 +1,61 @@
+<p align="center">
+  <img src="docs/media/project-banner.svg" alt="Aegis Fleet Control — Connected fleet operations and mission coordination." width="100%">
+</p>
+
+<p align="center"><strong>Connected fleet operations and mission coordination.</strong></p>
+
+<p align="center"><a href="#overview">Overview</a> · <a href="#explore">Explore</a> · <a href="#getting-started">Getting started</a></p>
+
+<p align="center"><code>React</code> · <code>TypeScript</code> · <code>Vite</code></p>
+
+## Overview
+
+**Aegis Fleet Control** is a self-contained React application for exploring connected robot-fleet operations in a simulated environment.
+
+**Repository:** `aegis-fleet-control` · **Application name:** Aegis Fleet Control. The application branding and code are unchanged.
+
+![Aegis Fleet Control: actual local application overview with fixture data](docs/media/overview.png)
+
+*Actual application capture using local fixture data.*
+
+## Explore
+
+- Fleet overview and facility map
+- Missions and execution
+- Traffic and resource reservations
+- Charging and fault recovery
+- Telemetry, replay, and simulation
+- Role-aware operational commands
+
+## Getting started
+
+Node.js requirement: `>=20.19.0 <21`. Use the package manager specified in [package.json](package.json).
+
+```bash
+git clone https://github.com/Akrambadr99/aegis-fleet-control.git
+cd aegis-fleet-control
+npm ci
+npm run dev
+```
+
+Open the URL printed by the development server.
+
+### Development commands
+
+| Command | Script defined by this project |
+| --- | --- |
+| `npm run dev` | `vite --host 127.0.0.1` |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | `eslint .` |
+| `npm run test` | `vitest run` |
+| `npm run test:e2e` | `playwright test` |
+| `npm run build` | `tsc --noEmit && vite build` |
+
+See the project guide below for browser installation and any service-specific setup.
+
+<details>
+<summary><strong>Project guide, technical details, and existing documentation</strong></summary>
+
 # Aegis Fleet Control
 
 A self-contained React 19 robotics operations platform built in coherent, tested milestones.
@@ -73,3 +131,9 @@ Use **Control scope** to grant command access to one facility while retaining re
 After a command, open **Activity** and expand **Inspect changes** to review immutable before/after records for affected robots, missions, routes and facility resources.
 
 Changes are delivered as coherent commits after typecheck, tests, build and diff review. Read-only actions do not generate filler commits. See the expanded [product requirements](docs/expansion-brief.md).
+
+</details>
+
+---
+
+<p align="center"><a href="https://github.com/Akrambadr99?tab=repositories">Explore the portfolio</a></p>
