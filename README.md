@@ -18,6 +18,29 @@
 
 *Actual application capture using local fixture data.*
 
+## AI code review and regression testing
+
+I have used Aegis Fleet Control to evaluate AI-generated changes, correct bugs, and design benchmarks and tests for connected TypeScript state transitions. The fleet simulation creates concrete cases where one command affects missions, resources, permissions, and persisted history.
+
+- **Asynchronous bug reproduction:** used a manual scheduler and controlled response order to check that late validation cannot overwrite the result for a newly edited mission draft. [Validation-race regression](src/features/missions/ValidationRace.test.tsx)
+- **Persistence and recovery tests:** checked schema migration, stale-instance writes, corrupt snapshots, and storage failures that must leave canonical state and subscribers unchanged. [Storage tests](src/storage/PersistentStorageAdapter.test.ts)
+- **Authorization and audit review:** tested facility-scoped commands, captured actor grants, immutable before/after history, and failure paths that must not create a successful audit record. [Permissions and audit tests](src/gateway/PermissionsAudit.test.ts)
+
+These behaviors inform debugging-task design and review of candidate patches and tests. This remains a local simulation with browser snapshot persistence; its role selector is not a production authentication service.
+
+After following the documented setup, run the existing verification commands:
+
+```sh
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
+
+The public suites cover domain behavior, rendered interactions, and Chromium journeys.
+
 ## Explore
 
 - Fleet overview and facility map
